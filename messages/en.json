@@ -1,0 +1,715 @@
+{
+  "dashboard": {
+    "appName": "Finance Manager",
+    "appTagline": "Manage your money",
+    "loading": "Loading...",
+    "redirecting": "Redirecting...",
+    "nav": {
+      "dashboard": "Dashboard",
+      "transactions": "Transactions",
+      "accounts": "Accounts",
+      "categories": "Categories",
+      "budgets": "Budgets",
+      "goals": "Goals",
+      "reports": "Reports"
+    },
+    "menu": {
+      "settings": "Settings",
+      "profile": "Profile",
+      "logout": "Logout"
+    }
+  },
+  "dashboardPage": {
+    "title": "Dashboard",
+    "welcome": "Welcome back! Here's your financial overview for {month}",
+    "addTransaction": "Add Transaction",
+    "totalIncome": "Total Income",
+    "totalExpenses": "Total Expenses",
+    "netBalance": "Net Balance",
+    "vsLastMonth": "vs last month",
+    "recentTransactions": "Recent Transactions",
+    "budgetProgress": "Budget Progress",
+    "quickAction": "Quick Actions",
+    "viewAll": "View All",
+    "manage": "Manage",
+    "income": "Income",
+    "expense": "Expense",
+    "uncategorized": "Uncategorized",
+    "of": "of",
+    "used": "used",
+    "budgetStatus": {
+      "overBudget": "Over budget",
+      "nearLimit": "Near limit",
+      "onTrack": "On track"
+    },
+    "empty": {
+      "transactions": {
+        "title": "No Transactions Yet",
+        "description": "Start tracking your finances by adding your first transaction"
+      },
+      "budgets": {
+        "title": "No Budgets Set",
+        "description": "Create budgets to track your spending limits and stay on target",
+        "action": "Set Your First Budget"
+      }
+    },
+    "quickActions": {
+      "transactions": {
+        "title": "Transactions",
+        "subtitle": "View all activity"
+      },
+      "budgets": {
+        "title": "Budgets",
+        "subtitle": "Manage limits"
+      },
+      "goals": {
+        "title": "Goals",
+        "subtitle": "Track progress"
+      },
+      "reports": {
+        "title": "Reports",
+        "subtitle": "View insights"
+      }
+    }
+  },
+  "transactionsPage": {
+    "title": "Transactions",
+    "subtitle": "Track and manage your income and expenses",
+    "addButton": "Add Transaction",
+    "income": "Income",
+    "expense": "Expense",
+    "noDescription": "No description",
+    "deleteButton": "Delete transaction",
+    "listTitle": "Transactions",
+    "filter": {
+      "title": "Filter Transactions",
+      "clear": "Clear Filters",
+      "type": "Type",
+      "allTypes": "All Types",
+      "category": "Category",
+      "allCategories": "All Categories",
+      "search": "Search",
+      "searchPlaceholder": "Search by description..."
+    },
+    "pagination": {
+      "showing": "Showing {start}-{end} of {total}",
+      "page": "Page",
+      "of": "of",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "empty": {
+      "title": "No Transactions Yet",
+      "description": "Start tracking your finances by recording your first transaction",
+      "action": "Add Your First Transaction"
+    },
+    "modal": {
+      "addTitle": "Add Transaction",
+      "hint": "Record your income or expense to keep track of your finances",
+      "type": "Type",
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount",
+      "account": "Account",
+      "category": "Category",
+      "categoryLabel": "Category",
+      "date": "Date",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g., Lunch at restaurant, Salary payment",
+      "preview": "Preview",
+      "cancel": "Cancel",
+      "create": "Create Transaction"
+    },
+    "deleteModal": {
+      "title": "Delete Transaction",
+      "confirm": "Are you sure?",
+      "warning": "This transaction will be permanently deleted and your account balance will be adjusted.",
+      "cancel": "Cancel",
+      "delete": "Delete Transaction"
+    },
+    "validation": {
+      "amount": "Please enter a valid amount greater than 0",
+      "account": "Please select an account",
+      "category": "Please select a category",
+      "description": "Please add a description"
+    },
+    "success": {
+      "created": "Transaction created successfully! 🎉",
+      "deleted": "Transaction deleted successfully"
+    },
+    "error": {
+      "create": "Failed to create transaction",
+      "delete": "Failed to delete transaction"
+    }
+  },
+  "accountsPage": {
+    "title": "Accounts",
+    "subtitle": "Manage your accounts and track balances",
+    "addButton": "Add Account",
+    "editButton": "Edit",
+    "deleteButton": "Delete account",
+    "default": "Default",
+    "negativeBalance": "Negative balance",
+    "types": {
+      "cash": "Cash",
+      "bank": "Bank Account",
+      "ewallet": "E-Wallet",
+      "credit_card": "Credit Card"
+    },
+    "summary": {
+      "totalBalance": "Total Balance",
+      "account": "account",
+      "accounts": "accounts",
+      "assets": "Assets",
+      "liabilities": "Liabilities",
+      "netWorth": "Net Worth"
+    },
+    "distribution": "Account Distribution",
+    "yourAccounts": "Your Accounts ({count})",
+    "empty": {
+      "title": "No Accounts Yet",
+      "description": "Start managing your finances by creating your first account",
+      "action": "Create Your First Account"
+    },
+    "modal": {
+      "addTitle": "Add Account",
+      "updateTitle": "Update Account",
+      "hint": "Create accounts to track different money sources like cash, bank accounts, or e-wallets",
+      "updateHint": "Update account details. Balance changes will affect your total net worth.",
+      "name": "Account Name",
+      "namePlaceholder": "e.g., Cash Wallet, BCA Savings, GoPay",
+      "type": "Account Type",
+      "balance": "Initial Balance",
+      "currentBalance": "Current Balance",
+      "balancePlaceholder": "Enter starting balance",
+      "currentBalancePlaceholder": "Enter current balance",
+      "icon": "Icon (Emoji)",
+      "color": "Color",
+      "quickSelect": "Quick select",
+      "setDefault": "Set as default account",
+      "defaultHint": "Default account will be pre-selected in transactions",
+      "preview": "Preview",
+      "accountNameLabel": "Account Name",
+      "cancel": "Cancel",
+      "create": "Create Account",
+      "update": "Update Account"
+    },
+    "deleteModal": {
+      "title": "Delete Account",
+      "confirm": "Are you sure?",
+      "warning": "This account will be permanently deleted. All associated transactions will be affected.",
+      "cancel": "Cancel",
+      "delete": "Delete Account"
+    },
+    "validation": {
+      "required": "Please fill all required fields (Name and Balance)",
+      "nameTooLong": "Account name is too long (max 50 characters)",
+      "invalidBalance": "Please enter a valid balance",
+      "duplicate": "An account with this name already exists"
+    },
+    "success": {
+      "created": "Account created successfully! 🎉",
+      "updated": "Account updated successfully! ✓",
+      "deleted": "Account deleted successfully"
+    },
+    "error": {
+      "create": "Failed to create account",
+      "update": "Failed to update account",
+      "delete": "Failed to delete account. It may be in use."
+    }
+  },
+  "categoriesPage": {
+    "title": "Categories",
+    "subtitle": "Organize and manage your transaction categories",
+    "addButton": "Add Category",
+    "createButton": "Create Category",
+    "editButton": "Edit",
+    "deleteButton": "Delete category",
+    "default": "Default",
+    "cannotModify": "Default categories cannot be modified",
+    "income": "Income",
+    "expense": "Expense",
+    "stats": {
+      "total": "Total Categories",
+      "custom": "Custom"
+    },
+    "filter": {
+      "all": "All"
+    },
+    "incomeCategories": "Income Categories ({count})",
+    "expenseCategories": "Expense Categories ({count})",
+    "empty": {
+      "income": {
+        "title": "No Income Categories",
+        "description": "Create categories to organize your income sources"
+      },
+      "expense": {
+        "title": "No Expense Categories",
+        "description": "Create categories to track your spending"
+      },
+      "all": {
+        "title": "No Categories Yet",
+        "description": "Start organizing your finances by creating categories"
+      }
+    },
+    "modal": {
+      "addTitle": "Add Category",
+      "editTitle": "Edit Category",
+      "hint": "Create custom categories to better organize your transactions",
+      "name": "Category Name",
+      "namePlaceholder": "e.g., Gym Membership, Freelance Income",
+      "type": "Type",
+      "icon": "Icon (Emoji)",
+      "color": "Color",
+      "quickSelect": "Quick select",
+      "setDefault": "Set as default category",
+      "defaultHint": "Default categories cannot be deleted",
+      "preview": "Preview",
+      "categoryNameLabel": "Category Name",
+      "categoryLabel": "Category",
+      "cancel": "Cancel",
+      "create": "Create",
+      "update": "Update"
+    },
+    "deleteModal": {
+      "title": "Delete Category",
+      "confirm": "Are you sure?",
+      "warning": "This category will be permanently deleted. Transactions using this category will become un-categorized.",
+      "cancel": "Cancel",
+      "delete": "Delete Category"
+    },
+    "validation": {
+      "required": "Category name is required",
+      "nameTooLong": "Category name is too long (max 50 characters)",
+      "duplicate": "A {type} category with this name already exists"
+    },
+    "success": {
+      "created": "Category created successfully! 🎉",
+      "updated": "Category updated successfully! ✓",
+      "deleted": "Category deleted successfully"
+    },
+    "error": {
+      "create": "Failed to create category",
+      "update": "Failed to update category",
+      "delete": "Cannot delete default categories or categories in use"
+    }
+  },
+  "budgetsPage": {
+    "title": "Budgets",
+    "subtitle": "Set and track monthly spending limits",
+    "setBudget": "Set Budget",
+    "editAmount": "Edit budget amount",
+    "deleteButton": "Delete budget",
+    "left": "left",
+    "over": "over",
+    "used": "used",
+    "status": {
+      "overBudget": "Over Budget",
+      "approachingLimit": "Approaching Limit",
+      "onTrack": "On Track"
+    },
+    "overBudgetBy": "Over budget by Rp {amount}",
+    "filter": {
+      "month": "Month",
+      "year": "Year",
+      "category": "Category",
+      "allCategories": "All Categories"
+    },
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "pagination": {
+      "page": "Page",
+      "of": "of",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "empty": {
+      "title": "No Budgets Set",
+      "description": "Start tracking your spending by setting budgets for different categories",
+      "action": "Set Your First Budget"
+    },
+    "modal": {
+      "title": "Set Budget",
+      "settingFor": "Setting budget for",
+      "category": "Category",
+      "amount": "Budget Amount",
+      "amountPlaceholder": "Enter amount",
+      "cancel": "Cancel",
+      "save": "Save Budget"
+    },
+    "deleteModal": {
+      "title": "Delete Budget",
+      "confirm": "Are you sure?",
+      "warning": "This budget will be permanently deleted. This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete Budget"
+    },
+    "validation": {
+      "required": "Please fill all required fields",
+      "amountGreaterThanZero": "Budget amount must be greater than 0",
+      "validAmount": "Please enter a valid amount"
+    },
+    "success": {
+      "created": "Budget saved successfully! 🎉",
+      "updated": "Budget updated successfully! ✓",
+      "deleted": "Budget deleted successfully"
+    },
+    "error": {
+      "create": "Failed to save budget. Please try again.",
+      "update": "Failed to update budget",
+      "delete": "Failed to delete budget"
+    }
+  },
+  "goalsPage": {
+    "title": "Financial Goals",
+    "subtitle": "Track and achieve your savings goals",
+    "addButton": "Add Goal",
+    "updateProgress": "Update Progress",
+    "deleteButton": "Delete goal",
+    "overdue": "Overdue",
+    "dueToday": "Due today",
+    "oneDayLeft": "1 day left",
+    "daysLeft": "{days} days left",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "ofTarget": "of Rp {amount} target",
+    "achieved": "{percentage}% achieved",
+    "toGo": "Rp {amount} to go",
+    "congratulations": "Congratulations! You've reached your goal!",
+    "overdueWarning": "This goal is overdue. Consider updating the deadline or progress.",
+    "summary": {
+      "totalGoals": "Total Goals",
+      "completed": "Completed",
+      "overallProgress": "Overall Progress",
+      "ofTotal": "of Rp {amount}"
+    },
+    "empty": {
+      "title": "No Goals Yet",
+      "description": "Start your financial journey by setting your first savings goal",
+      "action": "Create Your First Goal"
+    },
+    "modal": {
+      "createTitle": "Create Financial Goal",
+      "hint": "Set a clear goal with a specific target amount to stay motivated!",
+      "name": "Goal Name",
+      "namePlaceholder": "e.g., Emergency Fund, Buy Car, Vacation",
+      "targetAmount": "Target Amount",
+      "targetAmountPlaceholder": "Enter target amount",
+      "currentAmount": "Current Amount",
+      "currentAmountPlaceholder": "Enter current savings",
+      "deadline": "Target Deadline",
+      "optional": "Optional",
+      "cancel": "Cancel",
+      "create": "Create Goal"
+    },
+    "progressModal": {
+      "title": "Update Progress",
+      "updatingFor": "Updating progress for",
+      "currentInfo": "Current: Rp {current} / Target: Rp {target}",
+      "newAmount": "New Current Amount",
+      "newAmountPlaceholder": "Enter updated amount",
+      "willComplete": "This will complete your goal!",
+      "progressInfo": "Progress: {percentage}%",
+      "cancel": "Cancel",
+      "update": "Update Progress"
+    },
+    "deleteModal": {
+      "title": "Delete Goal",
+      "confirm": "Are you sure?",
+      "warning": "This goal will be permanently deleted. All progress will be lost.",
+      "cancel": "Cancel",
+      "delete": "Delete Goal"
+    },
+    "validation": {
+      "required": "Please fill required fields (Name and Target Amount)",
+      "targetGreaterThanZero": "Target amount must be greater than 0",
+      "currentNonNegative": "Current amount cannot be negative",
+      "currentExceedsTarget": "Current amount cannot exceed target amount",
+      "enterAmount": "Please enter an amount",
+      "amountNonNegative": "Amount cannot be negative",
+      "amountExceedsTarget": "Amount exceeds target. Your goal will be marked as completed!"
+    },
+    "success": {
+      "created": "Goal created successfully! 🎯",
+      "goalCompleted": "🎉 Congratulations! Goal completed!",
+      "progressUpdated": "Progress updated successfully! 💪",
+      "deleted": "Goal deleted successfully"
+    },
+    "error": {
+      "create": "Failed to create goal. Please try again.",
+      "updateProgress": "Failed to update progress",
+      "delete": "Failed to delete goal"
+    }
+  },
+  "reportsPage": {
+    "title": "Financial Reports",
+    "subtitle": "Comprehensive analysis of your income and expenses",
+    "income": "Income",
+    "expense": "Expense",
+    "balance": "Balance",
+    "ofTotal": "of total",
+    "categoriesCount": "categories",
+    "monthsCount": "months",
+    "topCategories": "Top Spending Categories",
+    "monthlyBreakdown": "Monthly Breakdown",
+    "filter": {
+      "reportType": "Report Type",
+      "monthlyReport": "Monthly Report",
+      "yearlyReport": "Yearly Report",
+      "month": "Month",
+      "year": "Year"
+    },
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "stats": {
+      "totalIncome": "Total Income",
+      "totalExpense": "Total Expense",
+      "netBalance": "Net Balance",
+      "yearlyBalance": "Yearly Balance",
+      "savingsRate": "Savings Rate",
+      "transactionCount": "Transaction Count",
+      "dailyAvgExpense": "Daily Avg Expense",
+      "largestTransaction": "Largest Transaction",
+      "totalTransactions": "Total Transactions",
+      "avgMonthlyIncome": "Avg Monthly Income",
+      "avgMonthlyExpense": "Avg Monthly Expense",
+      "greatJob": "Great job!",
+      "keepImproving": "Keep improving!",
+      "excellent": "Excellent!",
+      "roomToImprove": "Room to improve"
+    },
+    "empty": {
+      "title": "No Data Available",
+      "monthly": "No spending data available for this month. Start adding transactions to see your top categories.",
+      "yearly": "No spending data available for this year. Start tracking your expenses to see insights.",
+      "breakdown": "No monthly data available for this year. Transactions will appear here once recorded."
+    }
+  },
+  "profilesPage": {
+    "title": "Profile Settings",
+    "subtitle": "Manage your account settings and preferences",
+    "profile": {
+      "title": "Profile Information",
+      "description": "Update your personal details and preferences",
+      "unsavedChanges": "Unsaved changes",
+      "unsavedChangesTitle": "You have unsaved changes",
+      "unsavedChangesDescription": "Don't forget to save your changes before leaving this page.",
+      "name": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "email": "Email Address",
+      "emailNote": "Email cannot be changed for security reasons",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "noChanges": "No Changes",
+      "uploading": "Uploading...",
+      "validation": {
+        "nameRequired": "Name is required",
+        "nameMinLength": "Name must be at least 2 characters"
+      },
+      "success": {
+        "updated": "Profile updated successfully! ✓"
+      },
+      "error": {
+        "update": "Failed to update profile"
+      }
+    },
+    "avatar": {
+      "changePhoto": "Change Photo",
+      "upload": "Upload Photo",
+      "remove": "Remove",
+      "recommended": "Recommended: Square image, at least 200x200px",
+      "requirements": "JPG, PNG or WebP. Max file size 5MB.",
+      "validation": {
+        "invalidType": "Please upload a valid image file (JPG, PNG, or WebP)",
+        "sizeTooLarge": "Image size must be less than 5MB"
+      },
+      "success": {
+        "removed": "Avatar removed successfully! ✓"
+      },
+      "error": {
+        "remove": "Failed to remove avatar"
+      }
+    },
+    "security": {
+      "title": "Security Settings",
+      "description": "Change your password to keep your account secure",
+      "currentPassword": "Current Password",
+      "currentPasswordPlaceholder": "Enter current password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPassword": "Confirm New Password",
+      "confirmPasswordPlaceholder": "Re-enter new password",
+      "changePassword": "Change Password",
+      "tipsTitle": "Password Security Tips",
+      "tips": {
+        "unique": "Use a unique password that you don't use elsewhere",
+        "combine": "Combine uppercase, lowercase, numbers, and special characters",
+        "avoid": "Avoid using personal information like names or birthdates",
+        "manager": "Consider using a password manager for complex passwords"
+      }
+    },
+    "password": {
+      "strength": "Password strength",
+      "strengthLevel": {
+        "weak": "Weak",
+        "medium": "Medium",
+        "strong": "Strong"
+      },
+      "requirements": {
+        "length": "At least 8 characters",
+        "uppercase": "Uppercase letter",
+        "lowercase": "Lowercase letter",
+        "number": "Number",
+        "special": "Special character"
+      },
+      "match": "Passwords match",
+      "noMatch": "Passwords do not match",
+      "validation": {
+        "currentRequired": "Current password is required",
+        "newRequired": "New password is required",
+        "minLength": "Password must be at least 8 characters",
+        "noMatch": "Passwords do not match",
+        "tooWeak": "Please use a stronger password with uppercase, lowercase, numbers, and special characters",
+        "mustDiffer": "New password must be different from current password"
+      },
+      "success": {
+        "changed": "Password changed successfully! 🔒"
+      },
+      "error": {
+        "change": "Failed to change password. Please check your current password."
+      }
+    }
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "subtitle": "Manage your preferences, notifications, and account settings",
+    "stats": {
+      "activeAlerts": "Active Alerts",
+      "dataExport": "Data Export",
+      "ready": "Ready",
+      "theme": "Theme"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "subtitle": "Control which notifications you receive",
+      "disableAll": "Disable All",
+      "enableAll": "Enable All",
+      "allDisabled": "All notifications disabled 🔕",
+      "allEnabled": "All notifications enabled 🔔",
+      "enabled": "enabled",
+      "disabled": "disabled",
+      "updatedTo": "updated to",
+      "autoSave": {
+        "title": "Auto-save enabled",
+        "description": "All changes are saved automatically. No need to click a save button!"
+      }
+    },
+    "preferences": {
+      "title": "App Preferences",
+      "subtitle": "Customize your app experience",
+      "language": "Language",
+      "languageDescription": "Choose your preferred language",
+      "theme": "Theme",
+      "themeDescription": "Select your preferred color theme",
+      "currency": "Currency",
+      "currencyDescription": "Set your default currency"
+    },
+    "notificationTypes": {
+      "emailNotifications": "Email Notifications",
+      "emailNotificationsDescription": "Receive updates via email",
+      "budgetAlerts": "Budget Alerts",
+      "budgetAlertsDescription": "Get notified when approaching budget limits",
+      "weeklyReports": "Weekly Reports",
+      "weeklyReportsDescription": "Receive weekly financial summaries",
+      "transactionAlerts": "Transaction Alerts",
+      "transactionAlertsDescription": "Get notified for each transaction",
+      "marketingEmails": "Marketing Emails",
+      "marketingEmailsDescription": "Receive promotional content and updates"
+    },
+    "dataManagement": {
+      "title": "Data Management",
+      "subtitle": "Export or manage your account data",
+      "export": {
+        "title": "Export Your Data",
+        "description": "Download all your financial data in JSON format. Includes transactions, budgets, goals, and account information.",
+        "button": "Export Data",
+        "success": "Data exported successfully! 📥",
+        "error": "Failed to export data"
+      },
+      "dangerZone": {
+        "title": "Danger Zone",
+        "warning": {
+          "title": "Permanent Action",
+          "description": "Account deletion is permanent and cannot be undone. All your data including transactions, budgets, goals, and settings will be permanently removed."
+        },
+        "button": "Delete Account"
+      }
+    },
+    "deleteModal": {
+      "title": "Delete Account",
+      "warning": {
+        "title": "This action cannot be undone",
+        "description": "This will permanently delete your account and all associated data:",
+        "items": {
+          "transactions": "All transactions and financial records",
+          "budgets": "Budgets and spending limits",
+          "goals": "Financial goals and progress",
+          "categories": "Categories and accounts",
+          "settings": "Settings and preferences"
+        }
+      },
+      "confirmLabel": "Type {text} to confirm:",
+      "confirmText": "delete my account",
+      "placeholder": "delete my account",
+      "confirmError": "Please type 'delete my account' to confirm",
+      "finalNotice": {
+        "title": "Final Notice",
+        "description": "You will receive a confirmation email before the account is permanently deleted. You have 7 days to cancel this request."
+      },
+      "cancel": "Cancel",
+      "confirm": "Permanently Delete Account",
+      "success": "Account deletion initiated"
+    },
+    "appInfo": {
+      "title": "App Information",
+      "version": "Version",
+      "lastUpdated": "Last Updated",
+      "buildNumber": "Build Number",
+      "environment": "Environment",
+      "production": "Production",
+      "links": {
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "support": "Support",
+        "changelog": "Changelog"
+      }
+    },
+    "errors": {
+      "updateFailed": "Failed to update setting",
+      "deleteFailed": "Failed to delete account"
+    }
+  }
+}

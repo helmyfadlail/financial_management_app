@@ -1,0 +1,715 @@
+{
+  "dashboard": {
+    "appName": "财务管理器",
+    "appTagline": "管理您的资金",
+    "loading": "加载中...",
+    "redirecting": "重定向中...",
+    "nav": {
+      "dashboard": "仪表板",
+      "transactions": "交易",
+      "accounts": "账户",
+      "categories": "类别",
+      "budgets": "预算",
+      "goals": "目标",
+      "reports": "报告"
+    },
+    "menu": {
+      "settings": "设置",
+      "profile": "个人资料",
+      "logout": "登出"
+    }
+  },
+  "dashboardPage": {
+    "title": "仪表板",
+    "welcome": "欢迎回来！这是您{month}的财务概览",
+    "addTransaction": "添加交易",
+    "totalIncome": "总收入",
+    "totalExpenses": "总支出",
+    "netBalance": "净余额",
+    "vsLastMonth": "与上月相比",
+    "recentTransactions": "最近交易",
+    "budgetProgress": "预算进度",
+    "quickAction": "快速操作",
+    "viewAll": "查看全部",
+    "manage": "管理",
+    "income": "收入",
+    "expense": "支出",
+    "uncategorized": "未分类",
+    "of": "的",
+    "used": "已使用",
+    "budgetStatus": {
+      "overBudget": "超出预算",
+      "nearLimit": "接近限额",
+      "onTrack": "按计划进行"
+    },
+    "empty": {
+      "transactions": {
+        "title": "还没有交易",
+        "description": "通过添加第一笔交易开始跟踪您的财务"
+      },
+      "budgets": {
+        "title": "未设置预算",
+        "description": "创建预算以跟踪支出限额并保持目标",
+        "action": "设置第一个预算"
+      }
+    },
+    "quickActions": {
+      "transactions": {
+        "title": "交易",
+        "subtitle": "查看所有活动"
+      },
+      "budgets": {
+        "title": "预算",
+        "subtitle": "管理限额"
+      },
+      "goals": {
+        "title": "目标",
+        "subtitle": "跟踪进度"
+      },
+      "reports": {
+        "title": "报告",
+        "subtitle": "查看洞察"
+      }
+    }
+  },
+  "transactionsPage": {
+    "title": "交易",
+    "subtitle": "跟踪和管理您的收入和支出",
+    "addButton": "添加交易",
+    "income": "收入",
+    "expense": "支出",
+    "noDescription": "无描述",
+    "deleteButton": "删除交易",
+    "listTitle": "交易",
+    "filter": {
+      "title": "筛选交易",
+      "clear": "清除筛选",
+      "type": "类型",
+      "allTypes": "所有类型",
+      "category": "类别",
+      "allCategories": "所有类别",
+      "search": "搜索",
+      "searchPlaceholder": "按描述搜索..."
+    },
+    "pagination": {
+      "showing": "显示 {start}-{end} 共 {total}",
+      "page": "页",
+      "of": "共",
+      "previous": "上一页",
+      "next": "下一页"
+    },
+    "empty": {
+      "title": "还没有交易",
+      "description": "通过记录第一笔交易开始跟踪您的财务",
+      "action": "添加第一笔交易"
+    },
+    "modal": {
+      "addTitle": "添加交易",
+      "hint": "记录您的收入或支出以跟踪财务",
+      "type": "类型",
+      "amount": "金额",
+      "amountPlaceholder": "输入金额",
+      "account": "账户",
+      "category": "类别",
+      "categoryLabel": "类别",
+      "date": "日期",
+      "description": "描述",
+      "descriptionPlaceholder": "例如：餐厅午餐，工资支付",
+      "preview": "预览",
+      "cancel": "取消",
+      "create": "创建交易"
+    },
+    "deleteModal": {
+      "title": "删除交易",
+      "confirm": "您确定吗？",
+      "warning": "此交易将被永久删除，您的账户余额将被调整。",
+      "cancel": "取消",
+      "delete": "删除交易"
+    },
+    "validation": {
+      "amount": "请输入大于0的有效金额",
+      "account": "请选择账户",
+      "category": "请选择类别",
+      "description": "请添加描述"
+    },
+    "success": {
+      "created": "交易创建成功！🎉",
+      "deleted": "交易删除成功"
+    },
+    "error": {
+      "create": "创建交易失败",
+      "delete": "删除交易失败"
+    }
+  },
+  "accountsPage": {
+    "title": "账户",
+    "subtitle": "管理您的账户并跟踪余额",
+    "addButton": "添加账户",
+    "editButton": "编辑",
+    "deleteButton": "删除账户",
+    "default": "默认",
+    "negativeBalance": "负余额",
+    "types": {
+      "cash": "现金",
+      "bank": "银行账户",
+      "ewallet": "电子钱包",
+      "credit_card": "信用卡"
+    },
+    "summary": {
+      "totalBalance": "总余额",
+      "account": "账户",
+      "accounts": "账户",
+      "assets": "资产",
+      "liabilities": "负债",
+      "netWorth": "净资产"
+    },
+    "distribution": "账户分布",
+    "yourAccounts": "您的账户 ({count})",
+    "empty": {
+      "title": "还没有账户",
+      "description": "通过创建第一个账户开始管理您的财务",
+      "action": "创建第一个账户"
+    },
+    "modal": {
+      "addTitle": "添加账户",
+      "updateTitle": "更新账户",
+      "hint": "创建账户以跟踪不同的资金来源，如现金、银行账户或电子钱包",
+      "updateHint": "更新账户详情。余额变化将影响您的总净资产。",
+      "name": "账户名称",
+      "namePlaceholder": "例如：现金钱包、BCA储蓄、GoPay",
+      "type": "账户类型",
+      "balance": "初始余额",
+      "currentBalance": "当前余额",
+      "balancePlaceholder": "输入起始余额",
+      "currentBalancePlaceholder": "输入当前余额",
+      "icon": "图标（表情符号）",
+      "color": "颜色",
+      "quickSelect": "快速选择",
+      "setDefault": "设为默认账户",
+      "defaultHint": "默认账户将在交易中预选",
+      "preview": "预览",
+      "accountNameLabel": "账户名称",
+      "cancel": "取消",
+      "create": "创建账户",
+      "update": "更新账户"
+    },
+    "deleteModal": {
+      "title": "删除账户",
+      "confirm": "您确定吗？",
+      "warning": "此账户将被永久删除。所有相关交易都将受到影响。",
+      "cancel": "取消",
+      "delete": "删除账户"
+    },
+    "validation": {
+      "required": "请填写所有必填字段（名称和余额）",
+      "nameTooLong": "账户名称太长（最多50个字符）",
+      "invalidBalance": "请输入有效的余额",
+      "duplicate": "此名称的账户已存在"
+    },
+    "success": {
+      "created": "账户创建成功！🎉",
+      "updated": "账户更新成功！✓",
+      "deleted": "账户删除成功"
+    },
+    "error": {
+      "create": "创建账户失败",
+      "update": "更新账户失败",
+      "delete": "删除账户失败。可能正在使用中。"
+    }
+  },
+  "categoriesPage": {
+    "title": "类别",
+    "subtitle": "组织和管理您的交易类别",
+    "addButton": "添加类别",
+    "createButton": "创建类别",
+    "editButton": "编辑",
+    "deleteButton": "删除类别",
+    "default": "默认",
+    "cannotModify": "默认类别无法修改",
+    "income": "收入",
+    "expense": "支出",
+    "stats": {
+      "total": "总类别",
+      "custom": "自定义"
+    },
+    "filter": {
+      "all": "全部"
+    },
+    "incomeCategories": "收入类别 ({count})",
+    "expenseCategories": "支出类别 ({count})",
+    "empty": {
+      "income": {
+        "title": "没有收入类别",
+        "description": "创建类别以组织您的收入来源"
+      },
+      "expense": {
+        "title": "没有支出类别",
+        "description": "创建类别以跟踪您的支出"
+      },
+      "all": {
+        "title": "还没有类别",
+        "description": "通过创建类别开始组织您的财务"
+      }
+    },
+    "modal": {
+      "addTitle": "添加类别",
+      "editTitle": "编辑类别",
+      "hint": "创建自定义类别以更好地组织您的交易",
+      "name": "类别名称",
+      "namePlaceholder": "例如：健身房会员、自由职业收入",
+      "type": "类型",
+      "icon": "图标（表情符号）",
+      "color": "颜色",
+      "quickSelect": "快速选择",
+      "setDefault": "设为默认类别",
+      "defaultHint": "默认类别无法删除",
+      "preview": "预览",
+      "categoryNameLabel": "类别名称",
+      "categoryLabel": "类别",
+      "cancel": "取消",
+      "create": "创建",
+      "update": "更新"
+    },
+    "deleteModal": {
+      "title": "删除类别",
+      "confirm": "您确定吗？",
+      "warning": "此类别将被永久删除。使用此类别的交易将变为未分类。",
+      "cancel": "取消",
+      "delete": "删除类别"
+    },
+    "validation": {
+      "required": "类别名称为必填项",
+      "nameTooLong": "类别名称太长（最多50个字符）",
+      "duplicate": "此名称的{type}类别已存在"
+    },
+    "success": {
+      "created": "类别创建成功！🎉",
+      "updated": "类别更新成功！✓",
+      "deleted": "类别删除成功"
+    },
+    "error": {
+      "create": "创建类别失败",
+      "update": "更新类别失败",
+      "delete": "无法删除默认类别或正在使用的类别"
+    }
+  },
+  "budgetsPage": {
+    "title": "预算",
+    "subtitle": "设置和跟踪每月支出限额",
+    "setBudget": "设置预算",
+    "editAmount": "编辑预算金额",
+    "deleteButton": "删除预算",
+    "left": "剩余",
+    "over": "超出",
+    "used": "已使用",
+    "status": {
+      "overBudget": "超出预算",
+      "approachingLimit": "接近限额",
+      "onTrack": "按计划进行"
+    },
+    "overBudgetBy": "超出预算 Rp {amount}",
+    "filter": {
+      "month": "月份",
+      "year": "年份",
+      "category": "类别",
+      "allCategories": "所有类别"
+    },
+    "months": {
+      "january": "一月",
+      "february": "二月",
+      "march": "三月",
+      "april": "四月",
+      "may": "五月",
+      "june": "六月",
+      "july": "七月",
+      "august": "八月",
+      "september": "九月",
+      "october": "十月",
+      "november": "十一月",
+      "december": "十二月"
+    },
+    "pagination": {
+      "page": "页",
+      "of": "共",
+      "previous": "上一页",
+      "next": "下一页"
+    },
+    "empty": {
+      "title": "未设置预算",
+      "description": "通过为不同类别设置预算来开始跟踪您的支出",
+      "action": "设置第一个预算"
+    },
+    "modal": {
+      "title": "设置预算",
+      "settingFor": "设置预算期间",
+      "category": "类别",
+      "amount": "预算金额",
+      "amountPlaceholder": "输入金额",
+      "cancel": "取消",
+      "save": "保存预算"
+    },
+    "deleteModal": {
+      "title": "删除预算",
+      "confirm": "您确定吗？",
+      "warning": "此预算将被永久删除。此操作无法撤消。",
+      "cancel": "取消",
+      "delete": "删除预算"
+    },
+    "validation": {
+      "required": "请填写所有必填字段",
+      "amountGreaterThanZero": "预算金额必须大于0",
+      "validAmount": "请输入有效的金额"
+    },
+    "success": {
+      "created": "预算保存成功！🎉",
+      "updated": "预算更新成功！✓",
+      "deleted": "预算删除成功"
+    },
+    "error": {
+      "create": "保存预算失败。请重试。",
+      "update": "更新预算失败",
+      "delete": "删除预算失败"
+    }
+  },
+  "goalsPage": {
+    "title": "财务目标",
+    "subtitle": "跟踪并实现您的储蓄目标",
+    "addButton": "添加目标",
+    "updateProgress": "更新进度",
+    "deleteButton": "删除目标",
+    "overdue": "已逾期",
+    "dueToday": "今天到期",
+    "oneDayLeft": "剩余1天",
+    "daysLeft": "剩余{days}天",
+    "completed": "已完成",
+    "inProgress": "进行中",
+    "ofTarget": "目标 Rp {amount}",
+    "achieved": "{percentage}% 已达成",
+    "toGo": "还需 Rp {amount}",
+    "congratulations": "恭喜！您已达成目标！",
+    "overdueWarning": "此目标已逾期。请考虑更新截止日期或进度。",
+    "summary": {
+      "totalGoals": "总目标",
+      "completed": "已完成",
+      "overallProgress": "总体进度",
+      "ofTotal": "总共 Rp {amount}"
+    },
+    "empty": {
+      "title": "还没有目标",
+      "description": "通过设置第一个储蓄目标开始您的财务之旅",
+      "action": "创建第一个目标"
+    },
+    "modal": {
+      "createTitle": "创建财务目标",
+      "hint": "设定具有明确目标金额的清晰目标以保持动力！",
+      "name": "目标名称",
+      "namePlaceholder": "例如：应急基金、买车、度假",
+      "targetAmount": "目标金额",
+      "targetAmountPlaceholder": "输入目标金额",
+      "currentAmount": "当前金额",
+      "currentAmountPlaceholder": "输入当前储蓄",
+      "deadline": "目标截止日期",
+      "optional": "可选",
+      "cancel": "取消",
+      "create": "创建目标"
+    },
+    "progressModal": {
+      "title": "更新进度",
+      "updatingFor": "更新进度",
+      "currentInfo": "当前：Rp {current} / 目标：Rp {target}",
+      "newAmount": "新的当前金额",
+      "newAmountPlaceholder": "输入更新的金额",
+      "willComplete": "这将完成您的目标！",
+      "progressInfo": "进度：{percentage}%",
+      "cancel": "取消",
+      "update": "更新进度"
+    },
+    "deleteModal": {
+      "title": "删除目标",
+      "confirm": "您确定吗？",
+      "warning": "此目标将被永久删除。所有进度都将丢失。",
+      "cancel": "取消",
+      "delete": "删除目标"
+    },
+    "validation": {
+      "required": "请填写必填字段（名称和目标金额）",
+      "targetGreaterThanZero": "目标金额必须大于0",
+      "currentNonNegative": "当前金额不能为负",
+      "currentExceedsTarget": "当前金额不能超过目标金额",
+      "enterAmount": "请输入金额",
+      "amountNonNegative": "金额不能为负",
+      "amountExceedsTarget": "金额超过目标。您的目标将被标记为已完成！"
+    },
+    "success": {
+      "created": "目标创建成功！🎯",
+      "goalCompleted": "🎉 恭喜！目标完成！",
+      "progressUpdated": "进度更新成功！💪",
+      "deleted": "目标删除成功"
+    },
+    "error": {
+      "create": "创建目标失败。请重试。",
+      "updateProgress": "更新进度失败",
+      "delete": "删除目标失败"
+    }
+  },
+  "reportsPage": {
+    "title": "财务报告",
+    "subtitle": "全面分析您的收入和支出",
+    "income": "收入",
+    "expense": "支出",
+    "balance": "余额",
+    "ofTotal": "占总数",
+    "categoriesCount": "个类别",
+    "monthsCount": "个月",
+    "topCategories": "最高支出类别",
+    "monthlyBreakdown": "月度明细",
+    "filter": {
+      "reportType": "报告类型",
+      "monthlyReport": "月度报告",
+      "yearlyReport": "年度报告",
+      "month": "月份",
+      "year": "年份"
+    },
+    "months": {
+      "january": "一月",
+      "february": "二月",
+      "march": "三月",
+      "april": "四月",
+      "may": "五月",
+      "june": "六月",
+      "july": "七月",
+      "august": "八月",
+      "september": "九月",
+      "october": "十月",
+      "november": "十一月",
+      "december": "十二月"
+    },
+    "stats": {
+      "totalIncome": "总收入",
+      "totalExpense": "总支出",
+      "netBalance": "净余额",
+      "yearlyBalance": "年度余额",
+      "savingsRate": "储蓄率",
+      "transactionCount": "交易数量",
+      "dailyAvgExpense": "日均支出",
+      "largestTransaction": "最大交易",
+      "totalTransactions": "总交易数",
+      "avgMonthlyIncome": "月均收入",
+      "avgMonthlyExpense": "月均支出",
+      "greatJob": "做得好！",
+      "keepImproving": "继续加油！",
+      "excellent": "优秀！",
+      "roomToImprove": "还有改进空间"
+    },
+    "empty": {
+      "title": "无可用数据",
+      "monthly": "本月没有支出数据。开始添加交易以查看您的热门类别。",
+      "yearly": "本年没有支出数据。开始跟踪您的支出以查看洞察。",
+      "breakdown": "本年没有月度数据。记录后交易将显示在此处。"
+    }
+  },
+  "profilesPage": {
+    "title": "个人资料设置",
+    "subtitle": "管理您的账户设置和偏好",
+    "profile": {
+      "title": "个人资料信息",
+      "description": "更新您的个人详情和偏好",
+      "unsavedChanges": "未保存的更改",
+      "unsavedChangesTitle": "您有未保存的更改",
+      "unsavedChangesDescription": "离开此页面前别忘了保存您的更改。",
+      "name": "全名",
+      "namePlaceholder": "输入您的全名",
+      "email": "电子邮件地址",
+      "emailNote": "出于安全原因，电子邮件无法更改",
+      "cancel": "取消",
+      "saveChanges": "保存更改",
+      "noChanges": "无更改",
+      "uploading": "上传中...",
+      "validation": {
+        "nameRequired": "姓名为必填项",
+        "nameMinLength": "姓名至少需要2个字符"
+      },
+      "success": {
+        "updated": "个人资料更新成功！✓"
+      },
+      "error": {
+        "update": "更新个人资料失败"
+      }
+    },
+    "avatar": {
+      "changePhoto": "更换照片",
+      "upload": "上传照片",
+      "remove": "删除",
+      "recommended": "推荐：方形图片，至少200x200像素",
+      "requirements": "JPG、PNG或WebP。最大文件大小5MB。",
+      "validation": {
+        "invalidType": "请上传有效的图片文件（JPG、PNG或WebP）",
+        "sizeTooLarge": "图片大小必须小于5MB"
+      },
+      "success": {
+        "removed": "头像删除成功！✓"
+      },
+      "error": {
+        "remove": "删除头像失败"
+      }
+    },
+    "security": {
+      "title": "安全设置",
+      "description": "更改密码以保护您的账户安全",
+      "currentPassword": "当前密码",
+      "currentPasswordPlaceholder": "输入当前密码",
+      "newPassword": "新密码",
+      "newPasswordPlaceholder": "输入新密码",
+      "confirmPassword": "确认新密码",
+      "confirmPasswordPlaceholder": "重新输入新密码",
+      "changePassword": "更改密码",
+      "tipsTitle": "密码安全提示",
+      "tips": {
+        "unique": "使用您在其他地方未使用过的唯一密码",
+        "combine": "结合使用大写字母、小写字母、数字和特殊字符",
+        "avoid": "避免使用姓名或生日等个人信息",
+        "manager": "考虑使用密码管理器来管理复杂密码"
+      }
+    },
+    "password": {
+      "strength": "密码强度",
+      "strengthLevel": {
+        "weak": "弱",
+        "medium": "中等",
+        "strong": "强"
+      },
+      "requirements": {
+        "length": "至少8个字符",
+        "uppercase": "大写字母",
+        "lowercase": "小写字母",
+        "number": "数字",
+        "special": "特殊字符"
+      },
+      "match": "密码匹配",
+      "noMatch": "密码不匹配",
+      "validation": {
+        "currentRequired": "当前密码为必填项",
+        "newRequired": "新密码为必填项",
+        "minLength": "密码至少需要8个字符",
+        "noMatch": "密码不匹配",
+        "tooWeak": "请使用更强的密码，包含大写字母、小写字母、数字和特殊字符",
+        "mustDiffer": "新密码必须与当前密码不同"
+      },
+      "success": {
+        "changed": "密码更改成功！🔒"
+      },
+      "error": {
+        "change": "更改密码失败。请检查您的当前密码。"
+      }
+    }
+  },
+  "settingsPage": {
+    "title": "设置",
+    "subtitle": "管理您的偏好设置、通知和账户设置",
+    "stats": {
+      "activeAlerts": "活动提醒",
+      "dataExport": "数据导出",
+      "ready": "就绪",
+      "theme": "主题"
+    },
+    "notifications": {
+      "title": "通知偏好",
+      "subtitle": "控制您接收的通知",
+      "disableAll": "全部禁用",
+      "enableAll": "全部启用",
+      "allDisabled": "所有通知已禁用 🔕",
+      "allEnabled": "所有通知已启用 🔔",
+      "enabled": "已启用",
+      "disabled": "已禁用",
+      "updatedTo": "已更新为",
+      "autoSave": {
+        "title": "自动保存已启用",
+        "description": "所有更改都会自动保存。无需点击保存按钮！"
+      }
+    },
+    "preferences": {
+      "title": "应用偏好",
+      "subtitle": "自定义您的应用体验",
+      "language": "语言",
+      "languageDescription": "选择您的首选语言",
+      "theme": "主题",
+      "themeDescription": "选择您的首选颜色主题",
+      "currency": "货币",
+      "currencyDescription": "设置您的默认货币"
+    },
+    "notificationTypes": {
+      "emailNotifications": "电子邮件通知",
+      "emailNotificationsDescription": "通过电子邮件接收更新",
+      "budgetAlerts": "预算提醒",
+      "budgetAlertsDescription": "接近预算限额时收到通知",
+      "weeklyReports": "每周报告",
+      "weeklyReportsDescription": "接收每周财务摘要",
+      "transactionAlerts": "交易提醒",
+      "transactionAlertsDescription": "每笔交易都会收到通知",
+      "marketingEmails": "营销邮件",
+      "marketingEmailsDescription": "接收促销内容和更新"
+    },
+    "dataManagement": {
+      "title": "数据管理",
+      "subtitle": "导出或管理您的账户数据",
+      "export": {
+        "title": "导出您的数据",
+        "description": "以JSON格式下载所有财务数据。包括交易、预算、目标和账户信息。",
+        "button": "导出数据",
+        "success": "数据导出成功！📥",
+        "error": "导出数据失败"
+      },
+      "dangerZone": {
+        "title": "危险区域",
+        "warning": {
+          "title": "永久操作",
+          "description": "账户删除是永久性的，无法撤销。您的所有数据，包括交易、预算、目标和设置都将被永久删除。"
+        },
+        "button": "删除账户"
+      }
+    },
+    "deleteModal": {
+      "title": "删除账户",
+      "warning": {
+        "title": "此操作无法撤销",
+        "description": "这将永久删除您的账户和所有相关数据：",
+        "items": {
+          "transactions": "所有交易和财务记录",
+          "budgets": "预算和支出限额",
+          "goals": "财务目标和进度",
+          "categories": "类别和账户",
+          "settings": "设置和偏好"
+        }
+      },
+      "confirmLabel": "输入 {text} 以确认：",
+      "confirmText": "删除我的账户",
+      "placeholder": "删除我的账户",
+      "confirmError": "请输入\"删除我的账户\"以确认",
+      "finalNotice": {
+        "title": "最后通知",
+        "description": "在账户被永久删除之前, 您将收到一封确认电子邮件。您有7天时间取消此请求。"
+      },
+      "cancel": "取消",
+      "confirm": "永久删除账户",
+      "success": "账户删除已启动"
+    },
+    "appInfo": {
+      "title": "应用信息",
+      "version": "版本",
+      "lastUpdated": "最后更新",
+      "buildNumber": "构建号",
+      "environment": "环境",
+      "production": "生产环境",
+      "links": {
+        "terms": "服务条款",
+        "privacy": "隐私政策",
+        "support": "支持",
+        "changelog": "更新日志"
+      }
+    },
+    "errors": {
+      "updateFailed": "更新设置失败",
+      "deleteFailed": "删除账户失败"
+    }
+  }
+}

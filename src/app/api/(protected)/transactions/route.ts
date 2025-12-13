@@ -1,0 +1,162 @@
+import { NextRequest } from "next/server";
+
+import { prisma, requireAuth } from "@/lib";
+
+import { Prisma } from "prisma-client/client";
+
+import { errorResponse, successResponse, validationErrorResponse } from "@/utils";
+
+import z from "zod";
+
+import { transactionFilterSchema, transactionSchema } from "@/types";
+
+export async function GET(req: NextRequest) {
+  try {
+    const user = await requireAuth();
+    const { searchParams } = new URL(req.url);
+
+    const filterData = {
+      startDate: searchParams.get("startDate") || undefined,
+      endDate: searchParams.get("endDate") || undefined,
+      categoryId: searchParams.get("categoryId") || undefined,
+      type: searchParams.get("type") || undefined,
+      accountId: searchParams.get("accountId") || undefined,
+      search: searchParams.get("search") || undefined,
+      page: parseInt(searchParams.get("page") || "1"),
+      limit: parseInt(searchParams.get("limit") || "20"),
+    };
+
+    const validation = transactionFilterSchema.safeParse(filterData);
+    if (!validation.success) {
+      const { fieldErrors } = z.flattenError(validation.error);
+      return validationErrorResponse(fieldErrors);
+    }
+
+    const { startDate, endDate, categoryId, type, accountId, search, page, limit } = validation.data;
+
+    const where: Prisma.TransactionWhereInput = {
+      userId: user.id,
+      ...(startDate && { date: { gte: new Date(startDate) } }),
+      ...(endDate && { date: { lte: new Date(endDate) } }),
+      ...(categoryId && { categoryId }),
+      ...(type && { type }),
+      ...(accountId && { accountId }),
+      ...(search && {
+        description: {
+          contains: search,
+          mode: "insensitive",
+        },
+      }),
+    };
+
+    const [data, total] = await Promise.all([
+      prisma.transaction.findMany({
+        where,
+        include: {
+          category: true,
+          account: true,
+        },
+        orderBy: { date: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.transaction.count({ where }),
+    ]);
+
+    return successResponse({
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error(error);
+
+    if (error instanceof Error && error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    return errorResponse(errorMessage, 500);
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const user = await requireAuth();
+    const body = await req.json();
+    const validation = transactionSchema.safeParse(body);
+
+    if (!validation.success) {
+      const { fieldErrors } = z.flattenError(validation.error);
+      return validationErrorResponse(fieldErrors);
+    }
+
+    const data = validation.data;
+
+    const account = await prisma.account.findFirst({ where: { id: data.accountId, userId: user.id } });
+
+    if (!account) return errorResponse("Account not found", 404);
+
+    const category = await prisma.category.findFirst({
+      where: { id: data.categoryId, OR: [{ userId: user.id }, { isDefault: true }] },
+    });
+
+    if (!category) return errorResponse("Category not found", 404);
+
+    const transaction = await prisma.$transaction(async (tx) => {
+      const newTransaction = await tx.transaction.create({
+        data: {
+          userId: user.id,
+          accountId: data.accountId,
+          categoryId: data.categoryId,
+          amount: data.amount,
+          type: data.type,
+          description: data.description,
+          date: new Date(data.date),
+          attachment: data.attachment,
+        },
+        include: {
+          category: true,
+          account: true,
+        },
+      });
+
+      const balanceChange = data.type === "INCOME" ? data.amount : -data.amount;
+      await tx.account.update({
+        where: { id: data.accountId },
+        data: { balance: { increment: balanceChange } },
+      });
+
+      if (data.type === "EXPENSE") {
+        const transactionDate = new Date(data.date);
+        const month = transactionDate.getMonth() + 1;
+        const year = transactionDate.getFullYear();
+
+        await tx.budget.updateMany({
+          where: {
+            userId: user.id,
+            categoryId: data.categoryId,
+            month,
+            year,
+          },
+          data: {
+            spent: { increment: data.amount },
+          },
+        });
+      }
+
+      return newTransaction;
+    });
+
+    return successResponse(transaction, "Transaction created successfully");
+  } catch (error) {
+    console.error(error);
+
+    if (error instanceof Error && error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    return errorResponse(errorMessage, 500);
+  }
+}

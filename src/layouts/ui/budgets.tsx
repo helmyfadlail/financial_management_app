@@ -1,0 +1,469 @@
+"use client";
+
+import * as React from "react";
+
+import { useTranslations } from "next-intl";
+
+import { useBudgets, useCategories, useSearchPagination } from "@/hooks";
+
+import { Card, CardContent, Button, Input, Select, Modal, useToast } from "@/components";
+
+import type { Budget, SelectOption } from "@/types/api";
+
+interface BudgetStatus {
+  type: "over" | "warning" | "safe";
+  color: "red" | "yellow" | "green";
+  label: string;
+}
+
+interface FormData {
+  categoryId: string;
+  amount: string;
+}
+
+interface BudgetItemProps {
+  budget: Budget;
+  onEdit: (budgetId: string, newAmount: string) => void;
+  onDelete: (budgetId: string) => void;
+  isDeleting: boolean;
+}
+
+interface EmptyStateProps {
+  onCreateClick: () => void;
+}
+
+const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onEdit, onDelete, isDeleting }) => {
+  const t = useTranslations("budgetsPage");
+  const [isEditing, setIsEditing] = React.useState<boolean>(false);
+  const [editAmount, setEditAmount] = React.useState<string>(budget.amount.toString());
+
+  const spent: number = Number(budget.spent);
+  const amount: number = Number(budget.amount);
+  const percentage: number = (spent / amount) * 100;
+  const remaining: number = amount - spent;
+
+  const status: BudgetStatus = React.useMemo(() => {
+    if (percentage >= 100) return { type: "over", color: "red", label: t("status.overBudget") };
+    if (percentage >= 80) return { type: "warning", color: "yellow", label: t("status.approachingLimit") };
+    return { type: "safe", color: "green", label: t("status.onTrack") };
+  }, [percentage, t]);
+
+  const handleSaveEdit = React.useCallback(() => {
+    onEdit(budget.id, editAmount);
+    setIsEditing(false);
+  }, [budget.id, editAmount, onEdit]);
+
+  const handleCancelEdit = React.useCallback(() => {
+    setIsEditing(false);
+    setEditAmount(budget.amount.toString());
+  }, [budget.amount]);
+
+  const handleKeyDown = React.useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") handleSaveEdit();
+      if (e.key === "Escape") handleCancelEdit();
+    },
+    [handleSaveEdit, handleCancelEdit]
+  );
+
+  return (
+    <Card variant="elevated" className="transition-shadow hover:shadow-lg">
+      <CardContent className="pt-6">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="flex items-start flex-1 min-w-0 gap-3">
+            <span className="text-3xl shrink-0" role="img" aria-label={budget.category.name}>
+              {budget.category.icon}
+            </span>
+            <div className="flex-1 min-w-0">
+              <h3 className="mb-1 text-lg font-bold text-primary-900">{budget.category.name}</h3>
+              <div className="flex flex-wrap items-center gap-2 text-sm text-primary-600">
+                <span className="font-medium">Rp {spent.toLocaleString("id-ID")}</span>
+                <span className="text-primary-400">/</span>
+                {isEditing ? (
+                  <div className="flex items-center gap-2">
+                    <Input type="number" value={editAmount} onChange={(e) => setEditAmount(e.target.value)} className="w-32 py-1 text-sm" onKeyDown={handleKeyDown} autoFocus />
+                    <Button size="sm" variant="primary" onClick={handleSaveEdit}>
+                      ✓
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={handleCancelEdit}>
+                      ✕
+                    </Button>
+                  </div>
+                ) : (
+                  <button
+                    className="px-1 font-medium rounded hover:text-primary-800 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    onClick={() => setIsEditing(true)}
+                    aria-label={t("editAmount")}
+                  >
+                    Rp {amount.toLocaleString("id-ID")}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 shrink-0">
+            <div className="text-right">
+              <p className={`text-2xl font-bold text-${status.color}-600`}>{percentage.toFixed(1)}%</p>
+              <p className="mt-1 text-xs text-primary-600">
+                {remaining >= 0 ? `Rp ${remaining.toLocaleString("id-ID")} ${t("left")}` : `Rp ${Math.abs(remaining).toLocaleString("id-ID")} ${t("over")}`}
+              </p>
+            </div>
+            <Button variant="danger" size="sm" onClick={() => onDelete(budget.id)} disabled={isDeleting} aria-label={t("deleteButton")}>
+              🗑️
+            </Button>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="relative w-full h-4 mb-2 overflow-hidden rounded-full bg-primary-100">
+          <div
+            className={`h-full rounded-full transition-all duration-300 bg-${status.color}-500`}
+            style={{ width: `${Math.min(percentage, 100)}%` }}
+            role="progressbar"
+            aria-valuenow={percentage}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          />
+        </div>
+
+        {/* Status Messages */}
+        {status.type === "over" && (
+          <div className="flex items-center gap-2 p-2 mt-3 border border-red-200 rounded-lg bg-red-50">
+            <span className="text-red-600">⚠️</span>
+            <p className="text-sm font-medium text-red-600">{t("overBudgetBy", { amount: Math.abs(remaining).toLocaleString("id-ID") })}</p>
+          </div>
+        )}
+        {status.type === "warning" && (
+          <div className="flex items-center gap-2 p-2 mt-3 border border-yellow-200 rounded-lg bg-yellow-50">
+            <span className="text-yellow-600">⚠️</span>
+            <p className="text-sm font-medium text-yellow-600">
+              {status.label} - {percentage.toFixed(0)}% {t("used")}
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+const EmptyState: React.FC<EmptyStateProps> = ({ onCreateClick }) => {
+  const t = useTranslations("budgetsPage");
+
+  return (
+    <Card>
+      <CardContent className="pt-6">
+        <div className="py-16 text-center">
+          <div className="mb-4 text-6xl">📊</div>
+          <h3 className="mb-2 text-xl font-bold text-primary-900">{t("empty.title")}</h3>
+          <p className="max-w-md mx-auto mb-6 text-primary-600">{t("empty.description")}</p>
+          <Button variant="primary" onClick={onCreateClick} size="lg">
+            + {t("empty.action")}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export const Budgets: React.FC = () => {
+  const t = useTranslations("budgetsPage");
+  const now = React.useMemo(() => new Date(), []);
+  const [selectedMonth, setSelectedMonth] = React.useState<number>(now.getMonth() + 1);
+  const [selectedYear, setSelectedYear] = React.useState<number>(now.getFullYear());
+  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
+  const [formData, setFormData] = React.useState<FormData>({ categoryId: "", amount: "" });
+
+  const { selectedCategory, handleCategoryChange, currentPage, handlePageChange } = useSearchPagination({ defaultPage: 1, categoryParamName: "category" });
+
+  const { categories } = useCategories("EXPENSE");
+  const { addToast } = useToast();
+
+  const { budgets, pagination, createBudget, isCreating, updateBudget, deleteBudget, isDeleting } = useBudgets({
+    month: selectedMonth,
+    year: selectedYear,
+    page: currentPage,
+    limit: 10,
+    categoryId: selectedCategory,
+  });
+
+  // Memoized options
+  const categoryOptions: SelectOption[] = React.useMemo(() => categories.map((c) => ({ value: c.id, label: `${c.icon} ${c.name}` })), [categories]);
+
+  const monthOptions: SelectOption[] = React.useMemo(
+    () => [
+      { value: "1", label: t("months.january") },
+      { value: "2", label: t("months.february") },
+      { value: "3", label: t("months.march") },
+      { value: "4", label: t("months.april") },
+      { value: "5", label: t("months.may") },
+      { value: "6", label: t("months.june") },
+      { value: "7", label: t("months.july") },
+      { value: "8", label: t("months.august") },
+      { value: "9", label: t("months.september") },
+      { value: "10", label: t("months.october") },
+      { value: "11", label: t("months.november") },
+      { value: "12", label: t("months.december") },
+    ],
+    [t]
+  );
+
+  const yearOptions: SelectOption[] = React.useMemo(
+    () => [
+      { value: "2024", label: "2024" },
+      { value: "2025", label: "2025" },
+      { value: "2026", label: "2026" },
+      { value: "2027", label: "2027" },
+      { value: "2028", label: "2028" },
+    ],
+    []
+  );
+
+  const selectedMonthLabel: string = React.useMemo(
+    () =>
+      new Date(selectedYear, selectedMonth - 1).toLocaleString("default", {
+        month: "long",
+        year: "numeric",
+      }),
+    [selectedMonth, selectedYear]
+  );
+
+  const resetForm = React.useCallback((): void => {
+    setFormData({ categoryId: "", amount: "" });
+  }, []);
+
+  const openModal = React.useCallback((): void => {
+    resetForm();
+    setIsModalOpen(true);
+  }, [resetForm]);
+
+  const closeModal = React.useCallback((): void => {
+    setIsModalOpen(false);
+    resetForm();
+  }, [resetForm]);
+
+  const handleCreate = React.useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>): void => {
+      e.preventDefault();
+
+      if (!formData.categoryId || !formData.amount) {
+        addToast({ message: t("validation.required"), type: "error" });
+        return;
+      }
+
+      const amount: number = parseFloat(formData.amount);
+      if (amount <= 0) {
+        addToast({ message: t("validation.amountGreaterThanZero"), type: "error" });
+        return;
+      }
+
+      createBudget(
+        {
+          categoryId: formData.categoryId,
+          amount,
+          month: selectedMonth,
+          year: selectedYear,
+        },
+        {
+          onSuccess: () => {
+            addToast({ message: t("success.created"), type: "success" });
+            closeModal();
+          },
+          onError: (error: Error) => {
+            addToast({
+              message: error.message || t("error.create"),
+              type: "error",
+            });
+          },
+        }
+      );
+    },
+    [formData, selectedMonth, selectedYear, createBudget, addToast, closeModal, t]
+  );
+
+  const handleUpdate = React.useCallback(
+    (budgetId: string, newAmount: string): void => {
+      const amount: number = parseFloat(newAmount);
+
+      if (!newAmount || amount <= 0) {
+        addToast({ message: t("validation.validAmount"), type: "error" });
+        return;
+      }
+
+      updateBudget(
+        { id: budgetId, data: { amount } },
+        {
+          onSuccess: () => {
+            addToast({ message: t("success.updated"), type: "success" });
+          },
+          onError: (error: Error) => {
+            addToast({
+              message: error.message || t("error.update"),
+              type: "error",
+            });
+          },
+        }
+      );
+    },
+    [updateBudget, addToast, t]
+  );
+
+  const handleDeleteClick = React.useCallback((id: string): void => {
+    setDeleteId(id);
+  }, []);
+
+  const handleDeleteConfirm = React.useCallback((): void => {
+    if (!deleteId) return;
+
+    deleteBudget(deleteId, {
+      onSuccess: () => {
+        addToast({ message: t("success.deleted"), type: "success" });
+        setDeleteId(null);
+      },
+      onError: (error: Error) => {
+        addToast({
+          message: error.message || t("error.delete"),
+          type: "error",
+        });
+      },
+    });
+  }, [deleteId, deleteBudget, addToast, t]);
+
+  const handleMonthChange = React.useCallback((e: React.ChangeEvent<HTMLSelectElement>): void => {
+    setSelectedMonth(parseInt(e.target.value));
+  }, []);
+
+  const handleYearChange = React.useCallback((e: React.ChangeEvent<HTMLSelectElement>): void => {
+    setSelectedYear(parseInt(e.target.value));
+  }, []);
+
+  const handleCategorySelectChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>): void => {
+      handleCategoryChange(e.target.value);
+    },
+    [handleCategoryChange]
+  );
+
+  const handleFormCategoryChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>): void => {
+      setFormData({ ...formData, categoryId: e.target.value });
+    },
+    [formData]
+  );
+
+  const handleFormAmountChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>): void => {
+      setFormData({ ...formData, amount: e.target.value });
+    },
+    [formData]
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-primary-900">{t("title")}</h1>
+          <p className="mt-1 text-primary-600">{t("subtitle")}</p>
+        </div>
+        <Button variant="primary" onClick={openModal} className="w-full sm:w-auto">
+          + {t("setBudget")}
+        </Button>
+      </div>
+
+      <Card>
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Select label={t("filter.month")} options={monthOptions} value={selectedMonth.toString()} onChange={handleMonthChange} />
+            <Select label={t("filter.year")} options={yearOptions} value={selectedYear.toString()} onChange={handleYearChange} />
+            <Select label={t("filter.category")} options={[{ value: "", label: t("filter.allCategories") }, ...categoryOptions]} value={selectedCategory} onChange={handleCategorySelectChange} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="space-y-4">
+        {budgets.length === 0 ? (
+          <EmptyState onCreateClick={openModal} />
+        ) : (
+          <>
+            {budgets.map((budget) => (
+              <BudgetItem key={budget.id} budget={budget} onEdit={handleUpdate} onDelete={handleDeleteClick} isDeleting={isDeleting} />
+            ))}
+
+            {pagination && pagination.totalPages > 1 && (
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-center gap-3">
+                    <Button variant="outline" size="sm" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                      ← {t("pagination.previous")}
+                    </Button>
+                    <span className="px-2 text-sm text-primary-600">
+                      {t("pagination.page")} <strong>{pagination.page}</strong> {t("pagination.of")} <strong>{pagination.totalPages}</strong>
+                    </span>
+                    <Button variant="outline" size="sm" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === pagination.totalPages}>
+                      {t("pagination.next")} →
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </>
+        )}
+      </div>
+
+      <Modal isOpen={isModalOpen} onClose={closeModal} title={t("modal.title")} size="md">
+        <div className="space-y-4">
+          <div className="p-3 border rounded-lg bg-primary-50 border-primary-200">
+            <p className="text-sm font-medium text-primary-700">
+              📅 {t("modal.settingFor")} <strong>{selectedMonthLabel}</strong>
+            </p>
+          </div>
+
+          <Select label={t("modal.category")} options={categoryOptions} value={formData.categoryId} onChange={handleFormCategoryChange} required />
+
+          <Input
+            type="number"
+            label={t("modal.amount")}
+            placeholder={t("modal.amountPlaceholder")}
+            value={formData.amount}
+            onChange={handleFormAmountChange}
+            icon={<span className="text-primary-600">Rp</span>}
+            min="1"
+            step="1000"
+            required
+          />
+
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <Button type="button" variant="ghost" onClick={closeModal} disabled={isCreating}>
+              {t("modal.cancel")}
+            </Button>
+            <Button onClick={handleCreate} variant="primary" isLoading={isCreating}>
+              {t("modal.save")}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={!!deleteId} onClose={() => setDeleteId(null)} title={t("deleteModal.title")} size="sm">
+        <div className="space-y-4">
+          <div className="flex items-start gap-3 p-4 border border-red-200 rounded-lg bg-red-50">
+            <span className="text-2xl">⚠️</span>
+            <div>
+              <p className="mb-1 font-medium text-red-900">{t("deleteModal.confirm")}</p>
+              <p className="text-sm text-red-700">{t("deleteModal.warning")}</p>
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="ghost" onClick={() => setDeleteId(null)} disabled={isDeleting}>
+              {t("deleteModal.cancel")}
+            </Button>
+            <Button variant="danger" onClick={handleDeleteConfirm} isLoading={isDeleting}>
+              {t("deleteModal.delete")}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </div>
+  );
+};

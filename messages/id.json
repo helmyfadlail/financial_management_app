@@ -1,0 +1,715 @@
+{
+  "dashboard": {
+    "appName": "Manajer Keuangan",
+    "appTagline": "Kelola uang Anda",
+    "loading": "Memuat...",
+    "redirecting": "Mengalihkan...",
+    "nav": {
+      "dashboard": "Dasbor",
+      "transactions": "Transaksi",
+      "accounts": "Akun",
+      "categories": "Kategori",
+      "budgets": "Anggaran",
+      "goals": "Tujuan",
+      "reports": "Laporan"
+    },
+    "menu": {
+      "settings": "Pengaturan",
+      "profile": "Profil",
+      "logout": "Keluar"
+    }
+  },
+  "dashboardPage": {
+    "title": "Dasbor",
+    "welcome": "Selamat datang kembali! Berikut ringkasan keuangan Anda untuk {month}",
+    "addTransaction": "Tambah Transaksi",
+    "totalIncome": "Total Pemasukan",
+    "totalExpenses": "Total Pengeluaran",
+    "netBalance": "Saldo Bersih",
+    "vsLastMonth": "vs bulan lalu",
+    "recentTransactions": "Transaksi Terbaru",
+    "budgetProgress": "Progres Anggaran",
+    "quickAction": "Aksi Cepat",
+    "viewAll": "Lihat Semua",
+    "manage": "Kelola",
+    "income": "Pemasukan",
+    "expense": "Pengeluaran",
+    "uncategorized": "Tanpa Kategori",
+    "of": "dari",
+    "used": "terpakai",
+    "budgetStatus": {
+      "overBudget": "Melebihi anggaran",
+      "nearLimit": "Mendekati batas",
+      "onTrack": "Sesuai target"
+    },
+    "empty": {
+      "transactions": {
+        "title": "Belum Ada Transaksi",
+        "description": "Mulai lacak keuangan Anda dengan menambahkan transaksi pertama"
+      },
+      "budgets": {
+        "title": "Belum Ada Anggaran",
+        "description": "Buat anggaran untuk melacak batas pengeluaran dan tetap pada target",
+        "action": "Buat Anggaran Pertama"
+      }
+    },
+    "quickActions": {
+      "transactions": {
+        "title": "Transaksi",
+        "subtitle": "Lihat semua aktivitas"
+      },
+      "budgets": {
+        "title": "Anggaran",
+        "subtitle": "Kelola batas"
+      },
+      "goals": {
+        "title": "Tujuan",
+        "subtitle": "Lacak progres"
+      },
+      "reports": {
+        "title": "Laporan",
+        "subtitle": "Lihat wawasan"
+      }
+    }
+  },
+  "transactionsPage": {
+    "title": "Transaksi",
+    "subtitle": "Lacak dan kelola pemasukan dan pengeluaran Anda",
+    "addButton": "Tambah Transaksi",
+    "income": "Pemasukan",
+    "expense": "Pengeluaran",
+    "noDescription": "Tanpa deskripsi",
+    "deleteButton": "Hapus transaksi",
+    "listTitle": "Transaksi",
+    "filter": {
+      "title": "Filter Transaksi",
+      "clear": "Hapus Filter",
+      "type": "Tipe",
+      "allTypes": "Semua Tipe",
+      "category": "Kategori",
+      "allCategories": "Semua Kategori",
+      "search": "Cari",
+      "searchPlaceholder": "Cari berdasarkan deskripsi..."
+    },
+    "pagination": {
+      "showing": "Menampilkan {start}-{end} dari {total}",
+      "page": "Halaman",
+      "of": "dari",
+      "previous": "Sebelumnya",
+      "next": "Selanjutnya"
+    },
+    "empty": {
+      "title": "Belum Ada Transaksi",
+      "description": "Mulai lacak keuangan Anda dengan mencatat transaksi pertama",
+      "action": "Tambah Transaksi Pertama"
+    },
+    "modal": {
+      "addTitle": "Tambah Transaksi",
+      "hint": "Catat pemasukan atau pengeluaran Anda untuk melacak keuangan",
+      "type": "Tipe",
+      "amount": "Jumlah",
+      "amountPlaceholder": "Masukkan jumlah",
+      "account": "Akun",
+      "category": "Kategori",
+      "categoryLabel": "Kategori",
+      "date": "Tanggal",
+      "description": "Deskripsi",
+      "descriptionPlaceholder": "contoh: Makan siang di restoran, Pembayaran gaji",
+      "preview": "Pratinjau",
+      "cancel": "Batal",
+      "create": "Buat Transaksi"
+    },
+    "deleteModal": {
+      "title": "Hapus Transaksi",
+      "confirm": "Apakah Anda yakin?",
+      "warning": "Transaksi ini akan dihapus secara permanen dan saldo akun Anda akan disesuaikan.",
+      "cancel": "Batal",
+      "delete": "Hapus Transaksi"
+    },
+    "validation": {
+      "amount": "Masukkan jumlah yang valid lebih dari 0",
+      "account": "Pilih akun",
+      "category": "Pilih kategori",
+      "description": "Tambahkan deskripsi"
+    },
+    "success": {
+      "created": "Transaksi berhasil dibuat! 🎉",
+      "deleted": "Transaksi berhasil dihapus"
+    },
+    "error": {
+      "create": "Gagal membuat transaksi",
+      "delete": "Gagal menghapus transaksi"
+    }
+  },
+  "accountsPage": {
+    "title": "Akun",
+    "subtitle": "Kelola akun dan lacak saldo",
+    "addButton": "Tambah Akun",
+    "editButton": "Edit",
+    "deleteButton": "Hapus akun",
+    "default": "Default",
+    "negativeBalance": "Saldo negatif",
+    "types": {
+      "cash": "Tunai",
+      "bank": "Akun Bank",
+      "ewallet": "E-Wallet",
+      "credit_card": "Kartu Kredit"
+    },
+    "summary": {
+      "totalBalance": "Total Saldo",
+      "account": "akun",
+      "accounts": "akun",
+      "assets": "Aset",
+      "liabilities": "Kewajiban",
+      "netWorth": "Kekayaan Bersih"
+    },
+    "distribution": "Distribusi Akun",
+    "yourAccounts": "Akun Anda ({count})",
+    "empty": {
+      "title": "Belum Ada Akun",
+      "description": "Mulai kelola keuangan Anda dengan membuat akun pertama",
+      "action": "Buat Akun Pertama"
+    },
+    "modal": {
+      "addTitle": "Tambah Akun",
+      "updateTitle": "Perbarui Akun",
+      "hint": "Buat akun untuk melacak sumber uang yang berbeda seperti tunai, akun bank, atau e-wallet",
+      "updateHint": "Perbarui detail akun. Perubahan saldo akan mempengaruhi total kekayaan bersih Anda.",
+      "name": "Nama Akun",
+      "namePlaceholder": "contoh: Dompet Tunai, Tabungan BCA, GoPay",
+      "type": "Tipe Akun",
+      "balance": "Saldo Awal",
+      "currentBalance": "Saldo Saat Ini",
+      "balancePlaceholder": "Masukkan saldo awal",
+      "currentBalancePlaceholder": "Masukkan saldo saat ini",
+      "icon": "Ikon (Emoji)",
+      "color": "Warna",
+      "quickSelect": "Pilih cepat",
+      "setDefault": "Jadikan akun default",
+      "defaultHint": "Akun default akan dipilih otomatis saat transaksi",
+      "preview": "Pratinjau",
+      "accountNameLabel": "Nama Akun",
+      "cancel": "Batal",
+      "create": "Buat Akun",
+      "update": "Perbarui Akun"
+    },
+    "deleteModal": {
+      "title": "Hapus Akun",
+      "confirm": "Apakah Anda yakin?",
+      "warning": "Akun ini akan dihapus secara permanen. Semua transaksi terkait akan terpengaruh.",
+      "cancel": "Batal",
+      "delete": "Hapus Akun"
+    },
+    "validation": {
+      "required": "Harap isi semua kolom yang diperlukan (Nama dan Saldo)",
+      "nameTooLong": "Nama akun terlalu panjang (maks 50 karakter)",
+      "invalidBalance": "Masukkan saldo yang valid",
+      "duplicate": "Akun dengan nama ini sudah ada"
+    },
+    "success": {
+      "created": "Akun berhasil dibuat! 🎉",
+      "updated": "Akun berhasil diperbarui! ✓",
+      "deleted": "Akun berhasil dihapus"
+    },
+    "error": {
+      "create": "Gagal membuat akun",
+      "update": "Gagal memperbarui akun",
+      "delete": "Gagal menghapus akun. Mungkin sedang digunakan."
+    }
+  },
+  "categoriesPage": {
+    "title": "Kategori",
+    "subtitle": "Atur dan kelola kategori transaksi Anda",
+    "addButton": "Tambah Kategori",
+    "createButton": "Buat Kategori",
+    "editButton": "Edit",
+    "deleteButton": "Hapus kategori",
+    "default": "Default",
+    "cannotModify": "Kategori default tidak dapat diubah",
+    "income": "Pemasukan",
+    "expense": "Pengeluaran",
+    "stats": {
+      "total": "Total Kategori",
+      "custom": "Kustom"
+    },
+    "filter": {
+      "all": "Semua"
+    },
+    "incomeCategories": "Kategori Pemasukan ({count})",
+    "expenseCategories": "Kategori Pengeluaran ({count})",
+    "empty": {
+      "income": {
+        "title": "Belum Ada Kategori Pemasukan",
+        "description": "Buat kategori untuk mengatur sumber pemasukan Anda"
+      },
+      "expense": {
+        "title": "Belum Ada Kategori Pengeluaran",
+        "description": "Buat kategori untuk melacak pengeluaran Anda"
+      },
+      "all": {
+        "title": "Belum Ada Kategori",
+        "description": "Mulai atur keuangan Anda dengan membuat kategori"
+      }
+    },
+    "modal": {
+      "addTitle": "Tambah Kategori",
+      "editTitle": "Edit Kategori",
+      "hint": "Buat kategori kustom untuk mengatur transaksi dengan lebih baik",
+      "name": "Nama Kategori",
+      "namePlaceholder": "contoh: Gym, Penghasilan Freelance",
+      "type": "Tipe",
+      "icon": "Ikon (Emoji)",
+      "color": "Warna",
+      "quickSelect": "Pilih cepat",
+      "setDefault": "Jadikan kategori default",
+      "defaultHint": "Kategori default tidak dapat dihapus",
+      "preview": "Pratinjau",
+      "categoryNameLabel": "Nama Kategori",
+      "categoryLabel": "Kategori",
+      "cancel": "Batal",
+      "create": "Buat",
+      "update": "Perbarui"
+    },
+    "deleteModal": {
+      "title": "Hapus Kategori",
+      "confirm": "Apakah Anda yakin?",
+      "warning": "Kategori ini akan dihapus secara permanen. Transaksi yang menggunakan kategori ini akan menjadi tanpa kategori.",
+      "cancel": "Batal",
+      "delete": "Hapus Kategori"
+    },
+    "validation": {
+      "required": "Nama kategori diperlukan",
+      "nameTooLong": "Nama kategori terlalu panjang (maks 50 karakter)",
+      "duplicate": "Kategori {type} dengan nama ini sudah ada"
+    },
+    "success": {
+      "created": "Kategori berhasil dibuat! 🎉",
+      "updated": "Kategori berhasil diperbarui! ✓",
+      "deleted": "Kategori berhasil dihapus"
+    },
+    "error": {
+      "create": "Gagal membuat kategori",
+      "update": "Gagal memperbarui kategori",
+      "delete": "Tidak dapat menghapus kategori default atau kategori yang sedang digunakan"
+    }
+  },
+  "budgetsPage": {
+    "title": "Anggaran",
+    "subtitle": "Tetapkan dan lacak batas pengeluaran bulanan",
+    "setBudget": "Tetapkan Anggaran",
+    "editAmount": "Edit jumlah anggaran",
+    "deleteButton": "Hapus anggaran",
+    "left": "tersisa",
+    "over": "lebih",
+    "used": "terpakai",
+    "status": {
+      "overBudget": "Melebihi Anggaran",
+      "approachingLimit": "Mendekati Batas",
+      "onTrack": "Sesuai Target"
+    },
+    "overBudgetBy": "Melebihi anggaran sebesar Rp {amount}",
+    "filter": {
+      "month": "Bulan",
+      "year": "Tahun",
+      "category": "Kategori",
+      "allCategories": "Semua Kategori"
+    },
+    "months": {
+      "january": "Januari",
+      "february": "Februari",
+      "march": "Maret",
+      "april": "April",
+      "may": "Mei",
+      "june": "Juni",
+      "july": "Juli",
+      "august": "Agustus",
+      "september": "September",
+      "october": "Oktober",
+      "november": "November",
+      "december": "Desember"
+    },
+    "pagination": {
+      "page": "Halaman",
+      "of": "dari",
+      "previous": "Sebelumnya",
+      "next": "Selanjutnya"
+    },
+    "empty": {
+      "title": "Belum Ada Anggaran",
+      "description": "Mulai lacak pengeluaran dengan menetapkan anggaran untuk kategori berbeda",
+      "action": "Tetapkan Anggaran Pertama"
+    },
+    "modal": {
+      "title": "Tetapkan Anggaran",
+      "settingFor": "Menetapkan anggaran untuk",
+      "category": "Kategori",
+      "amount": "Jumlah Anggaran",
+      "amountPlaceholder": "Masukkan jumlah",
+      "cancel": "Batal",
+      "save": "Simpan Anggaran"
+    },
+    "deleteModal": {
+      "title": "Hapus Anggaran",
+      "confirm": "Apakah Anda yakin?",
+      "warning": "Anggaran ini akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.",
+      "cancel": "Batal",
+      "delete": "Hapus Anggaran"
+    },
+    "validation": {
+      "required": "Harap isi semua kolom yang diperlukan",
+      "amountGreaterThanZero": "Jumlah anggaran harus lebih dari 0",
+      "validAmount": "Masukkan jumlah yang valid"
+    },
+    "success": {
+      "created": "Anggaran berhasil disimpan! 🎉",
+      "updated": "Anggaran berhasil diperbarui! ✓",
+      "deleted": "Anggaran berhasil dihapus"
+    },
+    "error": {
+      "create": "Gagal menyimpan anggaran. Silakan coba lagi.",
+      "update": "Gagal memperbarui anggaran",
+      "delete": "Gagal menghapus anggaran"
+    }
+  },
+  "goalsPage": {
+    "title": "Tujuan Keuangan",
+    "subtitle": "Lacak dan capai tujuan tabungan Anda",
+    "addButton": "Tambah Tujuan",
+    "updateProgress": "Perbarui Progres",
+    "deleteButton": "Hapus tujuan",
+    "overdue": "Terlambat",
+    "dueToday": "Jatuh tempo hari ini",
+    "oneDayLeft": "1 hari tersisa",
+    "daysLeft": "{days} hari tersisa",
+    "completed": "Selesai",
+    "inProgress": "Dalam Progres",
+    "ofTarget": "dari target Rp {amount}",
+    "achieved": "{percentage}% tercapai",
+    "toGo": "Rp {amount} lagi",
+    "congratulations": "Selamat! Anda telah mencapai tujuan!",
+    "overdueWarning": "Tujuan ini terlambat. Pertimbangkan untuk memperbarui tenggat waktu atau progres.",
+    "summary": {
+      "totalGoals": "Total Tujuan",
+      "completed": "Selesai",
+      "overallProgress": "Progres Keseluruhan",
+      "ofTotal": "dari Rp {amount}"
+    },
+    "empty": {
+      "title": "Belum Ada Tujuan",
+      "description": "Mulai perjalanan keuangan Anda dengan menetapkan tujuan tabungan pertama",
+      "action": "Buat Tujuan Pertama"
+    },
+    "modal": {
+      "createTitle": "Buat Tujuan Keuangan",
+      "hint": "Tetapkan tujuan yang jelas dengan jumlah target spesifik agar tetap termotivasi!",
+      "name": "Nama Tujuan",
+      "namePlaceholder": "contoh: Dana Darurat, Beli Mobil, Liburan",
+      "targetAmount": "Jumlah Target",
+      "targetAmountPlaceholder": "Masukkan jumlah target",
+      "currentAmount": "Jumlah Saat Ini",
+      "currentAmountPlaceholder": "Masukkan tabungan saat ini",
+      "deadline": "Tenggat Waktu Target",
+      "optional": "Opsional",
+      "cancel": "Batal",
+      "create": "Buat Tujuan"
+    },
+    "progressModal": {
+      "title": "Perbarui Progres",
+      "updatingFor": "Memperbarui progres untuk",
+      "currentInfo": "Saat ini: Rp {current} / Target: Rp {target}",
+      "newAmount": "Jumlah Baru Saat Ini",
+      "newAmountPlaceholder": "Masukkan jumlah yang diperbarui",
+      "willComplete": "Ini akan menyelesaikan tujuan Anda!",
+      "progressInfo": "Progres: {percentage}%",
+      "cancel": "Batal",
+      "update": "Perbarui Progres"
+    },
+    "deleteModal": {
+      "title": "Hapus Tujuan",
+      "confirm": "Apakah Anda yakin?",
+      "warning": "Tujuan ini akan dihapus secara permanen. Semua progres akan hilang.",
+      "cancel": "Batal",
+      "delete": "Hapus Tujuan"
+    },
+    "validation": {
+      "required": "Harap isi kolom yang diperlukan (Nama dan Jumlah Target)",
+      "targetGreaterThanZero": "Jumlah target harus lebih dari 0",
+      "currentNonNegative": "Jumlah saat ini tidak boleh negatif",
+      "currentExceedsTarget": "Jumlah saat ini tidak boleh melebihi jumlah target",
+      "enterAmount": "Masukkan jumlah",
+      "amountNonNegative": "Jumlah tidak boleh negatif",
+      "amountExceedsTarget": "Jumlah melebihi target. Tujuan Anda akan ditandai sebagai selesai!"
+    },
+    "success": {
+      "created": "Tujuan berhasil dibuat! 🎯",
+      "goalCompleted": "🎉 Selamat! Tujuan selesai!",
+      "progressUpdated": "Progres berhasil diperbarui! 💪",
+      "deleted": "Tujuan berhasil dihapus"
+    },
+    "error": {
+      "create": "Gagal membuat tujuan. Silakan coba lagi.",
+      "updateProgress": "Gagal memperbarui progres",
+      "delete": "Gagal menghapus tujuan"
+    }
+  },
+  "reportsPage": {
+    "title": "Laporan Keuangan",
+    "subtitle": "Analisis komprehensif pemasukan dan pengeluaran Anda",
+    "income": "Pemasukan",
+    "expense": "Pengeluaran",
+    "balance": "Saldo",
+    "ofTotal": "dari total",
+    "categoriesCount": "kategori",
+    "monthsCount": "bulan",
+    "topCategories": "Kategori Pengeluaran Teratas",
+    "monthlyBreakdown": "Rincian Bulanan",
+    "filter": {
+      "reportType": "Tipe Laporan",
+      "monthlyReport": "Laporan Bulanan",
+      "yearlyReport": "Laporan Tahunan",
+      "month": "Bulan",
+      "year": "Tahun"
+    },
+    "months": {
+      "january": "Januari",
+      "february": "Februari",
+      "march": "Maret",
+      "april": "April",
+      "may": "Mei",
+      "june": "Juni",
+      "july": "Juli",
+      "august": "Agustus",
+      "september": "September",
+      "october": "Oktober",
+      "november": "November",
+      "december": "Desember"
+    },
+    "stats": {
+      "totalIncome": "Total Pemasukan",
+      "totalExpense": "Total Pengeluaran",
+      "netBalance": "Saldo Bersih",
+      "yearlyBalance": "Saldo Tahunan",
+      "savingsRate": "Tingkat Tabungan",
+      "transactionCount": "Jumlah Transaksi",
+      "dailyAvgExpense": "Rata-rata Pengeluaran Harian",
+      "largestTransaction": "Transaksi Terbesar",
+      "totalTransactions": "Total Transaksi",
+      "avgMonthlyIncome": "Rata-rata Pemasukan Bulanan",
+      "avgMonthlyExpense": "Rata-rata Pengeluaran Bulanan",
+      "greatJob": "Kerja bagus!",
+      "keepImproving": "Terus tingkatkan!",
+      "excellent": "Luar biasa!",
+      "roomToImprove": "Masih bisa lebih baik"
+    },
+    "empty": {
+      "title": "Tidak Ada Data",
+      "monthly": "Tidak ada data pengeluaran untuk bulan ini. Mulai tambahkan transaksi untuk melihat kategori teratas.",
+      "yearly": "Tidak ada data pengeluaran untuk tahun ini. Mulai lacak pengeluaran untuk melihat wawasan.",
+      "breakdown": "Tidak ada data bulanan untuk tahun ini. Transaksi akan muncul di sini setelah dicatat."
+    }
+  },
+  "profilesPage": {
+    "title": "Pengaturan Profil",
+    "subtitle": "Kelola pengaturan dan preferensi akun Anda",
+    "profile": {
+      "title": "Informasi Profil",
+      "description": "Perbarui detail dan preferensi pribadi Anda",
+      "unsavedChanges": "Perubahan belum disimpan",
+      "unsavedChangesTitle": "Anda memiliki perubahan yang belum disimpan",
+      "unsavedChangesDescription": "Jangan lupa simpan perubahan Anda sebelum meninggalkan halaman ini.",
+      "name": "Nama Lengkap",
+      "namePlaceholder": "Masukkan nama lengkap Anda",
+      "email": "Alamat Email",
+      "emailNote": "Email tidak dapat diubah karena alasan keamanan",
+      "cancel": "Batal",
+      "saveChanges": "Simpan Perubahan",
+      "noChanges": "Tidak Ada Perubahan",
+      "uploading": "Mengunggah...",
+      "validation": {
+        "nameRequired": "Nama diperlukan",
+        "nameMinLength": "Nama harus minimal 2 karakter"
+      },
+      "success": {
+        "updated": "Profil berhasil diperbarui! ✓"
+      },
+      "error": {
+        "update": "Gagal memperbarui profil"
+      }
+    },
+    "avatar": {
+      "changePhoto": "Ubah Foto",
+      "upload": "Unggah Foto",
+      "remove": "Hapus",
+      "recommended": "Direkomendasikan: Gambar persegi, minimal 200x200px",
+      "requirements": "JPG, PNG atau WebP. Ukuran file maks 5MB.",
+      "validation": {
+        "invalidType": "Harap unggah file gambar yang valid (JPG, PNG, atau WebP)",
+        "sizeTooLarge": "Ukuran gambar harus kurang dari 5MB"
+      },
+      "success": {
+        "removed": "Avatar berhasil dihapus! ✓"
+      },
+      "error": {
+        "remove": "Gagal menghapus avatar"
+      }
+    },
+    "security": {
+      "title": "Pengaturan Keamanan",
+      "description": "Ubah kata sandi Anda untuk menjaga keamanan akun",
+      "currentPassword": "Kata Sandi Saat Ini",
+      "currentPasswordPlaceholder": "Masukkan kata sandi saat ini",
+      "newPassword": "Kata Sandi Baru",
+      "newPasswordPlaceholder": "Masukkan kata sandi baru",
+      "confirmPassword": "Konfirmasi Kata Sandi Baru",
+      "confirmPasswordPlaceholder": "Masukkan kembali kata sandi baru",
+      "changePassword": "Ubah Kata Sandi",
+      "tipsTitle": "Tips Keamanan Kata Sandi",
+      "tips": {
+        "unique": "Gunakan kata sandi unik yang tidak Anda gunakan di tempat lain",
+        "combine": "Gabungkan huruf besar, huruf kecil, angka, dan karakter khusus",
+        "avoid": "Hindari menggunakan informasi pribadi seperti nama atau tanggal lahir",
+        "manager": "Pertimbangkan menggunakan pengelola kata sandi untuk kata sandi yang kompleks"
+      }
+    },
+    "password": {
+      "strength": "Kekuatan kata sandi",
+      "strengthLevel": {
+        "weak": "Lemah",
+        "medium": "Sedang",
+        "strong": "Kuat"
+      },
+      "requirements": {
+        "length": "Minimal 8 karakter",
+        "uppercase": "Huruf besar",
+        "lowercase": "Huruf kecil",
+        "number": "Angka",
+        "special": "Karakter khusus"
+      },
+      "match": "Kata sandi cocok",
+      "noMatch": "Kata sandi tidak cocok",
+      "validation": {
+        "currentRequired": "Kata sandi saat ini diperlukan",
+        "newRequired": "Kata sandi baru diperlukan",
+        "minLength": "Kata sandi harus minimal 8 karakter",
+        "noMatch": "Kata sandi tidak cocok",
+        "tooWeak": "Gunakan kata sandi yang lebih kuat dengan huruf besar, huruf kecil, angka, dan karakter khusus",
+        "mustDiffer": "Kata sandi baru harus berbeda dari kata sandi saat ini"
+      },
+      "success": {
+        "changed": "Kata sandi berhasil diubah! 🔒"
+      },
+      "error": {
+        "change": "Gagal mengubah kata sandi. Periksa kata sandi saat ini Anda."
+      }
+    }
+  },
+  "settingsPage": {
+    "title": "Pengaturan",
+    "subtitle": "Kelola preferensi, notifikasi, dan pengaturan akun Anda",
+    "stats": {
+      "activeAlerts": "Notifikasi Aktif",
+      "dataExport": "Ekspor Data",
+      "ready": "Siap",
+      "theme": "Tema"
+    },
+    "notifications": {
+      "title": "Preferensi Notifikasi",
+      "subtitle": "Kontrol notifikasi yang Anda terima",
+      "disableAll": "Nonaktifkan Semua",
+      "enableAll": "Aktifkan Semua",
+      "allDisabled": "Semua notifikasi dinonaktifkan 🔕",
+      "allEnabled": "Semua notifikasi diaktifkan 🔔",
+      "enabled": "diaktifkan",
+      "disabled": "dinonaktifkan",
+      "updatedTo": "diperbarui menjadi",
+      "autoSave": {
+        "title": "Penyimpanan otomatis diaktifkan",
+        "description": "Semua perubahan disimpan secara otomatis. Tidak perlu mengklik tombol simpan!"
+      }
+    },
+    "preferences": {
+      "title": "Preferensi Aplikasi",
+      "subtitle": "Sesuaikan pengalaman aplikasi Anda",
+      "language": "Bahasa",
+      "languageDescription": "Pilih bahasa pilihan Anda",
+      "theme": "Tema",
+      "themeDescription": "Pilih tema warna pilihan Anda",
+      "currency": "Mata Uang",
+      "currencyDescription": "Tetapkan mata uang default Anda"
+    },
+    "notificationTypes": {
+      "emailNotifications": "Notifikasi Email",
+      "emailNotificationsDescription": "Terima pembaruan melalui email",
+      "budgetAlerts": "Peringatan Anggaran",
+      "budgetAlertsDescription": "Dapatkan notifikasi saat mendekati batas anggaran",
+      "weeklyReports": "Laporan Mingguan",
+      "weeklyReportsDescription": "Terima ringkasan keuangan mingguan",
+      "transactionAlerts": "Peringatan Transaksi",
+      "transactionAlertsDescription": "Dapatkan notifikasi untuk setiap transaksi",
+      "marketingEmails": "Email Pemasaran",
+      "marketingEmailsDescription": "Terima konten promosi dan pembaruan"
+    },
+    "dataManagement": {
+      "title": "Manajemen Data",
+      "subtitle": "Ekspor atau kelola data akun Anda",
+      "export": {
+        "title": "Ekspor Data Anda",
+        "description": "Unduh semua data keuangan Anda dalam format JSON. Termasuk transaksi, anggaran, tujuan, dan informasi akun.",
+        "button": "Ekspor Data",
+        "success": "Data berhasil diekspor! 📥",
+        "error": "Gagal mengekspor data"
+      },
+      "dangerZone": {
+        "title": "Zona Berbahaya",
+        "warning": {
+          "title": "Tindakan Permanen",
+          "description": "Penghapusan akun bersifat permanen dan tidak dapat dibatalkan. Semua data Anda termasuk transaksi, anggaran, tujuan, dan pengaturan akan dihapus secara permanen."
+        },
+        "button": "Hapus Akun"
+      }
+    },
+    "deleteModal": {
+      "title": "Hapus Akun",
+      "warning": {
+        "title": "Tindakan ini tidak dapat dibatalkan",
+        "description": "Ini akan menghapus akun Anda secara permanen dan semua data terkait:",
+        "items": {
+          "transactions": "Semua transaksi dan catatan keuangan",
+          "budgets": "Anggaran dan batas pengeluaran",
+          "goals": "Tujuan keuangan dan progres",
+          "categories": "Kategori dan akun",
+          "settings": "Pengaturan dan preferensi"
+        }
+      },
+      "confirmLabel": "Ketik {text} untuk konfirmasi:",
+      "confirmText": "hapus akun saya",
+      "placeholder": "hapus akun saya",
+      "confirmError": "Silakan ketik 'hapus akun saya' untuk konfirmasi",
+      "finalNotice": {
+        "title": "Pemberitahuan Akhir",
+        "description": "Anda akan menerima email konfirmasi sebelum akun dihapus secara permanen. Anda memiliki waktu 7 hari untuk membatalkan permintaan ini."
+      },
+      "cancel": "Batal",
+      "confirm": "Hapus Akun Secara Permanen",
+      "success": "Penghapusan akun dimulai"
+    },
+    "appInfo": {
+      "title": "Informasi Aplikasi",
+      "version": "Versi",
+      "lastUpdated": "Terakhir Diperbarui",
+      "buildNumber": "Nomor Build",
+      "environment": "Lingkungan",
+      "production": "Produksi",
+      "links": {
+        "terms": "Ketentuan Layanan",
+        "privacy": "Kebijakan Privasi",
+        "support": "Dukungan",
+        "changelog": "Riwayat Perubahan"
+      }
+    },
+    "errors": {
+      "updateFailed": "Gagal memperbarui pengaturan",
+      "deleteFailed": "Gagal menghapus akun"
+    }
+  }
+}

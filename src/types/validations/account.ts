@@ -1,0 +1,15 @@
+import { z } from "zod";
+
+export const accountSchema = z.object({
+  name: z.string().min(1, "Account name is required").max(50),
+  type: z.enum(["CASH", "BANK", "EWALLET", "CREDIT_CARD"]),
+  balance: z.number().default(0),
+  color: z
+    .string()
+    .regex(/^#[0-9A-F]{6}$/i)
+    .optional(),
+  icon: z.string().optional(),
+  isDefault: z.boolean().default(false),
+});
+
+export const updateAccountSchema = accountSchema.partial();

@@ -1,0 +1,91 @@
+import { NextRequest } from "next/server";
+
+import { prisma, requireAuth } from "@/lib";
+
+import { errorResponse, successResponse, validationErrorResponse } from "@/utils";
+
+import z from "zod";
+
+import { updateAccountSchema } from "@/types";
+
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const user = await requireAuth();
+    const { id } = await params;
+
+    const account = await prisma.account.findFirst({ where: { id, userId: user.id } });
+
+    if (!account) return errorResponse("Account not found", 404);
+
+    return successResponse(account);
+  } catch (error) {
+    console.error(error);
+
+    if (error instanceof Error && error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    return errorResponse(errorMessage, 500);
+  }
+}
+
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const user = await requireAuth();
+    const { id } = await params;
+
+    const body = await req.json();
+    const validation = updateAccountSchema.safeParse(body);
+
+    if (!validation.success) {
+      const { fieldErrors } = z.flattenError(validation.error);
+      return validationErrorResponse(fieldErrors);
+    }
+
+    const existing = await prisma.account.findFirst({ where: { id, userId: user.id } });
+
+    if (!existing) return errorResponse("Account not found", 404);
+
+    const data = validation.data;
+
+    if (data.isDefault) {
+      await prisma.account.updateMany({ where: { userId: user.id, isDefault: true }, data: { isDefault: false } });
+    }
+
+    const account = await prisma.account.update({ where: { id }, data });
+
+    return successResponse(account, "Account updated successfully");
+  } catch (error) {
+    console.error(error);
+
+    if (error instanceof Error && error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    return errorResponse(errorMessage, 500);
+  }
+}
+
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const user = await requireAuth();
+    const { id } = await params;
+
+    const account = await prisma.account.findFirst({ where: { id, userId: user.id } });
+
+    if (!account) return errorResponse("Account not found", 404);
+
+    const transactionCount = await prisma.transaction.count({ where: { accountId: id } });
+
+    if (transactionCount > 0) return errorResponse("Cannot delete an account that has transactions", 400);
+
+    await prisma.account.delete({ where: { id } });
+
+    return successResponse(null, "Account deleted successfully");
+  } catch (error) {
+    console.error(error);
+
+    if (error instanceof Error && error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    return errorResponse(errorMessage, 500);
+  }
+}
