@@ -1,7 +1,7 @@
 {
   "dashboard": {
-    "appName": "财务管理器",
-    "appTagline": "管理您的资金",
+    "appName": "FINARTHAX",
+    "appTagline": "Manage your money",
     "loading": "加载中...",
     "redirecting": "重定向中...",
     "nav": {

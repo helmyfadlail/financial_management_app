@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: financial-management-postgres
+    container_name: finarthax-postgres
     env_file:
       - .env
     ports:
@@ -17,7 +17,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: financial-management-pgadmin
+    container_name: finarthax-pgadmin
     env_file:
       - .env
     ports:
@@ -27,9 +27,12 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  financial-management:
-    build: .
-    container_name: financial-management-app
+  app:
+    image: finarthax:latest
+    container_name: finarthax-app
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file:
       - .env
     environment:

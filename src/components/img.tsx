@@ -1,27 +1,23 @@
 import Image from "next/image";
 
-interface ResponsiveImgProps {
+interface ImgProps {
   src: string;
   alt: string;
-  aspectRatio?: "square" | "video" | "portrait" | "wide";
+  width?: number;
+  height?: number;
   objectFit?: "cover" | "contain" | "fill";
   priority?: boolean;
   className?: string;
 }
 
-const aspectRatios = {
-  square: "aspect-square",
-  video: "aspect-video",
-  portrait: "aspect-[3/4]",
-  wide: "aspect-[21/9]",
-};
+export const Img = ({ src, alt, width, height, objectFit = "contain", priority = false, className = "" }: ImgProps) => {
+  const objectFitClass = objectFit === "cover" ? "object-cover" : objectFit === "contain" ? "object-contain" : "object-fill";
 
-export const ResponsiveImg = ({ src, alt, aspectRatio = "video", objectFit = "cover", priority = false, className = "" }: ResponsiveImgProps) => {
-  return (
-    <div className={`relative ${aspectRatios[aspectRatio]} ${className}`}>
-      <Image src={src} alt={alt} fill className={`object-${objectFit}`} priority={priority} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-    </div>
-  );
+  if (width && height) {
+    return <Image src={src} alt={alt} width={width} height={height} className={`${objectFitClass} ${className}`} priority={priority} />;
+  }
+
+  return <Image src={src} alt={alt} fill className={`${objectFitClass} ${className}`} priority={priority} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />;
 };
 
 interface AvatarImgProps {

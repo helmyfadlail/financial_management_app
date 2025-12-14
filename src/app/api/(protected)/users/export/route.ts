@@ -326,7 +326,7 @@ export async function GET() {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="financial-report-${new Date().toISOString().split("T")[0]}.pdf"`,
+        "Content-Disposition": `attachment; filename="finarthax-${new Date().toISOString().split("T")[0]}.pdf"`,
       },
     });
   } catch (error) {

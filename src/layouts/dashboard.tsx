@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 
 import { useAuth } from "@/hooks";
 
-import { Dropdown, DropdownItem, DropdownDivider, AvatarImg } from "@/components";
+import { Dropdown, DropdownItem, DropdownDivider, AvatarImg, Img } from "@/components";
 
 import { formatInitialName } from "@/utils";
 
@@ -68,13 +68,12 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
       <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-primary-100">
         <div className="flex flex-col h-full">
           <div className="flex items-center gap-3 p-6 border-b border-primary-100">
-            <div className="flex items-center justify-center w-10 h-10 text-xl text-white rounded-lg bg-primary">💰</div>
-            <div>
+            <Img src="/finarthax.png" alt="finarthax logo" width={40} height={40} objectFit="cover" priority />
+            <div className="relative">
               <h1 className="font-bold text-primary-900">{t("appName")}</h1>
               <p className="text-xs text-primary-600">{t("appTagline")}</p>
             </div>
           </div>
-
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = pathname === item.href;
