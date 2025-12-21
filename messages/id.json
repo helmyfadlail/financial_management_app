@@ -307,7 +307,7 @@
       "approachingLimit": "Mendekati Batas",
       "onTrack": "Sesuai Target"
     },
-    "overBudgetBy": "Melebihi anggaran sebesar Rp {amount}",
+    "overBudgetBy": "Melebihi anggaran sebesar {amount}",
     "filter": {
       "month": "Bulan",
       "year": "Tahun",
@@ -383,16 +383,16 @@
     "daysLeft": "{days} hari tersisa",
     "completed": "Selesai",
     "inProgress": "Dalam Progres",
-    "ofTarget": "dari target Rp {amount}",
+    "ofTarget": "dari target {amount}",
     "achieved": "{percentage}% tercapai",
-    "toGo": "Rp {amount} lagi",
+    "toGo": "{amount} lagi",
     "congratulations": "Selamat! Anda telah mencapai tujuan!",
     "overdueWarning": "Tujuan ini terlambat. Pertimbangkan untuk memperbarui tenggat waktu atau progres.",
     "summary": {
       "totalGoals": "Total Tujuan",
       "completed": "Selesai",
       "overallProgress": "Progres Keseluruhan",
-      "ofTotal": "dari Rp {amount}"
+      "ofTotal": "dari {amount}"
     },
     "empty": {
       "title": "Belum Ada Tujuan",
@@ -416,7 +416,7 @@
     "progressModal": {
       "title": "Perbarui Progres",
       "updatingFor": "Memperbarui progres untuk",
-      "currentInfo": "Saat ini: Rp {current} / Target: Rp {target}",
+      "currentInfo": "Saat ini: {current} / Target: {target}",
       "newAmount": "Jumlah Baru Saat Ini",
       "newAmountPlaceholder": "Masukkan jumlah yang diperbarui",
       "willComplete": "Ini akan menyelesaikan tujuan Anda!",

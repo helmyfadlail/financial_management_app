@@ -8,7 +8,7 @@ import { apiClient } from "@/utils";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { Card, CardContent, CardHeader, CardTitle, Select, Skeleton } from "@/components";
+import { Card, CardContent, CardHeader, CardTitle, Select, Skeleton, useCurrency } from "@/components";
 
 import type { ApiResponse, MonthlyReport, YearlyReport } from "@/types";
 
@@ -80,6 +80,7 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon, color = "primar
 
 const CategoryBar: React.FC<CategoryBarProps> = ({ category, totalExpense }) => {
   const t = useTranslations("reportsPage");
+  const { format } = useCurrency();
   const percentage = totalExpense > 0 ? ((category.total / totalExpense) * 100).toFixed(1) : "0.0";
 
   return (
@@ -90,7 +91,7 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ category, totalExpense }) => 
           <span className="font-medium truncate text-primary-900">{category.name}</span>
         </div>
         <div className="ml-4 text-right shrink-0">
-          <p className="text-lg font-bold text-red-600">Rp {category.total?.toLocaleString("id-ID")}</p>
+          <p className="text-lg font-bold text-red-600">{format(category.total)}</p>
           <p className="text-xs text-primary-600">
             {percentage}% {t("ofTotal")}
           </p>
@@ -105,6 +106,7 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ category, totalExpense }) => 
 
 const MonthBreakdown: React.FC<MonthBreakdownProps> = ({ month }) => {
   const t = useTranslations("reportsPage");
+  const { format } = useCurrency();
 
   return (
     <div className="flex items-center justify-between p-4 transition-colors rounded-lg bg-neutral hover:bg-neutral-100">
@@ -114,15 +116,15 @@ const MonthBreakdown: React.FC<MonthBreakdownProps> = ({ month }) => {
       </div>
       <div className="flex gap-6 text-sm">
         <div className="text-right">
-          <p className="text-lg font-bold text-green-600">+Rp {month.income?.toLocaleString("id-ID")}</p>
+          <p className="text-lg font-bold text-green-600">+{format(month.income)}</p>
           <p className="text-xs text-primary-600">{t("income")}</p>
         </div>
         <div className="text-right">
-          <p className="text-lg font-bold text-red-600">-Rp {month.expense?.toLocaleString("id-ID")}</p>
+          <p className="text-lg font-bold text-red-600">-{format(month.expense)}</p>
           <p className="text-xs text-primary-600">{t("expense")}</p>
         </div>
         <div className="text-right">
-          <p className={`font-bold text-lg ${month.balance >= 0 ? "text-primary-900" : "text-red-600"}`}>Rp {month.balance?.toLocaleString("id-ID")}</p>
+          <p className={`font-bold text-lg ${month.balance >= 0 ? "text-primary-900" : "text-red-600"}`}>{format(month.balance)}</p>
           <p className="text-xs text-primary-600">{t("balance")}</p>
         </div>
       </div>
@@ -156,6 +158,7 @@ const LoadingSkeleton: React.FC = () => (
 
 export const Reports: React.FC = () => {
   const t = useTranslations("reportsPage");
+  const { format } = useCurrency();
   const now = React.useMemo(() => new Date(), []);
   const [reportType, setReportType] = React.useState<"monthly" | "yearly">("monthly");
   const [selectedMonth, setSelectedMonth] = React.useState<number>(now.getMonth() + 1);
@@ -248,9 +251,9 @@ export const Reports: React.FC = () => {
       {reportType === "monthly" && monthlyData && (
         <>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard label={t("stats.totalIncome")} value={`Rp ${(monthlyData.summary.income || 0).toLocaleString("id-ID")}`} icon="💰" color="green" />
-            <StatCard label={t("stats.totalExpense")} value={`Rp ${(monthlyData.summary.expense || 0).toLocaleString("id-ID")}`} icon="💳" color="red" />
-            <StatCard label={t("stats.netBalance")} value={`Rp ${(monthlyData.summary.balance || 0).toLocaleString("id-ID")}`} icon="📊" color="blue" />
+            <StatCard label={t("stats.totalIncome")} value={format(monthlyData.summary.income)} icon="💰" color="green" />
+            <StatCard label={t("stats.totalExpense")} value={format(monthlyData.summary.expense)} icon="💳" color="red" />
+            <StatCard label={t("stats.netBalance")} value={format(monthlyData.summary.balance)} icon="📊" color="blue" />
             <StatCard
               label={t("stats.savingsRate")}
               value={`${(monthlyData.summary.savingsRate || 0).toFixed(1)}%`}
@@ -284,8 +287,8 @@ export const Reports: React.FC = () => {
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <StatCard label={t("stats.transactionCount")} value={monthlyData.summary.transactionCount || 0} icon="🔢" color="primary" />
-            <StatCard label={t("stats.dailyAvgExpense")} value={`Rp ${(monthlyData.summary.avgDailyExpense || 0).toLocaleString("id-ID")}`} icon="📅" color="primary" />
-            <StatCard label={t("stats.largestTransaction")} value={`Rp ${(monthlyData.summary.largestTransaction || 0).toLocaleString("id-ID")}`} icon="💎" color="primary" />
+            <StatCard label={t("stats.dailyAvgExpense")} value={format(monthlyData.summary.avgDailyExpense)} icon="📅" color="primary" />
+            <StatCard label={t("stats.largestTransaction")} value={format(monthlyData.summary.largestTransaction)} icon="💎" color="primary" />
           </div>
         </>
       )}
@@ -293,9 +296,9 @@ export const Reports: React.FC = () => {
       {reportType === "yearly" && yearlyData && (
         <>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard label={t("stats.totalIncome")} value={`Rp ${(yearlyData.summary.totalIncome || 0).toLocaleString("id-ID")}`} icon="💰" color="green" />
-            <StatCard label={t("stats.totalExpense")} value={`Rp ${(yearlyData.summary.totalExpense || 0).toLocaleString("id-ID")}`} icon="💳" color="red" />
-            <StatCard label={t("stats.yearlyBalance")} value={`Rp ${(yearlyData.summary.yearlyBalance || 0).toLocaleString("id-ID")}`} icon="📊" color="blue" />
+            <StatCard label={t("stats.totalIncome")} value={format(yearlyData.summary.totalIncome)} icon="💰" color="green" />
+            <StatCard label={t("stats.totalExpense")} value={format(yearlyData.summary.totalExpense)} icon="💳" color="red" />
+            <StatCard label={t("stats.yearlyBalance")} value={format(yearlyData.summary.yearlyBalance)} icon="📊" color="blue" />
             <StatCard
               label={t("stats.savingsRate")}
               value={`${(yearlyData.summary.savingsRate || 0).toFixed(1)}%`}
@@ -351,8 +354,8 @@ export const Reports: React.FC = () => {
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <StatCard label={t("stats.totalTransactions")} value={yearlyData.summary.transactionCount || 0} icon="🔢" color="primary" />
-            <StatCard label={t("stats.avgMonthlyIncome")} value={`Rp ${(yearlyData.summary.avgMonthlyIncome || 0).toLocaleString("id-ID")}`} icon="💰" color="primary" />
-            <StatCard label={t("stats.avgMonthlyExpense")} value={`Rp ${(yearlyData.summary.avgMonthlyExpense || 0).toLocaleString("id-ID")}`} icon="💳" color="primary" />
+            <StatCard label={t("stats.avgMonthlyIncome")} value={format(yearlyData.summary.avgMonthlyIncome)} icon="💰" color="primary" />
+            <StatCard label={t("stats.avgMonthlyExpense")} value={format(yearlyData.summary.avgMonthlyExpense)} icon="💳" color="primary" />
           </div>
         </>
       )}

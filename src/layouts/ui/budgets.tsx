@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 
 import { useBudgets, useCategories, useSearchPagination } from "@/hooks";
 
-import { Card, CardContent, Button, Input, Select, Modal, useToast } from "@/components";
+import { Card, CardContent, Button, Input, Select, Modal, useToast, useCurrency } from "@/components";
 
 import type { Budget, SelectOption } from "@/types/api";
 
@@ -34,6 +34,9 @@ interface EmptyStateProps {
 
 const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onEdit, onDelete, isDeleting }) => {
   const t = useTranslations("budgetsPage");
+
+  const { format } = useCurrency();
+
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
   const [editAmount, setEditAmount] = React.useState<string>(budget.amount.toString());
 
@@ -77,11 +80,19 @@ const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onEdit, onDelete, isDel
             <div className="flex-1 min-w-0">
               <h3 className="mb-1 text-lg font-bold text-primary-900">{budget.category.name}</h3>
               <div className="flex flex-wrap items-center gap-2 text-sm text-primary-600">
-                <span className="font-medium">Rp {spent.toLocaleString("id-ID")}</span>
+                <span className="font-medium">{format(spent)}</span>
                 <span className="text-primary-400">/</span>
                 {isEditing ? (
                   <div className="flex items-center gap-2">
-                    <Input type="number" value={editAmount} onChange={(e) => setEditAmount(e.target.value)} className="w-32 py-1 text-sm" onKeyDown={handleKeyDown} autoFocus />
+                    <Input
+                      type="number"
+                      value={editAmount}
+                      onChange={(e) => setEditAmount(e.target.value)}
+                      className="w-32 py-1 text-sm"
+                      icon={<span className="text-primary-600 m-0 p-0">Rp</span>}
+                      onKeyDown={handleKeyDown}
+                      autoFocus
+                    />
                     <Button size="sm" variant="primary" onClick={handleSaveEdit}>
                       ✓
                     </Button>
@@ -95,7 +106,7 @@ const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onEdit, onDelete, isDel
                     onClick={() => setIsEditing(true)}
                     aria-label={t("editAmount")}
                   >
-                    Rp {amount.toLocaleString("id-ID")}
+                    {format(amount)}
                   </button>
                 )}
               </div>
@@ -105,9 +116,7 @@ const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onEdit, onDelete, isDel
           <div className="flex items-start gap-3 shrink-0">
             <div className="text-right">
               <p className={`text-2xl font-bold text-${status.color}-600`}>{percentage.toFixed(1)}%</p>
-              <p className="mt-1 text-xs text-primary-600">
-                {remaining >= 0 ? `Rp ${remaining.toLocaleString("id-ID")} ${t("left")}` : `Rp ${Math.abs(remaining).toLocaleString("id-ID")} ${t("over")}`}
-              </p>
+              <p className="mt-1 text-xs text-primary-600">{remaining >= 0 ? `${format(remaining)} ${t("left")}` : `${format(Math.abs(remaining))} ${t("over")}`}</p>
             </div>
             <Button variant="danger" size="sm" onClick={() => onDelete(budget.id)} disabled={isDeleting} aria-label={t("deleteButton")}>
               🗑️
@@ -131,7 +140,7 @@ const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onEdit, onDelete, isDel
         {status.type === "over" && (
           <div className="flex items-center gap-2 p-2 mt-3 border border-red-200 rounded-lg bg-red-50">
             <span className="text-red-600">⚠️</span>
-            <p className="text-sm font-medium text-red-600">{t("overBudgetBy", { amount: Math.abs(remaining).toLocaleString("id-ID") })}</p>
+            <p className="text-sm font-medium text-red-600">{t("overBudgetBy", { amount: format(Math.abs(remaining)) })}</p>
           </div>
         )}
         {status.type === "warning" && (

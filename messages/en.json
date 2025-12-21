@@ -307,7 +307,7 @@
       "approachingLimit": "Approaching Limit",
       "onTrack": "On Track"
     },
-    "overBudgetBy": "Over budget by Rp {amount}",
+    "overBudgetBy": "Over budget by {amount}",
     "filter": {
       "month": "Month",
       "year": "Year",
@@ -383,16 +383,16 @@
     "daysLeft": "{days} days left",
     "completed": "Completed",
     "inProgress": "In Progress",
-    "ofTarget": "of Rp {amount} target",
+    "ofTarget": "of {amount} target",
     "achieved": "{percentage}% achieved",
-    "toGo": "Rp {amount} to go",
+    "toGo": "{amount} to go",
     "congratulations": "Congratulations! You've reached your goal!",
     "overdueWarning": "This goal is overdue. Consider updating the deadline or progress.",
     "summary": {
       "totalGoals": "Total Goals",
       "completed": "Completed",
       "overallProgress": "Overall Progress",
-      "ofTotal": "of Rp {amount}"
+      "ofTotal": "of {amount}"
     },
     "empty": {
       "title": "No Goals Yet",
@@ -416,7 +416,7 @@
     "progressModal": {
       "title": "Update Progress",
       "updatingFor": "Updating progress for",
-      "currentInfo": "Current: Rp {current} / Target: Rp {target}",
+      "currentInfo": "Current: {current} / Target: {target}",
       "newAmount": "New Current Amount",
       "newAmountPlaceholder": "Enter updated amount",
       "willComplete": "This will complete your goal!",

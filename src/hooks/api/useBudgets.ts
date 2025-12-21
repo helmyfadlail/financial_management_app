@@ -55,6 +55,7 @@ export const useBudgets = (params?: BudgetsParams) => {
     mutationFn: (data: CreateBudgetData) => apiClient.post<ApiResponse<Budget>, CreateBudgetData>("/budgets", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 
@@ -63,6 +64,7 @@ export const useBudgets = (params?: BudgetsParams) => {
     mutationFn: ({ id, data }: { id: string; data: UpdateBudgetData }) => apiClient.put<ApiResponse<Budget>, UpdateBudgetData>(`/budgets/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 
@@ -71,6 +73,7 @@ export const useBudgets = (params?: BudgetsParams) => {
     mutationFn: (id: string) => apiClient.delete(`/budgets/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 

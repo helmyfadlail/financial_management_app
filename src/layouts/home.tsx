@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useQuickTransactions } from "@/hooks";
-import { Card, CardContent, Button, Input, Select, Badge, useToast } from "@/components";
+import { Card, CardContent, Button, Input, Select, Badge, useToast, useCurrency } from "@/components";
 import type { Account, Category } from "@/types";
 
 interface FormData {
@@ -26,6 +26,8 @@ const INITIAL_FORM_DATA: FormData = {
 
 export const Home: React.FC = () => {
   const { addToast } = useToast();
+  const { format } = useCurrency();
+
   const router = useRouter();
   const { createTransaction, searchEmail, isCreating, isSearchingEmail } = useQuickTransactions();
 
@@ -318,7 +320,8 @@ export const Home: React.FC = () => {
                         </div>
                         <div className="text-right shrink-0">
                           <p className={`font-bold text-sm sm:text-base ${transactionColor.text}`}>
-                            {getTransactionPrefix(formData.type)}Rp {parseFloat(formData.amount || "0").toLocaleString("id-ID")}
+                            {getTransactionPrefix(formData.type)}
+                            {format(formData.amount || "0")}
                           </p>
                           <Badge variant={transactionColor.badge} size="sm">
                             {formData.type}

@@ -73,7 +73,6 @@ export const authOptions: NextAuthOptions = {
     },
 
     async signIn({ user, account }) {
-      console.log("🚀 ~~~~~~~~~~~~~~~~~~~~ user:", user);
       if (account?.provider === "google") {
         const email = user.email;
 

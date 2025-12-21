@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 
 import { useAccounts } from "@/hooks";
 
-import { Card, CardContent, Button, Input, Select, Modal, Badge, useToast } from "@/components";
+import { Card, CardContent, Button, Input, Select, Modal, Badge, useToast, useCurrency } from "@/components";
 
 import type { Account } from "@/types";
 
@@ -41,6 +41,7 @@ const COLOR_PALETTE = ["#10B981", "#3B82F6", "#8B5CF6", "#F59E0B", "#EF4444", "#
 const ICON_SUGGESTIONS = ["💵", "🏦", "💳", "📱", "💰", "💸", "🏧", "💎", "🪙", "💴"];
 
 const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit, onDelete }) => {
+  const { format } = useCurrency();
   const t = useTranslations("accountsPage");
   const accountConfig = ACCOUNT_TYPE_CONFIG[account.type];
   const balance = Number(account.balance);
@@ -69,7 +70,7 @@ const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit, onDelete }) 
         </Badge>
 
         <div className="mb-4">
-          <p className={`text-3xl font-bold ${isNegative ? "text-red-600" : "text-primary-900"}`}>Rp {Math.abs(balance).toLocaleString("id-ID")}</p>
+          <p className={`text-3xl font-bold ${isNegative ? "text-red-600" : "text-primary-900"}`}>{format(Math.abs(balance))}</p>
           {isNegative && <p className="mt-1 text-xs text-red-600">⚠️ {t("negativeBalance")}</p>}
         </div>
 
@@ -108,6 +109,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({ onCreateClick }) => {
 export const Accounts: React.FC = () => {
   const t = useTranslations("accountsPage");
   const { accounts, createAccount, isCreating, deleteAccount, updateAccount, isUpdating, isDeleting } = useAccounts();
+
+  const { format } = useCurrency();
   const { addToast } = useToast();
 
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
@@ -339,7 +342,7 @@ export const Accounts: React.FC = () => {
           <CardContent className="pt-6">
             <div className="text-center text-primary-900">
               <p className="mb-2 text-sm opacity-90">💰 {t("summary.totalBalance")}</p>
-              <p className="text-4xl font-bold">Rp {summary.totalBalance.toLocaleString("id-ID")}</p>
+              <p className="text-4xl font-bold">{format(summary.totalBalance)}</p>
               <p className="mt-2 text-xs opacity-75">
                 {summary.total} {summary.total === 1 ? t("summary.account") : t("summary.accounts")}
               </p>
@@ -352,17 +355,17 @@ export const Accounts: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-primary-600">📈 {t("summary.assets")}</span>
-                <span className="font-bold text-green-600">Rp {summary.positiveBalance.toLocaleString("id-ID")}</span>
+                <span className="font-bold text-green-600">{format(summary.positiveBalance)}</span>
               </div>
               {summary.negativeBalance < 0 && (
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-primary-600">📉 {t("summary.liabilities")}</span>
-                  <span className="font-bold text-red-600">Rp {Math.abs(summary.negativeBalance).toLocaleString("id-ID")}</span>
+                  <span className="font-bold text-red-600">{format(Math.abs(summary.negativeBalance))}</span>
                 </div>
               )}
               <div className="flex items-center justify-between pt-3 border-t">
                 <span className="text-sm font-medium text-primary-900">{t("summary.netWorth")}</span>
-                <span className={`font-bold ${summary.totalBalance >= 0 ? "text-primary-900" : "text-red-600"}`}>Rp {summary.totalBalance.toLocaleString("id-ID")}</span>
+                <span className={`font-bold ${summary.totalBalance >= 0 ? "text-primary-900" : "text-red-600"}`}>{format(summary.totalBalance)}</span>
               </div>
             </div>
           </CardContent>

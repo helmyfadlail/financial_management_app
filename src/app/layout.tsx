@@ -1,11 +1,12 @@
 import { AuthProvider, QueryProvider } from "@/providers";
 
+import type { Metadata } from "next";
+
 import { Space_Grotesk } from "next/font/google";
 
 import "./globals.css";
 
-import type { Metadata } from "next";
-import { ToastProvider } from "@/components";
+import { ToastProvider, CurrencyProvider } from "@/components";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -25,7 +26,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${spaceGrotesk.className} antialiased`}>
         <QueryProvider>
           <AuthProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <ToastProvider>
+              <CurrencyProvider>{children}</CurrencyProvider>
+            </ToastProvider>
           </AuthProvider>
         </QueryProvider>
       </body>

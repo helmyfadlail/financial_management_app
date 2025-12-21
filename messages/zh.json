@@ -307,7 +307,7 @@
       "approachingLimit": "接近限额",
       "onTrack": "按计划进行"
     },
-    "overBudgetBy": "超出预算 Rp {amount}",
+    "overBudgetBy": "超出预算 {amount}",
     "filter": {
       "month": "月份",
       "year": "年份",
@@ -383,16 +383,16 @@
     "daysLeft": "剩余{days}天",
     "completed": "已完成",
     "inProgress": "进行中",
-    "ofTarget": "目标 Rp {amount}",
+    "ofTarget": "目标 {amount}",
     "achieved": "{percentage}% 已达成",
-    "toGo": "还需 Rp {amount}",
+    "toGo": "还需 {amount}",
     "congratulations": "恭喜！您已达成目标！",
     "overdueWarning": "此目标已逾期。请考虑更新截止日期或进度。",
     "summary": {
       "totalGoals": "总目标",
       "completed": "已完成",
       "overallProgress": "总体进度",
-      "ofTotal": "总共 Rp {amount}"
+      "ofTotal": "总共 {amount}"
     },
     "empty": {
       "title": "还没有目标",
@@ -416,7 +416,7 @@
     "progressModal": {
       "title": "更新进度",
       "updatingFor": "更新进度",
-      "currentInfo": "当前：Rp {current} / 目标：Rp {target}",
+      "currentInfo": "当前：{current} / 目标：{target}",
       "newAmount": "新的当前金额",
       "newAmountPlaceholder": "输入更新的金额",
       "willComplete": "这将完成您的目标！",

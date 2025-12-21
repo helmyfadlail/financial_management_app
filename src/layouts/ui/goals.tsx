@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 
 import { useGoals } from "@/hooks";
 
-import { Card, CardContent, Button, Input, Modal, Badge, useToast } from "@/components";
+import { Card, CardContent, Button, Input, Modal, Badge, useToast, useCurrency } from "@/components";
 
 import { calculateGoalStatus } from "@/utils";
 
@@ -27,6 +27,8 @@ interface GoalCardProps {
 
 const GoalCard: React.FC<GoalCardProps> = ({ goal, onUpdateProgress, onDelete }) => {
   const t = useTranslations("goalsPage");
+  const { format } = useCurrency();
+
   const status = React.useMemo(() => calculateGoalStatus(goal), [goal]);
 
   const progressColor = React.useMemo(() => {
@@ -75,8 +77,8 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onUpdateProgress, onDelete })
 
         <div className="mb-4 space-y-3">
           <div>
-            <p className="text-3xl font-bold text-primary-900">Rp {Number(goal.currentAmount).toLocaleString("id-ID")}</p>
-            <p className="mt-1 text-sm text-primary-600">{t("ofTarget", { amount: Number(goal.targetAmount).toLocaleString("id-ID") })}</p>
+            <p className="text-3xl font-bold text-primary-900">{format(Number(goal.currentAmount))}</p>
+            <p className="mt-1 text-sm text-primary-600">{t("ofTarget", { amount: format(Number(goal.targetAmount)) })}</p>
           </div>
 
           <div className="space-y-2">
@@ -93,7 +95,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onUpdateProgress, onDelete })
 
             <div className="flex justify-between text-xs text-primary-600">
               <span className="font-medium">{t("achieved", { percentage: status.percentage.toFixed(1) })}</span>
-              {!status.isCompleted && <span>{t("toGo", { amount: remainingAmount.toLocaleString("id-ID") })}</span>}
+              {!status.isCompleted && <span>{t("toGo", { amount: format(remainingAmount) })}</span>}
             </div>
           </div>
         </div>
@@ -145,6 +147,8 @@ const EmptyState: React.FC<{ onCreateClick: () => void }> = ({ onCreateClick }) 
 export const Goals: React.FC = () => {
   const t = useTranslations("goalsPage");
   const { goals, createGoal, isCreating, updateProgress, deleteGoal, isDeleting } = useGoals("ACTIVE");
+
+  const { format } = useCurrency();
   const { addToast } = useToast();
 
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
@@ -345,8 +349,8 @@ export const Goals: React.FC = () => {
                 <p className="mt-1 text-sm text-primary-600">{t("summary.overallProgress")}</p>
               </div>
               <div className="text-center">
-                <p className="text-lg font-bold text-primary-900">Rp {summary.totalSaved.toLocaleString("id-ID")}</p>
-                <p className="mt-1 text-sm text-primary-600">{t("summary.ofTotal", { amount: summary.totalTarget.toLocaleString("id-ID") })}</p>
+                <p className="text-lg font-bold text-primary-900">{format(summary.totalSaved)}</p>
+                <p className="mt-1 text-sm text-primary-600">{t("summary.ofTotal", { amount: format(summary.totalTarget) })}</p>
               </div>
             </div>
           </CardContent>
@@ -426,8 +430,8 @@ export const Goals: React.FC = () => {
             <p className="font-bold text-primary-900">{selectedGoal?.name}</p>
             <p className="mt-2 text-xs text-primary-600">
               {t("progressModal.currentInfo", {
-                current: Number(selectedGoal?.currentAmount || 0).toLocaleString("id-ID"),
-                target: Number(selectedGoal?.targetAmount || 0).toLocaleString("id-ID"),
+                current: format(Number(selectedGoal?.currentAmount || 0)),
+                target: format(Number(selectedGoal?.targetAmount || 0)),
               })}
             </p>
           </div>

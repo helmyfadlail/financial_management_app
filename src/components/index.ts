@@ -7,6 +7,7 @@ export * from "./select";
 export * from "./skeleton";
 export * from "./textarea";
 export * from "./toast";
+export * from "./currency";
 export * from "./img";
 export * from "./modal";
 export * from "./dropdown";

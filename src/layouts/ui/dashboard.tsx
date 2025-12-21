@@ -10,7 +10,7 @@ import Link from "next/link";
 
 import { apiClient } from "@/utils";
 
-import { Card, CardHeader, CardTitle, CardContent, Badge, Button, Skeleton } from "@/components";
+import { Card, CardHeader, CardTitle, CardContent, Badge, Button, Skeleton, useCurrency } from "@/components";
 
 import type { ApiResponse, DashboardCharts, DashboardSummary, Transaction } from "@/types";
 
@@ -38,6 +38,7 @@ interface BudgetProgressProps {
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ title, amount, change, icon, type }) => {
   const t = useTranslations("dashboardPage");
+  const { format } = useCurrency();
   const isPositive = type === "expense" ? change <= 0 : change >= 0;
   const colorClass = type === "income" ? "text-green-600" : type === "expense" ? "text-red-600" : "text-primary-900";
 
@@ -50,7 +51,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ title, amount, change, icon, 
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className={`text-4xl font-bold ${colorClass} mb-2`}>Rp {amount?.toLocaleString("id-ID") || 0}</p>
+        <p className={`text-4xl font-bold ${colorClass} mb-2`}>{format(amount)}</p>
         <div className="flex items-center gap-2">
           <span className={`text-sm font-medium ${isPositive ? "text-green-600" : "text-red-600"}`}>
             {change >= 0 ? "↗" : "↘"} {Math.abs(change).toFixed(1)}%
@@ -64,6 +65,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ title, amount, change, icon, 
 
 const TransactionItem: React.FC<TransactionItemProps> = ({ transaction }) => {
   const t = useTranslations("dashboardPage");
+  const { format } = useCurrency();
   const isIncome = transaction.type === "INCOME";
 
   return (
@@ -79,7 +81,8 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction }) => {
       </div>
       <div className="text-right shrink-0 ml-4">
         <p className={`text-xl font-bold ${isIncome ? "text-green-600" : "text-red-600"}`}>
-          {isIncome ? "+" : "-"}Rp {transaction.amount?.toLocaleString("id-ID")}
+          {isIncome ? "+" : "-"}
+          {format(transaction.amount)}
         </p>
         <Badge variant={isIncome ? "success" : "error"} size="sm" className="mt-1">
           {isIncome ? `💰 ${t("income")}` : `💳 ${t("expense")}`}
@@ -91,6 +94,8 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction }) => {
 
 const BudgetProgress: React.FC<BudgetProgressProps> = ({ budget }) => {
   const t = useTranslations("dashboardPage");
+
+  const { format } = useCurrency();
 
   const status = useMemo(() => {
     if (budget.percentage >= 100) return { color: "bg-red-500", label: t("budgetStatus.overBudget"), textColor: "text-red-600" };
@@ -106,9 +111,9 @@ const BudgetProgress: React.FC<BudgetProgressProps> = ({ budget }) => {
           <span className="font-semibold text-primary-900">{budget.category}</span>
         </div>
         <div className="text-right">
-          <p className="text-sm font-medium text-primary-900">Rp {budget.spent?.toLocaleString("id-ID")}</p>
+          <p className="text-sm font-medium text-primary-900">{format(budget.spent)}</p>
           <p className="text-xs text-primary-600">
-            {t("of")} Rp {budget.budget?.toLocaleString("id-ID")}
+            {t("of")} {format(budget.budget)}
           </p>
         </div>
       </div>

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 
 import { useTransactions, useCategories, useAccounts, useSearchPagination } from "@/hooks";
 
-import { Card, CardContent, Button, Input, Select, Badge, Modal, Skeleton, useToast } from "@/components";
+import { Card, CardContent, Button, Input, Select, Badge, Modal, Skeleton, useToast, useCurrency } from "@/components";
 
 import type { Transaction, TransactionFilter } from "@/types";
 
@@ -36,6 +36,7 @@ interface EmptyStateProps {
 
 const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete, isDeleting }) => {
   const t = useTranslations("transactionsPage");
+  const { format } = useCurrency();
   const isIncome = transaction.type === "INCOME";
   const formattedDate = React.useMemo(
     () =>
@@ -75,7 +76,8 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete
       <div className="flex items-center gap-4 shrink-0">
         <div className="text-right">
           <p className={`text-xl font-bold ${isIncome ? "text-green-600" : "text-red-600"}`}>
-            {isIncome ? "+" : "-"}Rp {transaction.amount?.toLocaleString("id-ID")}
+            {isIncome ? "+" : "-"}
+            {format(transaction.amount)}
           </p>
           <Badge variant={isIncome ? "success" : "error"} size="sm" className="mt-1">
             {isIncome ? `💰 ${t("income")}` : `💳 ${t("expense")}`}
@@ -124,7 +126,10 @@ export const Transactions: React.FC = () => {
   const t = useTranslations("transactionsPage");
   const { categories } = useCategories();
   const { accounts } = useAccounts();
+
+  const { format } = useCurrency();
   const { addToast } = useToast();
+
   const { createTransaction, isCreating } = useTransactions();
 
   const { searchQuery, inputValue, setInputValue, currentPage, handlePageChange, selectedType, handleTypeChange, selectedCategory, handleCategoryChange, resetFilters } = useSearchPagination({
@@ -472,7 +477,8 @@ export const Transactions: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <p className={`font-bold ${formData.type === "INCOME" ? "text-green-600" : "text-red-600"}`}>
-                    {formData.type === "INCOME" ? "+" : "-"}Rp {parseFloat(formData.amount || "0").toLocaleString("id-ID")}
+                    {formData.type === "INCOME" ? "+" : "-"}
+                    {format(formData.amount)}
                   </p>
                   <Badge variant={formData.type === "INCOME" ? "success" : "error"} size="sm">
                     {formData.type}

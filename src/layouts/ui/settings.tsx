@@ -10,6 +10,8 @@ import { useSettings } from "@/hooks";
 
 import { Card, CardContent, CardHeader, CardTitle, Button, Select, Alert, AlertTitle, AlertDescription, useToast, Skeleton, Modal, Input } from "@/components";
 
+import { CURRENCY_OPTIONS, LANGUAGE_OPTIONS, THEME_OPTIONS } from "@/static";
+
 import { formatSettingKey } from "@/utils";
 
 interface NotificationSettings {
@@ -69,7 +71,7 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({ title, description, ico
           <p className="text-sm text-primary-600">{description}</p>
         </div>
       </div>
-      <Select options={options} value={value} onChange={(e) => onChange(e.target.value)} parentClassName="w-60" />
+      <Select options={options} value={value} onChange={(e) => onChange(e.target.value)} parentClassName="w-72" />
     </div>
   );
 };
@@ -95,25 +97,6 @@ export const Settings: React.FC = () => {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState<boolean>(false);
   const [deleteConfirmText, setDeleteConfirmText] = React.useState<string>("");
-
-  const LANGUAGE_OPTIONS = [
-    { value: "en", label: "🇺🇸 English" },
-    { value: "id", label: "🇮🇩 Indonesia" },
-    { value: "zh", label: "🇨🇳 中文 (Chinese)" },
-  ];
-
-  const THEME_OPTIONS = [
-    { value: "light", label: `☀️ ${t("stats.theme")} Light` },
-    { value: "dark", label: `🌙 ${t("stats.theme")} Dark` },
-    { value: "auto", label: `🔄 ${t("stats.theme")} Auto` },
-  ];
-
-  const CURRENCY_OPTIONS = [
-    { value: "IDR", label: "🇮🇩 IDR - Indonesian Rupiah", symbol: "Rp" },
-    { value: "USD", label: "🇺🇸 USD - US Dollar", symbol: "$" },
-    { value: "EUR", label: "🇪🇺 EUR - Euro", symbol: "€" },
-    { value: "CNY", label: "🇨🇳 CNY - Chinese Yuan", symbol: "¥" },
-  ];
 
   const enabledNotificationsCount = React.useMemo(() => {
     if (!notifications) return 0;
