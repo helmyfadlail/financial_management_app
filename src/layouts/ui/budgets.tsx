@@ -183,6 +183,7 @@ export const Budgets: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
   const [deleteId, setDeleteId] = React.useState<string | null>(null);
   const [formData, setFormData] = React.useState<FormData>({ categoryId: "", amount: "" });
+  console.log("🚀 ~ Budgets ~ formData:", formData);
 
   const { selectedCategory, handleCategoryChange, currentPage, handlePageChange } = useSearchPagination({ defaultPage: 1, categoryParamName: "category" });
 
@@ -239,8 +240,8 @@ export const Budgets: React.FC = () => {
   );
 
   const resetForm = React.useCallback((): void => {
-    setFormData({ categoryId: "", amount: "" });
-  }, []);
+    setFormData({ categoryId: categories[0].id, amount: "" });
+  }, [categories]);
 
   const openModal = React.useCallback((): void => {
     resetForm();

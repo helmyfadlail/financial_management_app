@@ -153,6 +153,7 @@ export const Home: React.FC = () => {
 
     createTransaction(
       {
+        email,
         amount: parseFloat(formData.amount),
         type: formData.type,
         description: formData.description.trim(),

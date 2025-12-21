@@ -108,6 +108,7 @@ export interface Goal {
 }
 
 export interface QuickTransactionData {
+  email: string;
   categoryId: string;
   accountId: string;
   amount: number;
