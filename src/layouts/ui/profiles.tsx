@@ -170,7 +170,7 @@ export const Profiles: React.FC = () => {
     }
 
     updateProfile(
-      { name: profileData.name.trim(), avatar: "" },
+      { name: profileData.name.trim(), avatar: null },
       {
         onSuccess: () => {
           addToast({ message: t("avatar.success.removed"), type: "success" });
@@ -347,7 +347,6 @@ export const Profiles: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {/* Avatar Upload Section */}
             <div className="flex flex-col items-center gap-4 pb-6 border-b">
               <div className="relative group">
                 <div className="w-32 h-32 overflow-hidden rounded-full shadow-border bg-primary-50">
@@ -358,7 +357,6 @@ export const Profiles: React.FC = () => {
                   )}
                 </div>
 
-                {/* Hover overlay */}
                 <div
                   onClick={handleAvatarClick}
                   className="absolute inset-0 flex items-center justify-center transition-opacity bg-black bg-opacity-50 rounded-full opacity-0 cursor-pointer group-hover:opacity-100"
@@ -386,7 +384,6 @@ export const Profiles: React.FC = () => {
               </div>
             </div>
 
-            {/* Profile Form */}
             <div className="space-y-4">
               <Input
                 type="text"

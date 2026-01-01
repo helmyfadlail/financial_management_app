@@ -28,11 +28,12 @@ export async function GET() {
 
     return successResponse(userData);
   } catch (error) {
-    if (error instanceof Error && error.message === "Unauthorized") {
-      return errorResponse("Unauthorized", 401);
-    }
-    console.log(error);
-    return errorResponse(error as string, 500);
+    console.error(error);
+
+    if (error instanceof Error && error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    return errorResponse(errorMessage, 500);
   }
 }
 

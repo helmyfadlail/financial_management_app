@@ -81,6 +81,6 @@ export const bulkSettingsSchema = z.array(
     icon: z.string(),
     type: SettingType.optional().default("string"),
     category: SettingCategory.optional().default("general"),
-    description: z.string().optional(),
+    description: z.string().optional().nullable(),
   })
 );

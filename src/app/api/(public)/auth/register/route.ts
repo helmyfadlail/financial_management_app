@@ -30,11 +30,12 @@ export async function POST(req: NextRequest) {
 
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
-        data: { email, password: hashedPassword, name, emailVerified: new Date() },
+        data: { email, password: hashedPassword, name, avatar: null, emailVerified: new Date() },
         select: {
           id: true,
           email: true,
           name: true,
+          avatar: true,
           emailVerified: true,
           createdAt: true,
           updatedAt: true,

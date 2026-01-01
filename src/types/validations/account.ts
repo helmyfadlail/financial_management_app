@@ -7,8 +7,9 @@ export const accountSchema = z.object({
   color: z
     .string()
     .regex(/^#[0-9A-F]{6}$/i)
-    .optional(),
-  icon: z.string().optional(),
+    .optional()
+    .nullable(),
+  icon: z.string().optional().nullable(),
   isDefault: z.boolean().default(false),
 });
 

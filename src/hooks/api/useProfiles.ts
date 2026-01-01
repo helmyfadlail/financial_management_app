@@ -52,10 +52,7 @@ export const useProfiles = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("/api/uploads/images", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch("/api/uploads/images", { method: "POST", body: formData });
 
       if (!response.ok) throw new Error("Failed to upload avatar");
 
@@ -67,7 +64,7 @@ export const useProfiles = () => {
   // Delete avatar file
   const deleteAvatarMutation = useMutation({
     mutationFn: async (avatarUrl: string): Promise<void> => {
-      if (!avatarUrl || !avatarUrl.startsWith("/uploads/")) return;
+      if (!avatarUrl) return;
 
       const fileName = avatarUrl.split("/").pop();
       const response = await fetch(`/api/uploads/images?file=${fileName}`, { method: "DELETE" });
