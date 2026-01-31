@@ -11,7 +11,7 @@
     "db:generate": "npx prisma generate",
     "db:seed": "npx prisma db seed",
     "db:studio": "npx prisma studio",
-    "db:reset": "npx prisma migrate reset --force --skip-seed"
+    "db:reset": "npx prisma migrate reset --force"
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^3.0.4",
@@ -22,7 +22,7 @@
     "clsx": "^2.1.1",
     "imagekit": "^6.0.0",
     "lucide-react": "^0.556.0",
-    "next": "16.0.7",
+    "next": "^16.1.6",
     "next-auth": "^4.24.13",
     "next-intl": "^4.5.8",
     "pdfkit": "^0.17.2",
@@ -46,7 +46,7 @@
     "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.7",
-    "prisma": "^7.1.0",
+    "prisma": "^7.3.0",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"

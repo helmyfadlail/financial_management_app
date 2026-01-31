@@ -40,6 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# prisma
 /generated/prisma
+/prisma/migrations
 
+# kubernetes and docker
 k8s/
+
