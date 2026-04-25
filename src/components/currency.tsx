@@ -26,18 +26,12 @@ const CurrencyContext = React.createContext<CurrencyContextType | undefined>(und
 
 export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { notifications, isLoading: isSettingsLoading, exchangeRates, isLoadingRates } = useSettings();
-  const [currency, setCurrency] = React.useState<string>(DEFAULT_CURRENCY);
+  const currency = React.useMemo(() => {
+    const currencyValue = notifications?.find((n) => n.key === "currency")?.value;
+    return typeof currencyValue === "string" ? currencyValue : DEFAULT_CURRENCY;
+  }, [notifications]);
 
   const symbol = React.useMemo(() => getCurrencySymbol(currency), [currency]);
-
-  React.useEffect(() => {
-    if (notifications) {
-      const currencyValue = notifications.find((n) => n.key === "currency")?.value;
-      if (currencyValue && typeof currencyValue === "string") {
-        setCurrency(currencyValue);
-      }
-    }
-  }, [notifications]);
 
   const format = React.useCallback(
     (amount: number | string, fromCurrency: string = BASE_CURRENCY): string => {
@@ -84,7 +78,7 @@ export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       return `${symbol} ${formatted}`;
     },
-    [currency, symbol, exchangeRates]
+    [currency, symbol, exchangeRates],
   );
 
   const value: CurrencyContextType = React.useMemo(
@@ -94,7 +88,7 @@ export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       isLoading: isSettingsLoading || isLoadingRates,
       format,
     }),
-    [currency, exchangeRates, isSettingsLoading, isLoadingRates, format]
+    [currency, exchangeRates, isSettingsLoading, isLoadingRates, format],
   );
 
   return <CurrencyContext.Provider value={value}>{children}</CurrencyContext.Provider>;

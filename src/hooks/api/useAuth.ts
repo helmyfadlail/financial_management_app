@@ -14,7 +14,11 @@ interface RegisterData {
   email: string;
   password: string;
   name: string;
-  currency?: string;
+}
+
+interface ResetPasswordData {
+  password: string;
+  token: string;
 }
 
 export const useAuth = () => {
@@ -58,13 +62,41 @@ export const useAuth = () => {
     },
   });
 
+  const resetPasswordMutation = useMutation({
+    mutationFn: (data: ResetPasswordData) => apiClient.post<ApiResponse<User>, ResetPasswordData>("/auth/reset-password", data),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      const successParams = new URLSearchParams({
+        title: "Password Reset Successful",
+        message: "Your password has been reset successfully. You can now sign in with your new password.",
+        redirect: "/login",
+        redirectLabel: "Sign In Now",
+        autoRedirect: "true",
+      });
+
+      router.push(`/reset-password/success?${successParams.toString()}`);
+    },
+  });
+
+  const forgotPasswordMutation = useMutation({
+    mutationFn: (data: { email: string }) => apiClient.post<ApiResponse<User>, { email: string }>("/auth/forgot-password", data),
+  });
+
   return {
     register: registerMutation.mutate,
     registerAsync: registerMutation.mutateAsync,
     isRegistering: registerMutation.isPending,
     registerError: registerMutation.error,
-    loginWithGoogle,
     logout: logoutMutation.mutate,
     isLoggingOut: logoutMutation.isPending,
+    loginWithGoogle,
+    resetPassword: resetPasswordMutation.mutate,
+    resetPasswordAsync: resetPasswordMutation.mutateAsync,
+    isResettingPassword: resetPasswordMutation.isPending,
+    resetPasswordError: resetPasswordMutation.error,
+    forgotPassword: forgotPasswordMutation.mutate,
+    forgotPasswordAsync: forgotPasswordMutation.mutateAsync,
+    isSendingForgotPassword: forgotPasswordMutation.isPending,
+    forgotPasswordError: forgotPasswordMutation.error,
   };
 };

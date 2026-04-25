@@ -8,7 +8,7 @@ export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Allow these routes to bypass locale handling
-  if (pathname === "/" || pathname === "/login" || pathname === "/register") {
+  if (pathname === "/" || pathname === "/login" || pathname === "/register" || pathname === "/forgot-password" || pathname === "/reset-password" || pathname === "/reset-password/success") {
     return NextResponse.next();
   }
 

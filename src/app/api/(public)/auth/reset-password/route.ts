@@ -43,7 +43,8 @@ export async function POST(req: NextRequest) {
 
     return successResponse(null, "Password reset successful");
   } catch (error) {
-    console.error("Reset password error:", error);
-    return errorResponse("An error occurred", 500);
+    console.error(error);
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    return errorResponse(errorMessage, 500);
   }
 }

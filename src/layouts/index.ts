@@ -3,6 +3,9 @@ export * from "./register";
 export * from "./error";
 export * from "./dashboard";
 export * from "./home";
+export * from "./reset-password";
+export * from "./forgot-password";
+export * from "./reset-password-success";
 
 export * from "./ui/dashboard";
 export * from "./ui/transactions";

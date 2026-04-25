@@ -20,7 +20,8 @@ export const Register = () => {
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
-    // Validation
+    setLocalError("");
+
     if (!name.trim()) {
       setLocalError("Name is required");
       return;
@@ -58,27 +59,19 @@ export const Register = () => {
 
     setLocalError("");
 
-    // Call register from useAuth hook
-    register({
-      name,
-      email,
-      password,
-      currency: "IDR",
-    });
+    register({ name, email, password });
   };
 
   const error = localError || registerError?.message;
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4 bg-linear-to-br from-primary via-secondary to-accent">
-      {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute rounded-full top-20 left-10 w-72 h-72 bg-accent opacity-20 blur-3xl" />
         <div className="absolute rounded-full bottom-20 right-10 w-96 h-96 bg-secondary opacity-20 blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-md">
-        {/* Register Card */}
         <div className="p-8 shadow-2xl bg-white/95 backdrop-blur-sm rounded-2xl">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-primary-900">Create account</h2>
@@ -160,7 +153,6 @@ export const Register = () => {
               }
             />
 
-            {/* Password Requirements */}
             <div className="p-3 text-xs rounded-lg bg-primary-50 text-primary-700">
               <p className="mb-1 font-medium">Password must contain:</p>
               <ul className="space-y-1 list-disc list-inside">
@@ -171,7 +163,6 @@ export const Register = () => {
               </ul>
             </div>
 
-            {/* Terms and Conditions */}
             <div className="flex items-start gap-2 text-sm">
               <input type="checkbox" id="terms" required className="w-4 h-4 mt-0.5 rounded border-primary-300 text-primary-600 focus:ring-primary-500" />
               <label htmlFor="terms" className="text-primary-600">
@@ -191,7 +182,6 @@ export const Register = () => {
             </Button>
           </form>
 
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-primary-200" />
@@ -201,7 +191,6 @@ export const Register = () => {
             </div>
           </div>
 
-          {/* Google Sign Up */}
           <Button type="button" variant="outline" size="lg" className="w-full" onClick={loginWithGoogle} disabled={isRegistering}>
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -212,7 +201,6 @@ export const Register = () => {
             Sign up with Google
           </Button>
 
-          {/* Login link */}
           <p className="mt-6 text-sm text-center text-primary-600">
             Already have an account?{" "}
             <Link href="/login" className="font-semibold text-primary-700 hover:text-primary-900">
@@ -221,7 +209,6 @@ export const Register = () => {
           </p>
         </div>
 
-        {/* Footer */}
         <p className="mt-8 text-sm text-center text-white/80">© 2025 Finance Manager. All rights reserved.</p>
       </div>
     </div>

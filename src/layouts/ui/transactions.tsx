@@ -45,7 +45,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete
         month: "short",
         year: "numeric",
       }),
-    [transaction.date]
+    [transaction.date],
   );
 
   return (
@@ -249,10 +249,10 @@ export const Transactions: React.FC = () => {
           onError: (error: Error) => {
             addToast({ message: error.message || t("error.create"), type: "error" });
           },
-        }
+        },
       );
     },
-    [formData, createTransaction, addToast, closeModal, t]
+    [formData, createTransaction, addToast, closeModal, t],
   );
 
   const handleDeleteClick = React.useCallback((id: string): void => {
@@ -285,18 +285,6 @@ export const Transactions: React.FC = () => {
       return updated;
     });
   }, []);
-
-  React.useEffect(() => {
-    if (defaultCategoryId && !formData.categoryId) {
-      setFormData((prev) => ({ ...prev, categoryId: defaultCategoryId }));
-    }
-  }, [defaultCategoryId, formData.categoryId]);
-
-  React.useEffect(() => {
-    if (defaultAccountId && !formData.accountId) {
-      setFormData((prev) => ({ ...prev, accountId: defaultAccountId }));
-    }
-  }, [defaultAccountId, formData.accountId]);
 
   const hasActiveFilters = React.useMemo(() => selectedType || selectedCategory || searchQuery, [selectedType, selectedCategory, searchQuery]);
 

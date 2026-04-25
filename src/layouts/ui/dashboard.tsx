@@ -233,7 +233,7 @@ export const Dashboard: React.FC = () => {
                 actionHref="/admin/dashboard/transactions"
               />
             ) : (
-              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+              <div className="space-y-3 max-h-150 overflow-y-auto">
                 {recentTransactions.slice(0, 5).map((tx) => (
                   <TransactionItem key={tx.id} transaction={tx} />
                 ))}
@@ -263,7 +263,7 @@ export const Dashboard: React.FC = () => {
                 actionHref="/admin/dashboard/budgets"
               />
             ) : (
-              <div className="space-y-4 max-h-[600px] overflow-y-auto">
+              <div className="space-y-4 max-h-150 overflow-y-auto">
                 {budgetProgress.map((budget, index) => (
                   <BudgetProgress key={index} budget={budget} />
                 ))}

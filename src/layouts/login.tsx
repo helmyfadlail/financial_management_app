@@ -47,14 +47,12 @@ export const Login = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4 bg-linear-to-br from-primary via-secondary to-accent">
-      {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute rounded-full top-20 left-10 w-72 h-72 bg-accent opacity-20 blur-3xl" />
         <div className="absolute rounded-full bottom-20 right-10 w-96 h-96 bg-secondary opacity-20 blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-md">
-        {/* Login Card */}
         <div className="p-8 shadow-2xl bg-white/95 backdrop-blur-sm rounded-2xl">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-primary-900">Welcome back</h2>
@@ -119,7 +117,6 @@ export const Login = () => {
             </Button>
           </form>
 
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-primary-200" />
@@ -129,7 +126,6 @@ export const Login = () => {
             </div>
           </div>
 
-          {/* Google Sign In */}
           <Button type="button" variant="outline" size="lg" className="w-full" onClick={loginWithGoogle} disabled={isLoading}>
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -140,7 +136,6 @@ export const Login = () => {
             Sign in with Google
           </Button>
 
-          {/* Sign up link */}
           <p className="mt-6 text-sm text-center text-primary-600">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="font-semibold text-primary-700 hover:text-primary-900">
@@ -149,7 +144,6 @@ export const Login = () => {
           </p>
         </div>
 
-        {/* Footer */}
         <p className="mt-8 text-sm text-center text-white/80">© 2025 Finance Manager. All rights reserved.</p>
       </div>
     </div>

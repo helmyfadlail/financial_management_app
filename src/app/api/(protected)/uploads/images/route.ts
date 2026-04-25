@@ -63,12 +63,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error(error);
 
-    if (error instanceof Error && error.message === "Unauthorized") {
-      return errorResponse("Unauthorized", 401);
-    }
+    if (error instanceof Error && error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
 
     if (error instanceof Error) {
-      if (error.message?.includes("authentication")) {
+      if (error.message.includes("authentication")) {
         return errorResponse("ImageKit authentication failed", 500);
       }
       return errorResponse(error.message, 500);

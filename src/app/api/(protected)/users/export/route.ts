@@ -141,7 +141,7 @@ const generatePDF = async (userData: UserData, metrics: Metrics, topCategories: 
             month: "long",
             day: "numeric",
           })}`,
-          { align: "center" }
+          { align: "center" },
         );
 
       doc.moveDown(1.5);
@@ -319,7 +319,7 @@ export async function GET() {
         transactions,
       },
       metrics,
-      topCategories
+      topCategories,
     );
 
     return new NextResponse(new Uint8Array(pdfBuffer), {

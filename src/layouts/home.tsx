@@ -39,6 +39,8 @@ export const Home: React.FC = () => {
 
   const [formData, setFormData] = React.useState<FormData>(INITIAL_FORM_DATA);
 
+  const [transactionType, setTransactionType] = React.useState<FormData["type"]>("EXPENSE");
+
   const getFilteredCategories = React.useCallback((type: FormData["type"]) => categories.filter((c) => c.type === type), [categories]);
 
   const getDefaultCategory = React.useCallback(
@@ -46,38 +48,15 @@ export const Home: React.FC = () => {
       const filtered = getFilteredCategories(type);
       return filtered.find((c) => c.isDefault) || filtered[0];
     },
-    [getFilteredCategories]
+    [getFilteredCategories],
   );
 
-  const getDefaultAccount = React.useCallback(() => {
-    return accounts.find((a) => a.isDefault) || accounts[0];
-  }, [accounts]);
-
-  React.useEffect(() => {
-    if (emailVerified && categories.length > 0 && accounts.length > 0) {
-      const defaultCategory = getDefaultCategory(formData.type);
-      const defaultAccount = getDefaultAccount();
-
-      setFormData((prev) => ({
-        ...prev,
-        categoryId: defaultCategory?.id || "",
-        accountId: defaultAccount?.id || "",
-      }));
-    }
-  }, [emailVerified, categories, accounts, formData.type, getDefaultCategory, getDefaultAccount]);
-
   const categoryOptions = React.useMemo(() => {
-    return getFilteredCategories(formData.type).map((c) => ({
-      value: c.id,
-      label: `${c.icon} ${c.name}`,
-    }));
-  }, [formData.type, getFilteredCategories]);
+    return getFilteredCategories(transactionType).map((c) => ({ value: c.id, label: `${c.icon} ${c.name}` }));
+  }, [transactionType, getFilteredCategories]);
 
   const accountOptions = React.useMemo(() => {
-    return accounts.map((a) => ({
-      value: a.id,
-      label: `${a.icon} ${a.name}`,
-    }));
+    return accounts.map((a) => ({ value: a.id, label: `${a.icon} ${a.name}` }));
   }, [accounts]);
 
   const validateEmail = (email: string): string | null => {
@@ -142,6 +121,8 @@ export const Home: React.FC = () => {
 
       return updated;
     });
+
+    if (field === "type") setTransactionType(value as FormData["type"]);
   };
 
   const handleTransactionSubmit = () => {
@@ -169,7 +150,7 @@ export const Home: React.FC = () => {
         onError: (error: Error) => {
           addToast({ message: error.message || "Failed to record transaction", type: "error" });
         },
-      }
+      },
     );
   };
 
@@ -203,14 +184,12 @@ export const Home: React.FC = () => {
   return (
     <div className="min-h-screen px-4 py-6 sm:py-8 bg-to-br from-primary-50 to-neutral">
       <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
-        {/* Header */}
         <div className="text-center">
           <div className="mb-3 text-5xl sm:text-6xl">⚡</div>
           <h1 className="text-3xl font-bold sm:text-4xl text-primary-900">Quick Transaction</h1>
           <p className="px-4 mt-2 text-base sm:text-lg text-primary-600">Record your transactions instantly, no login required</p>
         </div>
 
-        {/* How it works */}
         <Card>
           <CardContent className="pt-4 sm:pt-6">
             <div className="flex items-start gap-3 p-3 border rounded-lg sm:p-4 bg-primary-50 border-primary-200">
@@ -228,10 +207,8 @@ export const Home: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Main Form Card */}
         <Card>
           <CardContent className="pt-4 sm:pt-6">
-            {/* Email Search Section - Hidden after verification */}
             {!emailVerified && (
               <div className="space-y-4">
                 <Input type="email" label="Email Address *" placeholder="your.email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={isSearchingEmail} />
@@ -241,7 +218,6 @@ export const Home: React.FC = () => {
               </div>
             )}
 
-            {/* Transaction Form - Shown after verification */}
             {emailVerified && (
               <>
                 <div className="flex items-center justify-between p-3 mb-4 border rounded-lg bg-green-50 border-green-200">
@@ -303,7 +279,6 @@ export const Home: React.FC = () => {
                     required
                   />
 
-                  {/* Preview */}
                   {showPreview && (
                     <div className="p-3 border rounded-lg sm:p-4 bg-to-br from-primary-50 to-neutral border-primary-200">
                       <p className="mb-3 text-xs font-medium sm:text-sm text-primary-700">Preview:</p>
@@ -341,7 +316,6 @@ export const Home: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* CTA Card */}
         <Card>
           <CardContent className="pt-6">
             <div className="p-6 text-center border-2 border-dashed rounded-lg border-primary-300 bg-primary-50">

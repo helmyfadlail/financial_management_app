@@ -112,7 +112,7 @@ const MonthBreakdown: React.FC<MonthBreakdownProps> = ({ month }) => {
     <div className="flex items-center justify-between p-4 transition-colors rounded-lg bg-neutral hover:bg-neutral-100">
       <div className="flex items-center gap-2">
         <span className="text-xl">📅</span>
-        <span className="font-semibold text-primary-900 min-w-[100px]">{month.month}</span>
+        <span className="font-semibold text-primary-900 min-w-25">{month.month}</span>
       </div>
       <div className="flex gap-6 text-sm">
         <div className="text-right">
@@ -179,7 +179,7 @@ export const Reports: React.FC = () => {
       { value: "11", label: t("months.november") },
       { value: "12", label: t("months.december") },
     ],
-    [t]
+    [t],
   );
 
   const { data: monthlyReport, isLoading: monthlyLoading } = useQuery<ApiResponse<MonthlyReport>>({
