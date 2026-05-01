@@ -1,28 +1,47 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
-import { apiClient } from "@/utils";
-import type { ApiResponse, UserSetting } from "@/types";
+import * as React from "react";
 
-const BASE_CURRENCY = "IDR";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { useSession } from "next-auth/react";
+
+import { apiClient } from "@/utils";
+
+import { BASE_CURRENCY, EXCHANGE_RATE_URL } from "@/static";
+
+import type { ApiResponse, AppSetting, UserSetting } from "@/types";
 
 export const useSettings = () => {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
 
   // Get all user settings
-  const { data, isLoading } = useQuery({
+  const { data: userSettingsData, isLoading: isLoadingUserSettings } = useQuery({
     queryKey: ["user-settings"],
     queryFn: () => apiClient.get<ApiResponse<UserSetting[]>>("/users/settings"),
     enabled: !!session?.user,
+  });
+
+  const { data: appSettingsData, isLoading: isLoadingAppSettings } = useQuery({
+    queryKey: ["app-settings"],
+    queryFn: () => apiClient.get<ApiResponse<AppSetting[]>>("/settings"),
+    enabled: !!session?.user,
+  });
+
+  // Update setting preferences or alert
+  const updateNotificationMutation = useMutation({
+    mutationFn: ({ key, value }: { key: string; value: boolean | string }) => apiClient.patch<ApiResponse<UserSetting>, { value: string }>(`/users/settings/${key}`, { value: String(value) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-settings"] });
+    },
   });
 
   // Fetch exchange rates
   const { data: ratesData, isLoading: isLoadingRates } = useQuery({
     queryKey: ["exchange-rates", BASE_CURRENCY],
     queryFn: async () => {
-      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${BASE_CURRENCY}`);
+      const response = await fetch(`${EXCHANGE_RATE_URL}/${BASE_CURRENCY}`);
 
       if (!response.ok) throw new Error(`Failed to fetch rates: ${response.status} ${response.statusText}`);
 
@@ -36,14 +55,6 @@ export const useSettings = () => {
     gcTime: 1000 * 60 * 60 * 24,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-  });
-
-  // Update setting preferences or alert
-  const updateNotificationMutation = useMutation({
-    mutationFn: ({ key, value }: { key: string; value: boolean | string }) => apiClient.patch<ApiResponse<UserSetting>, { value: string }>(`/users/settings/${key}`, { value: String(value) }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-settings"] });
-    },
   });
 
   // Export all summary transaction in pdf
@@ -74,11 +85,19 @@ export const useSettings = () => {
     },
   });
 
+  const getUserSetting = React.useCallback((key: string) => userSettingsData?.data.find((s) => s.key === key), [userSettingsData]);
+
+  const getAppSetting = React.useCallback((key: string) => appSettingsData?.data.find((s) => s.key === key), [appSettingsData]);
+
   return {
-    notifications: data?.data || null,
-    isLoading,
+    userSettingsData: userSettingsData?.data || null,
+    isLoadingUserSettings,
+    appSettingsData: appSettingsData?.data || null,
+    isLoadingAppSettings,
     exchangeRates: ratesData || null,
     isLoadingRates,
+    getAppSetting,
+    getUserSetting,
     updateNotification: updateNotificationMutation.mutate,
     updateNotificationAsync: updateNotificationMutation.mutateAsync,
     isUpdatingNotification: updateNotificationMutation.isPending,

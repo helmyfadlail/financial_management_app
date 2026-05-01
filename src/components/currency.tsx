@@ -4,100 +4,119 @@ import * as React from "react";
 
 import { useSettings } from "@/hooks";
 
-import { CURRENCY_OPTIONS } from "@/static";
+import { BASE_CURRENCY, CURRENCY_LOCALE_MAP, ZERO_DECIMAL_CURRENCIES } from "@/static";
 
-interface CurrencyContextType {
+interface CurrencyOption {
+  value: string;
+  label: string;
+  symbol: string;
+}
+
+export interface CurrencyContextType {
   currency: string;
+  symbol: string;
+  currencyOptions: CurrencyOption[];
   rates: Record<string, number> | null;
   isLoading: boolean;
   format: (amount: number | string, fromCurrency?: string) => string;
+  convert: (amount: number, from: string, to: string) => number;
 }
-
-const getCurrencySymbol = (currency: string): string => {
-  const option = CURRENCY_OPTIONS.find((opt) => opt.value === currency);
-  return option?.symbol || currency;
-};
-
-const ZERO_DECIMAL_CURRENCIES = new Set(["IDR", "JPY", "KRW"]);
-const DEFAULT_CURRENCY = "IDR";
-const BASE_CURRENCY = "IDR";
 
 const CurrencyContext = React.createContext<CurrencyContextType | undefined>(undefined);
 
 export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { notifications, isLoading: isSettingsLoading, exchangeRates, isLoadingRates } = useSettings();
-  const currency = React.useMemo(() => {
-    const currencyValue = notifications?.find((n) => n.key === "currency")?.value;
-    return typeof currencyValue === "string" ? currencyValue : DEFAULT_CURRENCY;
-  }, [notifications]);
+  const { getUserSetting, getAppSetting, isLoadingUserSettings, isLoadingAppSettings, exchangeRates, isLoadingRates } = useSettings();
 
-  const symbol = React.useMemo(() => getCurrencySymbol(currency), [currency]);
+  const currency = React.useMemo<string>(() => {
+    const setting = getUserSetting("currency");
+    return setting?.value ?? BASE_CURRENCY;
+  }, [getUserSetting]);
+
+  const currencyOptions = React.useMemo<CurrencyOption[]>(() => {
+    const setting = getAppSetting("currency_options");
+    if (!setting || !Array.isArray(setting.value)) return [];
+    return setting.value as unknown as CurrencyOption[];
+  }, [getAppSetting]);
+
+  const symbol = React.useMemo<string>(() => {
+    if (currencyOptions.length === 0) {
+      return currency;
+    }
+    return currencyOptions.find((o) => o.value === currency)?.symbol ?? currency;
+  }, [currency, currencyOptions]);
+
+  const localeMap = React.useMemo<Record<string, string>>(() => {
+    const setting = getAppSetting("currency_locale_map");
+    if (!setting || typeof setting.value !== "object" || Array.isArray(setting.value) || setting.value === null) return CURRENCY_LOCALE_MAP;
+    return setting.value as Record<string, string>;
+  }, [getAppSetting]);
+
+  const zeroDecimalSet = React.useMemo<Set<string>>(() => {
+    const setting = getAppSetting("zero_decimal_currencies");
+    if (!setting || !Array.isArray(setting.value)) return new Set(ZERO_DECIMAL_CURRENCIES);
+    return new Set(setting.value as string[]);
+  }, [getAppSetting]);
+
+  const convert = React.useCallback(
+    (amount: number, from: string, to: string): number => {
+      if (from === to || !exchangeRates) return amount;
+
+      if (from === BASE_CURRENCY) {
+        const rate = exchangeRates[to];
+        return rate ? amount * rate : amount;
+      }
+
+      if (to === BASE_CURRENCY) {
+        const rate = exchangeRates[from];
+        return rate ? amount / rate : amount;
+      }
+
+      const fromRate = exchangeRates[from];
+      const toRate = exchangeRates[to];
+      if (fromRate && toRate) return (amount / fromRate) * toRate;
+
+      return amount;
+    },
+    [exchangeRates],
+  );
 
   const format = React.useCallback(
-    (amount: number | string, fromCurrency: string = BASE_CURRENCY): string => {
+    (amount: number | string, fromCurrency = BASE_CURRENCY): string => {
       const num = typeof amount === "string" ? parseFloat(amount) : amount;
-      if (isNaN(num) || num === null || num === undefined) {
-        return `${symbol} 0`;
-      }
+      if (Number.isNaN(num)) return `${symbol} 0`;
 
-      let convertedAmount = num;
-      if (fromCurrency !== currency && exchangeRates) {
-        if (fromCurrency === BASE_CURRENCY) {
-          const rate = exchangeRates[currency];
-          if (rate) convertedAmount = num * rate;
-        } else if (currency === BASE_CURRENCY) {
-          const rate = exchangeRates[fromCurrency];
-          if (rate) convertedAmount = num / rate;
-        } else {
-          const fromRate = exchangeRates[fromCurrency];
-          const toRate = exchangeRates[currency];
-          if (fromRate && toRate) convertedAmount = (num / fromRate) * toRate;
-        }
-      }
+      const converted = convert(num, fromCurrency, currency);
+      const decimals = zeroDecimalSet.has(currency) ? 0 : 2;
+      const locale = localeMap[currency] ?? "en-US";
 
-      const decimals = ZERO_DECIMAL_CURRENCIES.has(currency) ? 0 : 2;
-
-      const localeMap: Record<string, string> = {
-        USD: "en-US",
-        EUR: "de-DE",
-        JPY: "ja-JP",
-        GBP: "en-GB",
-        AUD: "en-AU",
-        CAD: "en-CA",
-        CHF: "de-CH",
-        CNY: "zh-CN",
-        IDR: "id-ID",
-        HKD: "zh-HK",
-      };
-
-      const locale = localeMap[currency] || "en-US";
       const formatted = new Intl.NumberFormat(locale, {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
-      }).format(convertedAmount);
+      }).format(converted);
 
       return `${symbol} ${formatted}`;
     },
-    [currency, symbol, exchangeRates],
+    [currency, symbol, convert, zeroDecimalSet, localeMap],
   );
 
-  const value: CurrencyContextType = React.useMemo(
+  const value = React.useMemo<CurrencyContextType>(
     () => ({
       currency,
-      rates: exchangeRates,
-      isLoading: isSettingsLoading || isLoadingRates,
+      symbol,
+      currencyOptions,
+      rates: exchangeRates ?? null,
+      isLoading: isLoadingUserSettings || isLoadingAppSettings || isLoadingRates,
       format,
+      convert,
     }),
-    [currency, exchangeRates, isSettingsLoading, isLoadingRates, format],
+    [currency, symbol, currencyOptions, exchangeRates, isLoadingUserSettings, isLoadingAppSettings, isLoadingRates, format, convert],
   );
 
   return <CurrencyContext.Provider value={value}>{children}</CurrencyContext.Provider>;
 };
 
 export const useCurrency = (): CurrencyContextType => {
-  const context = React.useContext(CurrencyContext);
-  if (!context) {
-    throw new Error("useCurrency must be used within a CurrencyProvider");
-  }
-  return context;
+  const ctx = React.useContext(CurrencyContext);
+  if (!ctx) throw new Error("useCurrency must be used within <CurrencyProvider>");
+  return ctx;
 };

@@ -10,8 +10,6 @@ import { useSettings } from "@/hooks";
 
 import { Card, CardContent, CardHeader, CardTitle, Button, Select, Alert, AlertTitle, AlertDescription, useToast, Skeleton, Modal, Input } from "@/components";
 
-import { CURRENCY_OPTIONS, LANGUAGE_OPTIONS, THEME_OPTIONS } from "@/static";
-
 import { formatSettingKey } from "@/utils";
 
 interface NotificationSettings {
@@ -93,20 +91,38 @@ export const Settings: React.FC = () => {
   const currentLocale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const { notifications, isLoading, updateNotification, isUpdatingNotification, exportData, isExporting, deleteAccount, isDeleting } = useSettings();
+  const { getAppSetting, userSettingsData, isLoadingUserSettings, updateNotification, isUpdatingNotification, exportData, isExporting, deleteAccount, isDeleting } = useSettings();
+
+  const currencyOptions = React.useMemo(() => {
+    const setting = getAppSetting("currency_options");
+    if (!setting || !Array.isArray(setting.value)) return [];
+    return setting.value as unknown as PreferenceItemProps["options"];
+  }, [getAppSetting]);
+
+  const themeOptions = React.useMemo(() => {
+    const setting = getAppSetting("theme_options");
+    if (!setting || !Array.isArray(setting.value)) return [];
+    return setting.value as unknown as PreferenceItemProps["options"];
+  }, [getAppSetting]);
+
+  const languageOptions = React.useMemo(() => {
+    const setting = getAppSetting("language_options");
+    if (!setting || !Array.isArray(setting.value)) return [];
+    return setting.value as unknown as PreferenceItemProps["options"];
+  }, [getAppSetting]);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState<boolean>(false);
   const [deleteConfirmText, setDeleteConfirmText] = React.useState<string>("");
 
   const enabledNotificationsCount = React.useMemo(() => {
-    if (!notifications) return 0;
-    return notifications.filter((n) => n.type === "boolean" && n.value === "true").length;
-  }, [notifications]);
+    if (!userSettingsData) return 0;
+    return userSettingsData.filter((n) => n.type === "boolean" && n.value === "true").length;
+  }, [userSettingsData]);
 
   const notificationsCount = React.useMemo(() => {
-    if (!notifications) return 0;
-    return notifications.filter((n) => n.type === "boolean").length;
-  }, [notifications]);
+    if (!userSettingsData) return 0;
+    return userSettingsData.filter((n) => n.type === "boolean").length;
+  }, [userSettingsData]);
 
   const handleToggleNotification = React.useCallback(
     (key: keyof NotificationSettings, value: boolean | string): void => {
@@ -126,10 +142,10 @@ export const Settings: React.FC = () => {
               type: "error",
             });
           },
-        }
+        },
       );
     },
-    [updateNotification, addToast, t]
+    [updateNotification, addToast, t],
   );
 
   const handleLanguageChange = React.useCallback(
@@ -137,7 +153,7 @@ export const Settings: React.FC = () => {
       router.replace(pathname, { locale: newLocale });
       handleToggleNotification("language", newLocale);
     },
-    [router, pathname, handleToggleNotification]
+    [router, pathname, handleToggleNotification],
   );
 
   const handleExportData = React.useCallback((): void => {
@@ -180,24 +196,24 @@ export const Settings: React.FC = () => {
   }, [deleteConfirmText, deleteAccount, addToast, t]);
 
   const handleQuickDisableAll = React.useCallback((): void => {
-    notifications?.filter((s) => s.type === "boolean").map((n) => handleToggleNotification(n.key as keyof NotificationSettings, false));
+    userSettingsData?.filter((s) => s.type === "boolean").map((n) => handleToggleNotification(n.key as keyof NotificationSettings, false));
 
     addToast({
       message: t("notifications.allDisabled"),
       type: "success",
     });
-  }, [notifications, handleToggleNotification, addToast, t]);
+  }, [userSettingsData, handleToggleNotification, addToast, t]);
 
   const handleQuickEnableAll = React.useCallback((): void => {
-    notifications?.filter((s) => s.type === "boolean").map((n) => handleToggleNotification(n.key as keyof NotificationSettings, true));
+    userSettingsData?.filter((s) => s.type === "boolean").map((n) => handleToggleNotification(n.key as keyof NotificationSettings, true));
 
     addToast({
       message: t("notifications.allEnabled"),
       type: "success",
     });
-  }, [notifications, handleToggleNotification, addToast, t]);
+  }, [userSettingsData, handleToggleNotification, addToast, t]);
 
-  if (isLoading) {
+  if (isLoadingUserSettings) {
     return <LoadingSkeleton />;
   }
 
@@ -234,8 +250,10 @@ export const Settings: React.FC = () => {
         <Card variant="elevated" className="bg-linier-to-br from-blue-500 to-blue-600">
           <CardContent className="pt-6">
             <div className="text-center text-primary-900">
-              <p className="mb-2 text-4xl">{notifications?.find((n) => n.key === "theme")?.value === "light" ? "☀️" : notifications?.find((n) => n.key === "theme")?.value === "dark" ? "🌙" : "🔄"}</p>
-              <p className="text-2xl font-bold capitalize">{notifications?.find((n) => n.key === "theme")?.value}</p>
+              <p className="mb-2 text-4xl">
+                {userSettingsData?.find((n) => n.key === "theme")?.value === "light" ? "☀️" : userSettingsData?.find((n) => n.key === "theme")?.value === "dark" ? "🌙" : "🔄"}
+              </p>
+              <p className="text-2xl font-bold capitalize">{userSettingsData?.find((n) => n.key === "theme")?.value}</p>
               <p className="mt-1 text-sm opacity-90">{t("stats.theme")}</p>
             </div>
           </CardContent>
@@ -261,8 +279,8 @@ export const Settings: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {notifications &&
-              notifications
+            {userSettingsData &&
+              userSettingsData
                 .filter((s) => s.type === "boolean")
                 .map((n) => (
                   <ToggleItem
@@ -291,8 +309,8 @@ export const Settings: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {notifications &&
-              notifications
+            {userSettingsData &&
+              userSettingsData
                 .filter((s) => s.type === "string")
                 .map((n) => (
                   <PreferenceItem
@@ -300,7 +318,7 @@ export const Settings: React.FC = () => {
                     icon={n.icon}
                     title={formatSettingKey(n.key)}
                     description={n.description || ""}
-                    options={n.key === "theme" ? THEME_OPTIONS : n.key === "language" ? LANGUAGE_OPTIONS : CURRENCY_OPTIONS}
+                    options={n.key === "theme" ? themeOptions : n.key === "language" ? languageOptions : currencyOptions}
                     value={n.key === "language" ? currentLocale : n.value}
                     onChange={(value) => {
                       if (n.key === "language") {

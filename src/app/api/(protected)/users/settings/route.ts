@@ -8,7 +8,9 @@ import { errorResponse, successResponse, validationErrorResponse } from "@/utils
 
 import z from "zod";
 
-import { bulkSettingsSchema, DEFAULT_SETTINGS } from "@/types";
+import { DEFAULT_SETTINGS } from "@/static";
+
+import { bulkSettingsSchema } from "@/types";
 
 export async function GET(req: NextRequest) {
   try {
@@ -22,26 +24,14 @@ export async function GET(req: NextRequest) {
     if (category) where.category = category;
     if (key) where.key = key;
 
-    let settings = await prisma.userSetting.findMany({
-      where,
-      orderBy: [{ category: "asc" }, { key: "asc" }],
-    });
+    let settings = await prisma.userSetting.findMany({ where, orderBy: [{ category: "asc" }, { key: "asc" }] });
 
     if (settings.length === 0 && !category && !key) {
-      const defaultSettings = DEFAULT_SETTINGS.map((setting) => ({
-        userId: user.id,
-        ...setting,
-      }));
+      const defaultSettings = DEFAULT_SETTINGS.map((setting) => ({ userId: user.id, ...setting }));
 
-      await prisma.userSetting.createMany({
-        data: defaultSettings,
-        skipDuplicates: true,
-      });
+      await prisma.userSetting.createMany({ data: defaultSettings, skipDuplicates: true });
 
-      settings = await prisma.userSetting.findMany({
-        where: { userId: user.id },
-        orderBy: [{ category: "asc" }, { key: "asc" }],
-      });
+      settings = await prisma.userSetting.findMany({ where: { userId: user.id }, orderBy: [{ category: "asc" }, { key: "asc" }] });
     }
 
     return successResponse(settings);

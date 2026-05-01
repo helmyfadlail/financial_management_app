@@ -41,6 +41,16 @@ export interface UserSetting {
   updatedAt: string;
 }
 
+export interface AppSetting {
+  id: string;
+  key: string;
+  value: string | string[] | number | boolean;
+  type: string;
+  category: string;
+  label: string;
+  description?: string | null;
+}
+
 export interface Transaction {
   id: string;
   userId: string;
