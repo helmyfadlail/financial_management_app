@@ -4,11 +4,9 @@ import { useEffect } from "react";
 
 import { useSession } from "next-auth/react";
 
-import Link from "next/link";
+import { useRouter as useRouterGlobal } from "next/navigation";
 
-import { useRouter } from "next/navigation";
-
-import { usePathname } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 import { useTranslations } from "next-intl";
 
@@ -22,6 +20,7 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
   const t = useTranslations("dashboard");
   const { data: session, status } = useSession();
   const { logout } = useAuth();
+  const routerGlobal = useRouterGlobal();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -37,9 +36,9 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
 
   useEffect(() => {
     if (status !== "loading" && !session) {
-      router.push("/login");
+      routerGlobal.push("/login");
     }
-  }, [status, session, router]);
+  }, [status, session, routerGlobal]);
 
   if (status === "loading") {
     return (
@@ -78,14 +77,14 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
             {navigation.map((item) => {
               const isActive = pathname === item.href;
               return (
-                <Link
+                <button
                   key={item.name}
-                  href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive ? "bg-primary text-white" : "text-primary-700 hover:bg-primary-50"}`}
+                  onClick={() => router.push(item.href)}
+                  className={`flex items-center w-full gap-3 px-4 py-3 rounded-lg transition-colors ${isActive ? "bg-primary text-white" : "text-primary-700 hover:bg-primary-50"}`}
                 >
                   <span className="text-xl">{item.icon}</span>
                   <span className="font-medium">{item.name}</span>
-                </Link>
+                </button>
               );
             })}
           </nav>

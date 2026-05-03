@@ -530,7 +530,7 @@ async function main() {
       category: "system",
       label: "Currency Locale Map",
       description: "Mapping of currency to locale for formatting",
-      isPublic: false,
+      isPublic: true,
     },
     {
       key: "zero_decimal_currencies",
@@ -539,7 +539,7 @@ async function main() {
       category: "system",
       label: "Zero Decimal Currencies",
       description: "Currencies that do not use decimal fractions",
-      isPublic: false,
+      isPublic: true,
     },
     // ── Feature flags ───────────────────────────
     {
@@ -578,6 +578,43 @@ async function main() {
       label: "Max Categories Per User",
       description: "Maximum number of custom categories a user can create",
       isPublic: false,
+    },
+    // ── Information ─────────────────────────────
+    {
+      key: "app_version",
+      value: "1.0.0",
+      type: "string",
+      category: "system",
+      label: "App Version",
+      description: "Current application version",
+      isPublic: true,
+    },
+    {
+      key: "app_last_updated",
+      value: "November 2025",
+      type: "string",
+      category: "system",
+      label: "Last Updated",
+      description: "Last application update date",
+      isPublic: true,
+    },
+    {
+      key: "app_build_number",
+      value: "2025.11.30",
+      type: "string",
+      category: "system",
+      label: "Build Number",
+      description: "Current application build number",
+      isPublic: true,
+    },
+    {
+      key: "app_environment",
+      value: "Production",
+      type: "string",
+      category: "system",
+      label: "Environment",
+      description: "Current application environment",
+      isPublic: true,
     },
   ] as const;
 

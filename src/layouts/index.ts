@@ -1,6 +1,5 @@
 export * from "./login";
 export * from "./register";
-export * from "./error";
 export * from "./dashboard";
 export * from "./home";
 export * from "./reset-password";

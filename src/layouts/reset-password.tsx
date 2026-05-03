@@ -19,7 +19,7 @@ export const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = React.useState<string>("");
   const [localError, setLocalError] = React.useState<string>("");
 
-  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleResetPassword = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
     setLocalError("");

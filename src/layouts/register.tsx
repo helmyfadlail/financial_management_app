@@ -17,7 +17,7 @@ export const Register = () => {
 
   const { register, isRegistering, registerError, loginWithGoogle } = useAuth();
 
-  const handleRegister = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleRegister = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
     setLocalError("");

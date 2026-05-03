@@ -16,7 +16,7 @@ export const ForgotPassword = () => {
 
   const { forgotPassword, isSendingForgotPassword, forgotPasswordError } = useAuth();
 
-  const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleForgotPassword = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
     setLocalError("");

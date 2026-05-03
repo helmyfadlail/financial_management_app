@@ -9,7 +9,7 @@ export default function NotFound() {
       <h1 className="text-6xl font-bold text-slate-800">404</h1>
       <h2 className="text-xl font-medium text-slate-600">{t("title")}</h2>
       <p className="text-slate-500">{t("description")}</p>
-      <Link href="/" className="mt-2 rounded-md bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600">
+      <Link href="/admin/dashboard" className="mt-2 rounded-md bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600">
         {t("homeButton")}
       </Link>
     </div>

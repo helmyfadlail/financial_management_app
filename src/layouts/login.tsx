@@ -18,7 +18,7 @@ export const Login = () => {
 
   const { loginWithGoogle } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
     if (isLoading) return;

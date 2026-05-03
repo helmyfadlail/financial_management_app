@@ -18,7 +18,7 @@ const spaceGrotesk = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Finance Tracker App",
+  title: "Finarthax",
   description:
     "Stay on top of your income, expenses, and budgets with a simple financial management app. " + "Easily monitor transactions, organize your finances, and export data for better money control.",
 };

@@ -91,7 +91,7 @@ export const Settings: React.FC = () => {
   const currentLocale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const { getAppSetting, userSettingsData, isLoadingUserSettings, updateNotification, isUpdatingNotification, exportData, isExporting, deleteAccount, isDeleting } = useSettings();
+  const { appSettingsData, getAppSetting, userSettingsData, isLoadingUserSettings, updateNotification, isUpdatingNotification, exportData, isExporting, deleteAccount, isDeleting } = useSettings();
 
   const currencyOptions = React.useMemo(() => {
     const setting = getAppSetting("currency_options");
@@ -378,22 +378,14 @@ export const Settings: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-2 border-b">
-              <span className="text-sm text-primary-600">{t("appInfo.version")}</span>
-              <span className="font-medium text-primary-900">1.0.0</span>
-            </div>
-            <div className="flex items-center justify-between py-2 border-b">
-              <span className="text-sm text-primary-600">{t("appInfo.lastUpdated")}</span>
-              <span className="font-medium text-primary-900">November 2025</span>
-            </div>
-            <div className="flex items-center justify-between py-2 border-b">
-              <span className="text-sm text-primary-600">{t("appInfo.buildNumber")}</span>
-              <span className="font-medium text-primary-900">2025.11.30</span>
-            </div>
-            <div className="flex items-center justify-between py-2">
-              <span className="text-sm text-primary-600">{t("appInfo.environment")}</span>
-              <span className="font-medium text-primary-900">{t("appInfo.production")}</span>
-            </div>
+            {appSettingsData
+              ?.filter((s) => s.type === "string")
+              .map((setting, key) => (
+                <div key={setting.label + key} className="flex items-center justify-between py-2 border-b">
+                  <span className="text-sm text-primary-600">{setting.label}</span>
+                  <span className="font-medium text-primary-900">{setting.value}</span>
+                </div>
+              ))}
 
             <div className="flex flex-wrap gap-4 pt-4 border-t">
               <a href="#" className="text-sm text-primary-600 hover:text-primary-900 hover:underline">

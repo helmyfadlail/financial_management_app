@@ -49,6 +49,9 @@ export interface AppSetting {
   category: string;
   label: string;
   description?: string | null;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Transaction {

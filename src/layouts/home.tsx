@@ -185,7 +185,7 @@ export const Home: React.FC = () => {
       <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
         <div className="text-center">
           <div className="mb-3 text-5xl sm:text-6xl">⚡</div>
-          <h1 className="text-3xl font-bold sm:text-4xl text-primary-900">Quick Transaction</h1>
+          <h1 className="text-3xl font-bold sm:text-4xl text-primary-900">Finarthax</h1>
           <p className="px-4 mt-2 text-base sm:text-lg text-primary-600">Record your transactions instantly, no login required</p>
         </div>
 

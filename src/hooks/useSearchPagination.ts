@@ -36,27 +36,15 @@ export const useSearchPagination = (options?: SearchPaginationOptions): SearchPa
   const router = useRouter();
   const pathname = usePathname();
 
-  const [searchQuery, setSearchQuery] = React.useState<string>("");
-  const [inputValue, setInputValue] = React.useState<string>("");
-  const [selectedType, setSelectedType] = React.useState<string>("");
-  const [selectedCategory, setSelectedCategory] = React.useState<string>("");
+  const currentSearchQuery = searchParams.get(searchParamName) || "";
+  const currentSelectedType = searchParams.get(typeParamName) || "";
+  const currentSelectedCategory = searchParams.get(categoryParamName) || "";
 
+  const [inputValue, setInputValue] = React.useState<string>(currentSearchQuery);
   const currentPage = Number(searchParams.get(pageParamName)) || defaultPage;
 
   // Debounce timer ref
   const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  // Initialize from URL params
-  React.useEffect(() => {
-    const queryFromUrl = searchParams.get(searchParamName) || "";
-    const typeFromUrl = searchParams.get(typeParamName) || "";
-    const categoryFromUrl = searchParams.get(categoryParamName) || "";
-
-    setSearchQuery(queryFromUrl);
-    setInputValue(queryFromUrl);
-    setSelectedType(typeFromUrl);
-    setSelectedCategory(categoryFromUrl);
-  }, [searchParams, searchParamName, typeParamName, categoryParamName]);
 
   const updateSearchParams = React.useCallback(
     (updates: Record<string, string>) => {
@@ -73,7 +61,7 @@ export const useSearchPagination = (options?: SearchPaginationOptions): SearchPa
       const newUrl = `${pathname}?${newParams.toString()}`;
       router.push(newUrl);
     },
-    [searchParams, pathname, router]
+    [searchParams, pathname, router],
   );
 
   const handleSearch = React.useCallback(() => {
@@ -81,7 +69,6 @@ export const useSearchPagination = (options?: SearchPaginationOptions): SearchPa
       [searchParamName]: inputValue,
       [pageParamName]: String(defaultPage),
     });
-    setSearchQuery(inputValue);
   }, [inputValue, defaultPage, searchParamName, pageParamName, updateSearchParams]);
 
   const handlePageChange = React.useCallback(
@@ -90,7 +77,7 @@ export const useSearchPagination = (options?: SearchPaginationOptions): SearchPa
         [pageParamName]: String(newPage),
       });
     },
-    [pageParamName, updateSearchParams]
+    [pageParamName, updateSearchParams],
   );
 
   const handleTypeChange = React.useCallback(
@@ -99,9 +86,8 @@ export const useSearchPagination = (options?: SearchPaginationOptions): SearchPa
         [typeParamName]: type,
         [pageParamName]: String(defaultPage),
       });
-      setSelectedType(type);
     },
-    [typeParamName, pageParamName, defaultPage, updateSearchParams]
+    [typeParamName, pageParamName, defaultPage, updateSearchParams],
   );
 
   const handleCategoryChange = React.useCallback(
@@ -110,16 +96,12 @@ export const useSearchPagination = (options?: SearchPaginationOptions): SearchPa
         [categoryParamName]: category,
         [pageParamName]: String(defaultPage),
       });
-      setSelectedCategory(category);
     },
-    [categoryParamName, pageParamName, defaultPage, updateSearchParams]
+    [categoryParamName, pageParamName, defaultPage, updateSearchParams],
   );
 
   const resetFilters = React.useCallback(() => {
     setInputValue("");
-    setSearchQuery("");
-    setSelectedType("");
-    setSelectedCategory("");
     router.push(pathname);
   }, [pathname, router]);
 
@@ -130,7 +112,7 @@ export const useSearchPagination = (options?: SearchPaginationOptions): SearchPa
     }
 
     debounceTimerRef.current = setTimeout(() => {
-      if (inputValue !== searchQuery) {
+      if (inputValue !== currentSearchQuery) {
         handleSearch();
       }
     }, debounceMs);
@@ -140,18 +122,18 @@ export const useSearchPagination = (options?: SearchPaginationOptions): SearchPa
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [inputValue, searchQuery, debounceMs, handleSearch]);
+  }, [inputValue, currentSearchQuery, debounceMs, handleSearch]);
 
   return {
-    searchQuery,
+    searchQuery: currentSearchQuery,
     inputValue,
     setInputValue,
     handleSearch,
     currentPage,
     handlePageChange,
-    selectedType,
+    selectedType: currentSelectedType,
     handleTypeChange,
-    selectedCategory,
+    selectedCategory: currentSelectedCategory,
     handleCategoryChange,
     resetFilters,
   };
