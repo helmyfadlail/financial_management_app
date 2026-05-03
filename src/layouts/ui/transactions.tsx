@@ -14,7 +14,7 @@ interface FormData {
   accountId: string;
   categoryId: string;
   amount: string;
-  type: "INCOME" | "EXPENSE";
+  type: "INCOME" | "EXPENSE" | "TRANSFER";
   description: string;
   date: string;
 }
@@ -33,6 +33,15 @@ interface TransactionItemProps {
 interface EmptyStateProps {
   onCreateClick: () => void;
 }
+
+const INITIAL_FORM_DATA: FormData = {
+  accountId: "",
+  categoryId: "",
+  amount: "",
+  type: "EXPENSE",
+  description: "",
+  date: new Date().toISOString().split("T")[0],
+};
 
 const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete, isDeleting }) => {
   const t = useTranslations("transactionsPage");
@@ -145,72 +154,44 @@ export const Transactions: React.FC = () => {
     limit: 20,
   });
 
-  const [formData, setFormData] = React.useState<FormData>({
-    accountId: "",
-    categoryId: "",
-    amount: "",
-    type: "EXPENSE",
-    description: "",
-    date: new Date().toISOString().split("T")[0],
-  });
+  const [formData, setFormData] = React.useState<FormData>(INITIAL_FORM_DATA);
 
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
   const [deleteId, setDeleteId] = React.useState<string | null>(null);
 
-  const defaultAccountId = React.useMemo(() => {
-    return accounts.find((c) => c.isDefault === true)?.id || "";
-  }, [accounts]);
+  const getFilteredCategories = React.useCallback((type: FormData["type"]) => categories.filter((c) => c.type === type), [categories]);
 
-  const defaultCategoryId = React.useMemo(() => {
-    return categories.find((c) => c.isDefault === true)?.id || "";
-  }, [categories]);
+  const getDefaultCategory = React.useCallback(
+    (type: FormData["type"]) => {
+      const filtered = getFilteredCategories(type);
+      return filtered.find((c) => c.isDefault) || filtered[0];
+    },
+    [getFilteredCategories],
+  );
 
   const categoryOptions = React.useMemo<SelectOption[]>(() => {
-    if (!categories || categories.length === 0) return [];
-    return categories.map((c) => ({
-      value: c.id,
-      label: `${c.icon} ${c.name}`,
-    }));
-  }, [categories]);
+    return getFilteredCategories(formData.type).map((c) => ({ value: c.id, label: `${c.icon} ${c.name}` }));
+  }, [formData.type, getFilteredCategories]);
 
   const accountOptions = React.useMemo<SelectOption[]>(() => {
-    if (!accounts || accounts.length === 0) return [];
-    return accounts.map((w) => ({
-      value: w.id,
-      label: `${w.icon} ${w.name}`,
-    }));
+    return accounts.map((a) => ({ value: a.id, label: `${a.icon} ${a.name}` }));
   }, [accounts]);
 
-  const filteredCategoryOptions = React.useMemo<SelectOption[]>(() => {
-    if (!categories || categories.length === 0) return [];
-    return categoryOptions.filter((c) => {
-      const category = categories.find((cat) => cat.id === c.value);
-      return category?.type === formData.type;
-    });
-  }, [categoryOptions, categories, formData.type]);
-
-  const resetForm = React.useCallback((): void => {
-    setFormData({
-      accountId: defaultAccountId,
-      categoryId: defaultCategoryId,
-      amount: "",
-      type: "EXPENSE",
-      description: "",
-      date: new Date().toISOString().split("T")[0],
-    });
-  }, [defaultAccountId, defaultCategoryId]);
+  const resetForm = (): void => {
+    setFormData(INITIAL_FORM_DATA);
+  };
 
   const openModal = React.useCallback((): void => {
     resetForm();
     setIsModalOpen(true);
-  }, [resetForm]);
+  }, []);
 
   const closeModal = React.useCallback((): void => {
     setIsModalOpen(false);
     resetForm();
-  }, [resetForm]);
+  }, []);
 
-  const handleCreate = React.useCallback(
+  const handleSubmitForm = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement>): void => {
       e.preventDefault();
 
@@ -274,17 +255,23 @@ export const Transactions: React.FC = () => {
     });
   }, [deleteId, deleteTransaction, addToast, t]);
 
-  const handleFormChange = React.useCallback((field: keyof FormData, value: string): void => {
-    setFormData((prev) => {
-      const updated = { ...prev, [field]: value };
+  const handleChangeForm = React.useCallback(
+    (field: keyof FormData, value: string): void => {
+      setFormData((prev) => {
+        const updated = { ...prev, [field]: value };
 
-      if (field === "type") {
-        updated.categoryId = "";
-      }
+        if (field === "type") {
+          const defaultCategory = getDefaultCategory(value as FormData["type"]);
+          if (defaultCategory) {
+            updated.categoryId = defaultCategory.id;
+          }
+        }
 
-      return updated;
-    });
-  }, []);
+        return updated;
+      });
+    },
+    [getDefaultCategory],
+  );
 
   const hasActiveFilters = React.useMemo(() => selectedType || selectedCategory || searchQuery, [selectedType, selectedCategory, searchQuery]);
 
@@ -416,7 +403,7 @@ export const Transactions: React.FC = () => {
                 { value: "INCOME", label: `💰 ${t("income")}` },
               ]}
               value={formData.type}
-              onChange={(e) => handleFormChange("type", e.target.value)}
+              onChange={(e) => handleChangeForm("type", e.target.value)}
             />
 
             <Input
@@ -424,7 +411,7 @@ export const Transactions: React.FC = () => {
               label={`${t("modal.amount")} *`}
               placeholder={t("modal.amountPlaceholder")}
               value={formData.amount}
-              onChange={(e) => handleFormChange("amount", e.target.value)}
+              onChange={(e) => handleChangeForm("amount", e.target.value)}
               icon={<span className="text-primary-600">Rp</span>}
               min="1"
               step="1000"
@@ -433,19 +420,31 @@ export const Transactions: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Select label={`${t("modal.account")} *`} options={accountOptions} value={formData.accountId} onChange={(e) => handleFormChange("accountId", e.target.value)} required />
+            <Select
+              label={`${t("modal.account")} *`}
+              options={[{ value: "", label: t("modal.selected", { type: t("modal.account") }) }, ...accountOptions]}
+              value={formData.accountId}
+              onChange={(e) => handleChangeForm("accountId", e.target.value)}
+              required
+            />
 
-            <Select label={`${t("modal.category")} *`} options={filteredCategoryOptions} value={formData.categoryId} onChange={(e) => handleFormChange("categoryId", e.target.value)} required />
+            <Select
+              label={`${t("modal.category")} *`}
+              options={[{ value: "", label: t("modal.selected", { type: t("modal.category") }) }, ...categoryOptions]}
+              value={formData.categoryId}
+              onChange={(e) => handleChangeForm("categoryId", e.target.value)}
+              required
+            />
           </div>
 
-          <Input type="date" label={`${t("modal.date")} *`} value={formData.date} onChange={(e) => handleFormChange("date", e.target.value)} max={new Date().toISOString().split("T")[0]} required />
+          <Input type="date" label={`${t("modal.date")} *`} value={formData.date} onChange={(e) => handleChangeForm("date", e.target.value)} max={new Date().toISOString().split("T")[0]} required />
 
           <Input
             type="text"
             label={`${t("modal.description")} *`}
             placeholder={t("modal.descriptionPlaceholder")}
             value={formData.description}
-            onChange={(e) => handleFormChange("description", e.target.value)}
+            onChange={(e) => handleChangeForm("description", e.target.value)}
             maxLength={200}
             required
           />
@@ -480,7 +479,7 @@ export const Transactions: React.FC = () => {
             <Button type="button" variant="ghost" onClick={closeModal} disabled={isCreating}>
               {t("modal.cancel")}
             </Button>
-            <Button onClick={handleCreate} variant="primary" isLoading={isCreating}>
+            <Button onClick={handleSubmitForm} variant="primary" isLoading={isCreating}>
               {t("modal.create")}
             </Button>
           </div>

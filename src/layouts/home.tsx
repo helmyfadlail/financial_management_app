@@ -24,6 +24,32 @@ const INITIAL_FORM_DATA: FormData = {
   accountId: "",
 };
 
+const validateEmail = (email: string): string | null => {
+  if (!email.trim()) {
+    return "Please enter your email address";
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "Please enter a valid email address";
+  }
+  return null;
+};
+
+const validateForm = (formData: FormData): string | null => {
+  if (!formData.amount || parseFloat(formData.amount) <= 0) {
+    return "Please enter a valid amount greater than 0";
+  }
+  if (!formData.categoryId) {
+    return "Please select a category";
+  }
+  if (!formData.accountId) {
+    return "Please select an account";
+  }
+  if (!formData.description.trim()) {
+    return "Please add a description";
+  }
+  return null;
+};
+
 export const Home: React.FC = () => {
   const { addToast } = useToast();
   const { format } = useCurrency();
@@ -39,8 +65,6 @@ export const Home: React.FC = () => {
 
   const [formData, setFormData] = React.useState<FormData>(INITIAL_FORM_DATA);
 
-  const [transactionType, setTransactionType] = React.useState<FormData["type"]>("EXPENSE");
-
   const getFilteredCategories = React.useCallback((type: FormData["type"]) => categories.filter((c) => c.type === type), [categories]);
 
   const getDefaultCategory = React.useCallback(
@@ -52,40 +76,14 @@ export const Home: React.FC = () => {
   );
 
   const categoryOptions = React.useMemo(() => {
-    return getFilteredCategories(transactionType).map((c) => ({ value: c.id, label: `${c.icon} ${c.name}` }));
-  }, [transactionType, getFilteredCategories]);
+    return [{ value: "", label: "Select Category..." }, ...getFilteredCategories(formData.type).map((c) => ({ value: c.id, label: `${c.icon} ${c.name}` }))];
+  }, [formData.type, getFilteredCategories]);
 
   const accountOptions = React.useMemo(() => {
-    return accounts.map((a) => ({ value: a.id, label: `${a.icon} ${a.name}` }));
+    return [{ value: "", label: "Select Account..." }, ...accounts.map((a) => ({ value: a.id, label: `${a.icon} ${a.name}` }))];
   }, [accounts]);
 
-  const validateEmail = (email: string): string | null => {
-    if (!email.trim()) {
-      return "Please enter your email address";
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return "Please enter a valid email address";
-    }
-    return null;
-  };
-
-  const validateForm = (): string | null => {
-    if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      return "Please enter a valid amount greater than 0";
-    }
-    if (!formData.categoryId) {
-      return "Please select a category";
-    }
-    if (!formData.accountId) {
-      return "Please select an account";
-    }
-    if (!formData.description.trim()) {
-      return "Please add a description";
-    }
-    return null;
-  };
-
-  const handleEmailSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmitEmail = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     const validationError = validateEmail(email);
@@ -108,25 +106,26 @@ export const Home: React.FC = () => {
     });
   };
 
-  const handleFieldChange = (field: keyof FormData, value: string) => {
-    setFormData((prev) => {
-      const updated = { ...prev, [field]: value };
+  const handleChangeForm = React.useCallback(
+    (field: keyof FormData, value: string) => {
+      setFormData((prev) => {
+        const updated = { ...prev, [field]: value };
 
-      if (field === "type") {
-        const defaultCategory = getDefaultCategory(value as FormData["type"]);
-        if (defaultCategory) {
-          updated.categoryId = defaultCategory.id;
+        if (field === "type") {
+          const defaultCategory = getDefaultCategory(value as FormData["type"]);
+          if (defaultCategory) {
+            updated.categoryId = defaultCategory.id;
+          }
         }
-      }
 
-      return updated;
-    });
+        return updated;
+      });
+    },
+    [getDefaultCategory],
+  );
 
-    if (field === "type") setTransactionType(value as FormData["type"]);
-  };
-
-  const handleTransactionSubmit = () => {
-    const validationError = validateForm();
+  const handleSubmitForm = () => {
+    const validationError = validateForm(formData);
     if (validationError) {
       addToast({ message: validationError, type: "error" });
       return;
@@ -212,7 +211,7 @@ export const Home: React.FC = () => {
             {!emailVerified && (
               <div className="space-y-4">
                 <Input type="email" label="Email Address *" placeholder="your.email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={isSearchingEmail} />
-                <Button variant="primary" className="w-full" size="lg" isLoading={isSearchingEmail} onClick={handleEmailSubmit}>
+                <Button variant="primary" className="w-full" size="lg" isLoading={isSearchingEmail} onClick={handleSubmitEmail}>
                   {isSearchingEmail ? "Verifying..." : "Verify Email"}
                 </Button>
               </div>
@@ -246,10 +245,9 @@ export const Home: React.FC = () => {
                       options={[
                         { value: "EXPENSE", label: "💳 Expense" },
                         { value: "INCOME", label: "💰 Income" },
-                        { value: "TRANSFER", label: "🔄 Transfer" },
                       ]}
                       value={formData.type}
-                      onChange={(e) => handleFieldChange("type", e.target.value)}
+                      onChange={(e) => handleChangeForm("type", e.target.value)}
                     />
 
                     <Input
@@ -257,24 +255,24 @@ export const Home: React.FC = () => {
                       label="Amount *"
                       placeholder="Enter amount"
                       value={formData.amount}
-                      onChange={(e) => handleFieldChange("amount", e.target.value)}
+                      onChange={(e) => handleChangeForm("amount", e.target.value)}
                       icon={<span className="text-primary-600">Rp</span>}
                       required
                     />
                   </div>
 
-                  <Select label="Account *" options={accountOptions} value={formData.accountId} onChange={(e) => handleFieldChange("accountId", e.target.value)} required />
+                  <Select label="Account *" options={accountOptions} value={formData.accountId} onChange={(e) => handleChangeForm("accountId", e.target.value)} required />
 
-                  <Select label="Category *" options={categoryOptions} value={formData.categoryId} onChange={(e) => handleFieldChange("categoryId", e.target.value)} required />
+                  <Select label="Category *" options={categoryOptions} value={formData.categoryId} onChange={(e) => handleChangeForm("categoryId", e.target.value)} required />
 
-                  <Input type="date" label="Date *" value={formData.date} onChange={(e) => handleFieldChange("date", e.target.value)} max={new Date().toISOString().split("T")[0]} required />
+                  <Input type="date" label="Date *" value={formData.date} onChange={(e) => handleChangeForm("date", e.target.value)} max={new Date().toISOString().split("T")[0]} required />
 
                   <Input
                     type="text"
                     label="Description *"
                     placeholder="e.g., Lunch at restaurant, Salary payment"
                     value={formData.description}
-                    onChange={(e) => handleFieldChange("description", e.target.value)}
+                    onChange={(e) => handleChangeForm("description", e.target.value)}
                     maxLength={200}
                     required
                   />
@@ -307,7 +305,7 @@ export const Home: React.FC = () => {
                     </div>
                   )}
 
-                  <Button onClick={handleTransactionSubmit} variant="primary" className="w-full" size="lg" isLoading={isCreating}>
+                  <Button onClick={handleSubmitForm} variant="primary" className="w-full" size="lg" isLoading={isCreating}>
                     ⚡ Record Transaction
                   </Button>
                 </div>

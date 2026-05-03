@@ -109,6 +109,7 @@
       "type": "Type",
       "amount": "Amount",
       "amountPlaceholder": "Enter amount",
+      "selected": "Select {type} ...",
       "account": "Account",
       "category": "Category",
       "categoryLabel": "Category",
@@ -711,5 +712,10 @@
       "updateFailed": "Failed to update setting",
       "deleteFailed": "Failed to delete account"
     }
+  },
+  "notFoundPage": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "homeButton": "Go to Dashboard"
   }
 }

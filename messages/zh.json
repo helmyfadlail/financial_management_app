@@ -109,6 +109,7 @@
       "type": "类型",
       "amount": "金额",
       "amountPlaceholder": "输入金额",
+      "selected": "选择 {type} ...",
       "account": "账户",
       "category": "类别",
       "categoryLabel": "类别",
@@ -711,5 +712,10 @@
       "updateFailed": "更新设置失败",
       "deleteFailed": "删除账户失败"
     }
+  },
+  "notFoundPage": {
+    "title": "页面未找到",
+    "description": "您访问的页面不存在或已被移动。",
+    "homeButton": "返回仪表板"
   }
 }

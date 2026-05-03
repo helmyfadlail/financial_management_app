@@ -4,21 +4,24 @@ import { NextRequest, NextResponse } from "next/server";
 
 const intlMiddleware = createMiddleware(routing);
 
+const BYPASS_ROUTES = new Set(["/", "/login", "/register", "/forgot-password", "/reset-password", "/reset-password/success"]);
+
+const hasLocalePrefix = (pathname: string): boolean => routing.locales.some((locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`));
+
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Allow these routes to bypass locale handling
-  if (pathname === "/" || pathname === "/login" || pathname === "/register" || pathname === "/forgot-password" || pathname === "/reset-password" || pathname === "/reset-password/success") {
+  if (BYPASS_ROUTES.has(pathname)) {
     return NextResponse.next();
   }
 
-  // Apply next-intl middleware for all other routes
+  if (!hasLocalePrefix(pathname)) {
+    return NextResponse.next();
+  }
+
   return intlMiddleware(req);
 }
 
 export const config = {
-  // Match all pathnames except for
-  // - … if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
-  // - … the ones containing a dot (e.g. `favicon.ico`)
   matcher: ["/((?!api|trpc|_next|_vercel|.*\\..*).*)", "/"],
 };

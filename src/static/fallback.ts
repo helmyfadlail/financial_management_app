@@ -84,6 +84,7 @@ export const CURRENCY_OPTIONS = [
 export const LANGUAGE_OPTIONS = [
   { value: "en", label: "🇺🇸 English" },
   { value: "id", label: "🇮🇩 Indonesia" },
+  { value: "zh", label: "🇨🇳 Chinese" },
 ];
 
 export const THEME_OPTIONS = [

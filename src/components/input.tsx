@@ -5,10 +5,11 @@ import { cn } from "@/utils";
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  minusNumber?: React.ReactNode;
   icon?: React.ReactNode;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(({ className, label, error, icon, type = "text", onWheel, onKeyDown, ...props }, ref) => {
+const Input = forwardRef<HTMLInputElement, InputProps>(({ className, label, error, icon, minusNumber, type = "text", onWheel, onKeyDown, ...props }, ref) => {
   const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => {
     if (type === "number") {
       e.currentTarget.blur();
@@ -37,6 +38,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ className, label, erro
       {label && <label className="block text-sm font-medium text-primary-700 mb-1.5">{label}</label>}
       <div className="relative">
         {icon && <div className="absolute -translate-y-1/2 left-3 top-1/2 text-primary-400">{icon}</div>}
+        {minusNumber && <div className="absolute -translate-y-1/2 left-9 top-1/2 text-primary-400">{minusNumber}</div>}
         <input
           type={type}
           ref={ref}
@@ -49,8 +51,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ className, label, erro
             "disabled:bg-neutral-100 disabled:cursor-not-allowed",
             error && "border-red-500 focus:border-red-500 focus:ring-red-200",
             icon && "pl-10",
+            minusNumber && "pl-11",
             type === "number" && "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-            className
+            className,
           )}
           {...props}
         />

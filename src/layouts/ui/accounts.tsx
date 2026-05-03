@@ -70,8 +70,9 @@ const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit, onDelete }) 
         </Badge>
 
         <div className="mb-4">
-          <p className={`text-3xl font-bold ${isNegative ? "text-red-600" : "text-primary-900"}`}>{format(Math.abs(balance))}</p>
-          {isNegative && <p className="mt-1 text-xs text-red-600">⚠️ {t("negativeBalance")}</p>}
+          <p className={`text-3xl font-bold ${isNegative || account.type === "CREDIT_CARD" ? "text-red-600" : "text-primary-900"}`}>
+            {format(isNegative || account.type === "CREDIT_CARD" ? -Math.abs(balance) : Math.abs(balance))}
+          </p>
         </div>
 
         <div className="flex gap-2">
@@ -132,10 +133,13 @@ export const Accounts: React.FC = () => {
     const positiveBalance = accounts.filter((acc) => Number(acc.balance) > 0).reduce((sum, acc) => sum + Number(acc.balance), 0);
     const negativeBalance = accounts.filter((acc) => Number(acc.balance) < 0).reduce((sum, acc) => sum + Number(acc.balance), 0);
 
-    const accountsByType = accounts.reduce((acc, account) => {
-      acc[account.type] = (acc[account.type] || 0) + 1;
-      return acc;
-    }, {} as Record<Account["type"], number>);
+    const accountsByType = accounts.reduce(
+      (acc, account) => {
+        acc[account.type] = (acc[account.type] || 0) + 1;
+        return acc;
+      },
+      {} as Record<Account["type"], number>,
+    );
 
     return {
       total: accounts.length,
@@ -228,10 +232,10 @@ export const Accounts: React.FC = () => {
           onError: (error: Error) => {
             addToast({ message: error.message || t("error.create"), type: "error" });
           },
-        }
+        },
       );
     },
-    [formData, accounts, createAccount, addToast, closeCreateModal, t]
+    [formData, accounts, createAccount, addToast, closeCreateModal, t],
   );
 
   const handleUpdate = React.useCallback(
@@ -274,10 +278,10 @@ export const Accounts: React.FC = () => {
           onError: (error: Error) => {
             addToast({ message: error.message || t("error.update"), type: "error" });
           },
-        }
+        },
       );
     },
-    [selectedAccount, formData, accounts, updateAccount, addToast, closeUpdateModal, t]
+    [selectedAccount, formData, accounts, updateAccount, addToast, closeUpdateModal, t],
   );
 
   const handleDeleteClick = React.useCallback((id: string): void => {
@@ -322,7 +326,7 @@ export const Accounts: React.FC = () => {
         value,
         label: `${config.icon} ${t(`types.${value.toLowerCase()}`)}`,
       })),
-    [t]
+    [t],
   );
 
   return (
@@ -430,6 +434,7 @@ export const Accounts: React.FC = () => {
             value={formData.balance}
             onChange={(e) => handleFormChange("balance", e.target.value)}
             icon={<span className="text-primary-600">Rp</span>}
+            minusNumber={formData.type === "CREDIT_CARD" ? <span className="text-primary-600">-</span> : undefined}
             step="1000"
             required
           />
@@ -534,6 +539,7 @@ export const Accounts: React.FC = () => {
             value={formData.balance}
             onChange={(e) => handleFormChange("balance", e.target.value)}
             icon={<span className="text-primary-600">Rp</span>}
+            minusNumber={formData.type === "CREDIT_CARD" ? <span className="text-primary-600">-</span> : undefined}
             step="1000"
             required
           />

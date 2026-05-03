@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 
+import { createId } from "@paralleldrive/cuid2";
+
 import { cn } from "@/utils";
 
 interface Toast {
@@ -23,7 +25,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = (toast: Omit<Toast, "id">) => {
-    const id = crypto.randomUUID();
+    const id = createId();
     const newToast = { ...toast, id };
     setToasts((prev) => [...prev, newToast]);
 

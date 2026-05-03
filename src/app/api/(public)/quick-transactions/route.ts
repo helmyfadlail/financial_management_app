@@ -65,21 +65,49 @@ export async function POST(req: NextRequest) {
 
     if (!user) return errorResponse("User not found. Please create an account first", 404);
 
-    const quickTransaction = await prisma.transaction.create({
-      data: {
-        userId: user.id,
-        accountId: data.accountId,
-        categoryId: data.categoryId,
-        amount: data.amount,
-        type: data.type,
-        description: data.description,
-        date: new Date(data.date),
-        attachment: data.attachment,
-      },
-      include: {
-        category: true,
-        account: true,
-      },
+    const quickTransaction = await prisma.$transaction(async (tx) => {
+      const newTransaction = await tx.transaction.create({
+        data: {
+          userId: user.id,
+          accountId: data.accountId,
+          categoryId: data.categoryId,
+          amount: data.amount,
+          type: data.type,
+          description: data.description,
+          date: new Date(data.date),
+          attachment: data.attachment,
+        },
+        include: {
+          category: true,
+          account: true,
+        },
+      });
+
+      const balanceChange = data.type === "INCOME" ? data.amount : -data.amount;
+      await tx.account.update({
+        where: { id: data.accountId },
+        data: { balance: { increment: balanceChange } },
+      });
+
+      if (data.type === "EXPENSE") {
+        const transactionDate = new Date(data.date);
+        const month = transactionDate.getMonth() + 1;
+        const year = transactionDate.getFullYear();
+
+        await tx.budget.updateMany({
+          where: {
+            userId: user.id,
+            categoryId: data.categoryId,
+            month,
+            year,
+          },
+          data: {
+            spent: { increment: data.amount },
+          },
+        });
+      }
+
+      return newTransaction;
     });
 
     return successResponse(quickTransaction, "Quick transaction created successfully");

@@ -1,4 +1,4 @@
-interface PasswordStrength {
+type PasswordStrength = {
   strength: "weak" | "medium" | "strong";
   percentage: number;
   color: string;
@@ -10,7 +10,7 @@ interface PasswordStrength {
     number: boolean;
     special: boolean;
   };
-}
+};
 
 export const calculatePasswordStrength = (password: string): PasswordStrength => {
   const checks = {

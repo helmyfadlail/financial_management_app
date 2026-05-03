@@ -21,12 +21,12 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({ parentClassName, cl
           "transition-all duration-200 cursor-pointer",
           "disabled:bg-neutral-100 disabled:cursor-not-allowed",
           error && "border-red-500 focus:border-red-500 focus:ring-red-200",
-          className
+          className,
         )}
         {...props}
       >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
+        {options.map((option, key) => (
+          <option key={option.label + option.value + key} value={option.value}>
             {option.label}
           </option>
         ))}

@@ -109,6 +109,7 @@
       "type": "Tipe",
       "amount": "Jumlah",
       "amountPlaceholder": "Masukkan jumlah",
+      "selected": "Pilih {type} ...",
       "account": "Akun",
       "category": "Kategori",
       "categoryLabel": "Kategori",
@@ -711,5 +712,10 @@
       "updateFailed": "Gagal memperbarui pengaturan",
       "deleteFailed": "Gagal menghapus akun"
     }
+  },
+  "notFoundPage": {
+    "title": "Halaman Tidak Ditemukan",
+    "description": "Halaman yang Anda cari tidak ada atau telah dipindahkan.",
+    "homeButton": "Kembali ke Dasbor"
   }
 }

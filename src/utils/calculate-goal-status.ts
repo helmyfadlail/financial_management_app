@@ -1,12 +1,12 @@
 import type { Goal } from "@/types";
 
-interface GoalStatus {
+type GoalStatus = {
   percentage: number;
   isCompleted: boolean;
   daysLeft: number | null;
   isOverdue: boolean;
   isUrgent: boolean;
-}
+};
 
 export const calculateGoalStatus = (goal: Goal): GoalStatus => {
   const current = Number(goal.currentAmount);
