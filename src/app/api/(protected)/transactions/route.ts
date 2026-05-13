@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 
-import { prisma, requireAuth } from "@/lib";
+import { applyBalanceChange, applyBudgetChange, prisma, requireAuth, TRANSACTION_INCLUDE, validateAccount, validateCategory } from "@/lib";
 
 import { Prisma } from "prisma-client/client";
 
@@ -95,59 +95,52 @@ export async function POST(req: NextRequest) {
 
     const data = validation.data;
 
-    const account = await prisma.account.findFirst({ where: { id: data.accountId, userId: user.id } });
+    const { error: accountError } = await validateAccount(user.id, data.accountId, "toAccountId" in data ? data.toAccountId : undefined);
+    if (accountError) return errorResponse(accountError, 404);
 
-    if (!account) return errorResponse("Account not found", 404);
-
-    const category = await prisma.category.findFirst({
-      where: { id: data.categoryId, OR: [{ userId: user.id }, { isDefault: true }] },
-    });
-
-    if (!category) return errorResponse("Category not found", 404);
+    const { error: categoryError } = await validateCategory(user.id, "categoryId" in data ? data.categoryId : undefined);
+    if (categoryError) return errorResponse(categoryError, 404);
 
     const transaction = await prisma.$transaction(async (tx) => {
-      const newTransaction = await tx.transaction.create({
+      const created = await tx.transaction.create({
         data: {
           userId: user.id,
           accountId: data.accountId,
-          categoryId: data.categoryId,
+          toAccountId: "toAccountId" in data ? (data.toAccountId ?? null) : null,
+          categoryId: "categoryId" in data ? (data.categoryId ?? null) : null,
           amount: data.amount,
           type: data.type,
           description: data.description,
           date: new Date(data.date),
           attachment: data.attachment,
         },
-        include: {
-          category: true,
-          account: true,
+        include: TRANSACTION_INCLUDE,
+      });
+
+      await applyBalanceChange(
+        tx,
+        {
+          type: data.type,
+          accountId: data.accountId,
+          toAccountId: "toAccountId" in data ? data.toAccountId : null,
+          amount: data.amount,
         },
-      });
+        "apply",
+      );
 
-      const balanceChange = data.type === "INCOME" ? data.amount : -data.amount;
-      await tx.account.update({
-        where: { id: data.accountId },
-        data: { balance: { increment: balanceChange } },
-      });
+      await applyBudgetChange(
+        tx,
+        user.id,
+        {
+          type: data.type,
+          categoryId: "categoryId" in data ? data.categoryId : null,
+          amount: data.amount,
+          date: data.date,
+        },
+        "apply",
+      );
 
-      if (data.type === "EXPENSE") {
-        const transactionDate = new Date(data.date);
-        const month = transactionDate.getMonth() + 1;
-        const year = transactionDate.getFullYear();
-
-        await tx.budget.updateMany({
-          where: {
-            userId: user.id,
-            categoryId: data.categoryId,
-            month,
-            year,
-          },
-          data: {
-            spent: { increment: data.amount },
-          },
-        });
-      }
-
-      return newTransaction;
+      return created;
     });
 
     return successResponse(transaction, "Transaction created successfully");

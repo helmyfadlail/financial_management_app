@@ -342,7 +342,7 @@ export const Accounts: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card variant="elevated" className="bg-linier-to-br from-primary-500 to-primary-600">
+        <Card variant="elevated" className="bg-linear-to-br from-primary-500 to-primary-600">
           <CardContent className="pt-6">
             <div className="text-center text-primary-900">
               <p className="mb-2 text-sm opacity-90">💰 {t("summary.totalBalance")}</p>
@@ -481,7 +481,7 @@ export const Accounts: React.FC = () => {
             </label>
           </div>
 
-          <div className="p-4 border rounded-lg bg-linier-to-br from-primary-50 to-neutral border-primary-200">
+          <div className="p-4 border rounded-lg bg-linear-to-br from-primary-50 to-neutral border-primary-200">
             <p className="mb-3 text-sm font-medium text-primary-700">{t("modal.preview")}:</p>
             <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
               <div className="flex items-center justify-center w-12 h-12 text-2xl rounded-xl" style={{ backgroundColor: formData.color + "20" }}>

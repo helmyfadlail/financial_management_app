@@ -1,16 +1,21 @@
 "use client";
 
 import * as React from "react";
+
 import { useRouter } from "next/navigation";
+
 import { useQuickTransactions } from "@/hooks";
-import { Card, CardContent, Button, Input, Select, Badge, useToast, useCurrency } from "@/components";
-import type { Account, Category } from "@/types";
+
+import { Card, CardContent, Button, Input, Select, Badge, useToast } from "@/components";
+
+import type { Account, Category, TransactionType } from "@/types";
 
 interface FormData {
   categoryId: string;
   accountId: string;
+  toAccountId: string;
   amount: string;
-  type: "INCOME" | "EXPENSE" | "TRANSFER";
+  type: TransactionType;
   description: string;
   date: string;
 }
@@ -22,73 +27,91 @@ const INITIAL_FORM_DATA: FormData = {
   date: new Date().toISOString().split("T")[0],
   categoryId: "",
   accountId: "",
+  toAccountId: "",
+};
+
+const TYPE_CONFIG: Record<
+  TransactionType,
+  {
+    bg: string;
+    text: string;
+    badge: "success" | "error" | "info";
+    prefix: string;
+    icon: string;
+  }
+> = {
+  INCOME: { bg: "bg-green-50", text: "text-green-600", badge: "success", prefix: "+", icon: "💰" },
+  EXPENSE: { bg: "bg-red-50", text: "text-red-600", badge: "error", prefix: "-", icon: "💳" },
+  TRANSFER: { bg: "bg-blue-50", text: "text-blue-600", badge: "info", prefix: "⇄", icon: "🔄" },
 };
 
 const validateEmail = (email: string): string | null => {
-  if (!email.trim()) {
-    return "Please enter your email address";
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return "Please enter a valid email address";
-  }
+  if (!email.trim()) return "Please enter your email address";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Please enter a valid email address";
   return null;
 };
 
 const validateForm = (formData: FormData): string | null => {
-  if (!formData.amount || parseFloat(formData.amount) <= 0) {
-    return "Please enter a valid amount greater than 0";
+  if (!formData.amount || parseFloat(formData.amount) <= 0) return "Please enter a valid amount greater than 0";
+  if (!formData.accountId) return "Please select an account";
+  if (formData.type === "TRANSFER") {
+    if (formData.toAccountId && formData.toAccountId === formData.accountId) return "Source and destination accounts must be different";
+  } else {
+    if (!formData.categoryId) return "Please select a category";
   }
-  if (!formData.categoryId) {
-    return "Please select a category";
-  }
-  if (!formData.accountId) {
-    return "Please select an account";
-  }
-  if (!formData.description.trim()) {
-    return "Please add a description";
-  }
+  if (!formData.description.trim()) return "Please add a description";
   return null;
 };
 
 export const Home: React.FC = () => {
   const { addToast } = useToast();
-  const { format } = useCurrency();
-
   const router = useRouter();
+
   const { createTransaction, searchEmail, isCreating, isSearchingEmail } = useQuickTransactions();
 
-  const [email, setEmail] = React.useState<string>("");
-  const [emailVerified, setEmailVerified] = React.useState<boolean>(false);
-
+  const [email, setEmail] = React.useState("");
+  const [emailVerified, setEmailVerified] = React.useState(false);
   const [accounts, setAccounts] = React.useState<Account[]>([]);
   const [categories, setCategories] = React.useState<Category[]>([]);
-
   const [formData, setFormData] = React.useState<FormData>(INITIAL_FORM_DATA);
 
-  const getFilteredCategories = React.useCallback((type: FormData["type"]) => categories.filter((c) => c.type === type), [categories]);
+  // ── Derived options ───────────────────────────────────────────────────────
+
+  const getFilteredCategories = React.useCallback(
+    (type: TransactionType) => {
+      if (type === "TRANSFER") return [];
+      return categories.filter((c) => c.type === type);
+    },
+    [categories],
+  );
 
   const getDefaultCategory = React.useCallback(
-    (type: FormData["type"]) => {
+    (type: TransactionType) => {
       const filtered = getFilteredCategories(type);
-      return filtered.find((c) => c.isDefault) || filtered[0];
+      return filtered.find((c) => c.isDefault) ?? filtered[0] ?? null;
     },
     [getFilteredCategories],
   );
 
-  const categoryOptions = React.useMemo(() => {
-    return [{ value: "", label: "Select Category..." }, ...getFilteredCategories(formData.type).map((c) => ({ value: c.id, label: `${c.icon} ${c.name}` }))];
-  }, [formData.type, getFilteredCategories]);
+  const categoryOptions = React.useMemo(
+    () => [{ value: "", label: "Select Category..." }, ...getFilteredCategories(formData.type).map((c) => ({ value: c.id, label: `${c.icon} ${c.name}` }))],
+    [formData.type, getFilteredCategories],
+  );
 
-  const accountOptions = React.useMemo(() => {
-    return [{ value: "", label: "Select Account..." }, ...accounts.map((a) => ({ value: a.id, label: `${a.icon} ${a.name}` }))];
-  }, [accounts]);
+  const accountOptions = React.useMemo(() => [{ value: "", label: "Select Account..." }, ...accounts.map((a) => ({ value: a.id, label: `${a.icon} ${a.name}` }))], [accounts]);
+
+  const toAccountOptions = React.useMemo(
+    () => [{ value: "", label: "No destination (withdrawal only)" }, ...accounts.filter((a) => a.id !== formData.accountId).map((a) => ({ value: a.id, label: `${a.icon} ${a.name}` }))],
+    [accounts, formData.accountId],
+  );
+
+  const resetForm = React.useCallback(() => setFormData(INITIAL_FORM_DATA), []);
 
   const handleSubmitEmail = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
-    const validationError = validateEmail(email);
-    if (validationError) {
-      addToast({ message: validationError, type: "error" });
+    const error = validateEmail(email);
+    if (error) {
+      addToast({ message: error, type: "error" });
       return;
     }
 
@@ -110,14 +133,12 @@ export const Home: React.FC = () => {
     (field: keyof FormData, value: string) => {
       setFormData((prev) => {
         const updated = { ...prev, [field]: value };
-
         if (field === "type") {
-          const defaultCategory = getDefaultCategory(value as FormData["type"]);
-          if (defaultCategory) {
-            updated.categoryId = defaultCategory.id;
-          }
+          const newType = value as TransactionType;
+          updated.toAccountId = "";
+          updated.categoryId = newType === "TRANSFER" ? "" : (getDefaultCategory(newType)?.id ?? "");
         }
-
+        if (field === "accountId" && updated.toAccountId === value) updated.toAccountId = "";
         return updated;
       });
     },
@@ -125,77 +146,74 @@ export const Home: React.FC = () => {
   );
 
   const handleSubmitForm = () => {
-    const validationError = validateForm(formData);
-    if (validationError) {
-      addToast({ message: validationError, type: "error" });
+    const error = validateForm(formData);
+    if (error) {
+      addToast({ message: error, type: "error" });
       return;
     }
 
-    createTransaction(
-      {
-        email,
-        amount: parseFloat(formData.amount),
-        type: formData.type,
-        description: formData.description.trim(),
-        date: new Date(formData.date).toISOString(),
-        categoryId: formData.categoryId,
-        accountId: formData.accountId,
+    const payload =
+      formData.type === "TRANSFER"
+        ? {
+            email,
+            type: formData.type,
+            accountId: formData.accountId,
+            toAccountId: formData.toAccountId || undefined,
+            amount: parseFloat(formData.amount),
+            description: formData.description.trim(),
+            date: new Date(formData.date).toISOString(),
+          }
+        : {
+            email,
+            type: formData.type,
+            accountId: formData.accountId,
+            categoryId: formData.categoryId,
+            amount: parseFloat(formData.amount),
+            description: formData.description.trim(),
+            date: new Date(formData.date).toISOString(),
+          };
+
+    createTransaction(payload, {
+      onSuccess: () => {
+        addToast({ message: "Transaction recorded! 🎉", type: "success" });
+        resetForm();
       },
-      {
-        onSuccess: () => {
-          addToast({ message: "Transaction recorded! 🎉", type: "success" });
-          setFormData(INITIAL_FORM_DATA);
-        },
-        onError: (error: Error) => {
-          addToast({ message: error.message || "Failed to record transaction", type: "error" });
-        },
+      onError: (error: Error) => {
+        addToast({ message: error.message || "Failed to record transaction", type: "error" });
       },
-    );
+    });
   };
 
-  const getTransactionColor = (type: FormData["type"]) => {
-    switch (type) {
-      case "INCOME":
-        return { bg: "bg-green-100", text: "text-green-600", badge: "success" as const };
-      case "TRANSFER":
-        return { bg: "bg-blue-100", text: "text-blue-600", badge: "info" as const };
-      default:
-        return { bg: "bg-red-100", text: "text-red-600", badge: "error" as const };
-    }
-  };
-
-  const getTransactionPrefix = (type: FormData["type"]) => {
-    switch (type) {
-      case "INCOME":
-        return "+";
-      case "TRANSFER":
-        return "→";
-      default:
-        return "-";
-    }
-  };
+  const config = TYPE_CONFIG[formData.type];
+  const isTransfer = formData.type === "TRANSFER";
 
   const selectedCategory = categories.find((c) => c.id === formData.categoryId);
   const selectedAccount = accounts.find((a) => a.id === formData.accountId);
-  const transactionColor = getTransactionColor(formData.type);
-  const showPreview = formData.amount && formData.description;
+  const selectedToAccount = accounts.find((a) => a.id === formData.toAccountId);
+
+  const previewIcon = isTransfer ? "🔄" : (selectedCategory?.icon ?? "💰");
+  const previewSubtitle = isTransfer
+    ? [selectedAccount?.name, selectedToAccount?.name].filter(Boolean).join(" → ") || "—"
+    : [selectedCategory?.name, selectedAccount?.name].filter(Boolean).join(" • ") || "—";
+
+  const showPreview = !!formData.amount && !!formData.description;
 
   return (
-    <div className="min-h-screen px-4 py-6 sm:py-8 bg-to-br from-primary-50 to-neutral">
-      <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
-        <div className="text-center">
-          <div className="mb-3 text-5xl sm:text-6xl">⚡</div>
-          <h1 className="text-3xl font-bold sm:text-4xl text-primary-900">Finarthax</h1>
-          <p className="px-4 mt-2 text-base sm:text-lg text-primary-600">Record your transactions instantly, no login required</p>
+    <div className="min-h-screen px-3 sm:px-4 py-6 sm:py-8 md:py-12 bg-to-br from-primary-50 to-neutral">
+      <div className="max-w-lg sm:max-w-xl md:max-w-2xl mx-auto space-y-3 sm:space-y-4 md:space-y-6">
+        <div className="text-center py-2 sm:py-4">
+          <div className="mb-2 sm:mb-3 text-4xl sm:text-5xl md:text-6xl">⚡</div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary-900">Finarthax</h1>
+          <p className="px-4 mt-1 sm:mt-2 text-sm sm:text-base md:text-lg text-primary-600">Record your transactions instantly, no login required</p>
         </div>
 
         <Card>
-          <CardContent className="pt-4 sm:pt-6">
-            <div className="flex items-start gap-3 p-3 border rounded-lg sm:p-4 bg-primary-50 border-primary-200">
-              <span className="hidden text-xl sm:block sm:text-2xl shrink-0">💡</span>
+          <CardContent className="pt-3 sm:pt-4 md:pt-6 pb-3 sm:pb-4">
+            <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 border rounded-lg bg-primary-50 border-primary-200">
+              <span className="text-lg sm:text-xl md:text-2xl shrink-0">💡</span>
               <div className="flex-1 min-w-0">
-                <p className="mb-2 text-sm font-medium sm:text-base text-primary-900">How it works:</p>
-                <ul className="space-y-1 text-xs sm:text-sm text-primary-700">
+                <p className="mb-1.5 sm:mb-2 text-xs sm:text-sm md:text-base font-medium text-primary-900">How it works:</p>
+                <ul className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm text-primary-700">
                   <li>✓ Record transactions without creating an account</li>
                   <li>✓ Transactions saved locally on your device</li>
                   <li>✓ Perfect for quick expense tracking on the go</li>
@@ -207,9 +225,9 @@ export const Home: React.FC = () => {
         </Card>
 
         <Card>
-          <CardContent className="pt-4 sm:pt-6">
+          <CardContent className="pt-3 sm:pt-4 md:pt-6">
             {!emailVerified && (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <Input type="email" label="Email Address *" placeholder="your.email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={isSearchingEmail} />
                 <Button variant="primary" className="w-full" size="lg" isLoading={isSearchingEmail} onClick={handleSubmitEmail}>
                   {isSearchingEmail ? "Verifying..." : "Verify Email"}
@@ -219,37 +237,37 @@ export const Home: React.FC = () => {
 
             {emailVerified && (
               <>
-                <div className="flex items-center justify-between p-3 mb-4 border rounded-lg bg-green-50 border-green-200">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">✓</span>
-                    <span className="text-sm font-medium text-green-900">{email}</span>
+                <div className="flex items-center justify-between p-2.5 sm:p-3 mb-3 sm:mb-4 border rounded-lg bg-green-50 border-green-200">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-base sm:text-xl shrink-0">✓</span>
+                    <span className="text-xs sm:text-sm font-medium text-green-900 truncate">{email}</span>
                   </div>
                   <button
                     onClick={() => {
                       setEmailVerified(false);
                       setEmail("");
-                      setFormData(INITIAL_FORM_DATA);
+                      resetForm();
                       setAccounts([]);
                       setCategories([]);
                     }}
-                    className="text-xs text-green-700 hover:text-green-900"
+                    className="text-xs text-green-700 hover:text-green-900 shrink-0 ml-2"
                   >
                     Change
                   </button>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <Select
                       label="Type *"
                       options={[
                         { value: "EXPENSE", label: "💳 Expense" },
                         { value: "INCOME", label: "💰 Income" },
+                        { value: "TRANSFER", label: "🔄 Transfer" },
                       ]}
                       value={formData.type}
                       onChange={(e) => handleChangeForm("type", e.target.value)}
                     />
-
                     <Input
                       type="number"
                       label="Amount *"
@@ -261,16 +279,26 @@ export const Home: React.FC = () => {
                     />
                   </div>
 
-                  <Select label="Account *" options={accountOptions} value={formData.accountId} onChange={(e) => handleChangeForm("accountId", e.target.value)} required />
+                  <Select
+                    label={isTransfer ? "From Account *" : "Account *"}
+                    options={accountOptions}
+                    value={formData.accountId}
+                    onChange={(e) => handleChangeForm("accountId", e.target.value)}
+                    required
+                  />
 
-                  <Select label="Category *" options={categoryOptions} value={formData.categoryId} onChange={(e) => handleChangeForm("categoryId", e.target.value)} required />
+                  {isTransfer ? (
+                    <Select label="To Account (optional)" options={toAccountOptions} value={formData.toAccountId} onChange={(e) => handleChangeForm("toAccountId", e.target.value)} />
+                  ) : (
+                    <Select label="Category *" options={categoryOptions} value={formData.categoryId} onChange={(e) => handleChangeForm("categoryId", e.target.value)} required />
+                  )}
 
                   <Input type="date" label="Date *" value={formData.date} onChange={(e) => handleChangeForm("date", e.target.value)} max={new Date().toISOString().split("T")[0]} required />
 
                   <Input
                     type="text"
                     label="Description *"
-                    placeholder="e.g., Lunch at restaurant, Salary payment"
+                    placeholder="e.g., Lunch at restaurant, Salary payment, Top up GoPay"
                     value={formData.description}
                     onChange={(e) => handleChangeForm("description", e.target.value)}
                     maxLength={200}
@@ -278,26 +306,30 @@ export const Home: React.FC = () => {
                   />
 
                   {showPreview && (
-                    <div className="p-3 border rounded-lg sm:p-4 bg-to-br from-primary-50 to-neutral border-primary-200">
-                      <p className="mb-3 text-xs font-medium sm:text-sm text-primary-700">Preview:</p>
-                      <div className="flex items-center justify-between gap-3 p-3 bg-white rounded-lg shadow-sm">
+                    <div className={`p-3 sm:p-4 border rounded-xl ${config.bg} border-primary-200`}>
+                      <p className="mb-2 sm:mb-3 text-xs sm:text-sm font-medium text-primary-700">Preview:</p>
+                      <div className="flex items-center justify-between gap-2 sm:gap-3 p-2.5 sm:p-3 bg-white rounded-lg shadow-sm">
                         <div className="flex items-center flex-1 min-w-0 gap-2 sm:gap-3">
-                          <div className={`flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-lg sm:text-xl rounded-full shrink-0 ${transactionColor.bg}`}>
-                            {selectedCategory?.icon || "💰"}
+                          <div
+                            className={`
+                            flex items-center justify-center shrink-0
+                            w-8 h-8 sm:w-10 sm:h-10
+                            text-base sm:text-xl rounded-full
+                            ${config.bg}
+                          `}
+                          >
+                            {previewIcon}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate sm:text-base text-primary-900">{formData.description}</p>
-                            <p className="text-xs truncate text-primary-600">
-                              {selectedCategory?.name} • {selectedAccount?.name}
-                            </p>
+                            <p className="text-xs sm:text-sm md:text-base font-medium truncate text-primary-900">{formData.description}</p>
+                            <p className="text-xs truncate text-primary-600">{previewSubtitle}</p>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className={`font-bold text-sm sm:text-base ${transactionColor.text}`}>
-                            {getTransactionPrefix(formData.type)}
-                            {format(formData.amount || "0")}
+                          <p className={`font-bold text-sm sm:text-base ${config.text}`}>
+                            {config.prefix} {"Rp." + (formData.amount || "0")}
                           </p>
-                          <Badge variant={transactionColor.badge} size="sm">
+                          <Badge variant={config.badge} size="sm" className="mt-0.5">
                             {formData.type}
                           </Badge>
                         </div>
@@ -315,16 +347,16 @@ export const Home: React.FC = () => {
         </Card>
 
         <Card>
-          <CardContent className="pt-6">
-            <div className="p-6 text-center border-2 border-dashed rounded-lg border-primary-300 bg-primary-50">
-              <div className="mb-3 text-4xl">🚀</div>
-              <h3 className="mb-2 text-xl font-bold text-primary-900">Ready for More?</h3>
-              <p className="mb-4 text-primary-600">Create a free account to sync your data, set budgets, and access powerful analytics</p>
-              <div className="flex justify-center gap-3">
-                <Button variant="primary" size="lg" onClick={() => router.push("/register")}>
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="p-4 sm:p-6 text-center border-2 border-dashed rounded-xl border-primary-300 bg-primary-50">
+              <div className="mb-2 sm:mb-3 text-3xl sm:text-4xl">🚀</div>
+              <h3 className="mb-1.5 sm:mb-2 text-lg sm:text-xl font-bold text-primary-900">Ready for More?</h3>
+              <p className="mb-3 sm:mb-4 text-xs sm:text-sm md:text-base text-primary-600 max-w-xs mx-auto">Create a free account to sync your data, set budgets, and access powerful analytics</p>
+              <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
+                <Button variant="primary" size="lg" onClick={() => router.push("/register")} className="w-full sm:w-auto">
                   Sign Up Free
                 </Button>
-                <Button variant="outline" size="lg" onClick={() => router.push("/login")}>
+                <Button variant="outline" size="lg" onClick={() => router.push("/login")} className="w-full sm:w-auto">
                   Sign In
                 </Button>
               </div>

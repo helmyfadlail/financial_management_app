@@ -37,6 +37,20 @@
     "uncategorized": "Uncategorized",
     "of": "of",
     "used": "used",
+    "totalBalance": "Total Balance",
+    "accountsLinked": "accounts linked",
+    "transfers": "Transfers",
+    "neutral": "Neutral",
+    "noDescription": "No description",
+    "transfer": "Transfer",
+    "monthlyOverview": "6-Month Overview",
+    "monthlyComparison": "Monthly Comparison",
+    "expenseBreakdown": "Expense Breakdown",
+    "transferFlow": {
+      "totalMoved": "Total Moved",
+      "totalReceived": "Received",
+      "withdrawals": "Withdrawals"
+    },
     "budgetStatus": {
       "overBudget": "Over budget",
       "nearLimit": "Near limit",
@@ -51,6 +65,14 @@
         "title": "No Budgets Set",
         "description": "Create budgets to track your spending limits and stay on target",
         "action": "Set Your First Budget"
+      },
+      "charts": {
+        "title": "No data yet",
+        "description": "Start adding transactions to see your trends"
+      },
+      "categories": {
+        "title": "No expenses",
+        "description": "No expense transactions this month"
       }
     },
     "quickActions": {
@@ -78,6 +100,7 @@
     "addButton": "Add Transaction",
     "income": "Income",
     "expense": "Expense",
+    "transfer": "Transfer",
     "noDescription": "No description",
     "deleteButton": "Delete transaction",
     "listTitle": "Transactions",
@@ -112,6 +135,9 @@
       "selected": "Select {type} ...",
       "account": "Account",
       "category": "Category",
+      "fromAccount": "From Account",
+      "toAccount": "To Account (optional)",
+      "toAccountOptional": "Select destination account",
       "categoryLabel": "Category",
       "date": "Date",
       "description": "Description",
@@ -131,7 +157,8 @@
       "amount": "Please enter a valid amount greater than 0",
       "account": "Please select an account",
       "category": "Please select a category",
-      "description": "Please add a description"
+      "description": "Please add a description",
+      "sameAccount": "Source and destination accounts must be different"
     },
     "success": {
       "created": "Transaction created successfully! 🎉",
@@ -455,15 +482,16 @@
   },
   "reportsPage": {
     "title": "Financial Reports",
-    "subtitle": "Comprehensive analysis of your income and expenses",
+    "subtitle": "Analyze your income, expenses, and transfers",
+    "tabs": {
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "custom": "Custom"
+    },
     "income": "Income",
     "expense": "Expense",
+    "transfer": "Transfer",
     "balance": "Balance",
-    "ofTotal": "of total",
-    "categoriesCount": "categories",
-    "monthsCount": "months",
-    "topCategories": "Top Spending Categories",
-    "monthlyBreakdown": "Monthly Breakdown",
     "filter": {
       "reportType": "Report Type",
       "monthlyReport": "Monthly Report",
@@ -488,25 +516,64 @@
     "stats": {
       "totalIncome": "Total Income",
       "totalExpense": "Total Expense",
+      "totalTransfers": "Total Transfers",
+      "transfers": "Transfers",
       "netBalance": "Net Balance",
-      "yearlyBalance": "Yearly Balance",
+      "balance": "Balance",
       "savingsRate": "Savings Rate",
-      "transactionCount": "Transaction Count",
+      "greatJob": "Great job!",
+      "keepImproving": "Keep improving",
+      "excellent": "Excellent!",
+      "roomToImprove": "Room to improve",
       "dailyAvgExpense": "Daily Avg Expense",
       "largestTransaction": "Largest Transaction",
+      "transactionCount": "Transactions",
       "totalTransactions": "Total Transactions",
       "avgMonthlyIncome": "Avg Monthly Income",
       "avgMonthlyExpense": "Avg Monthly Expense",
-      "greatJob": "Great job!",
-      "keepImproving": "Keep improving!",
-      "excellent": "Excellent!",
-      "roomToImprove": "Room to improve"
+      "txn": "txn"
+    },
+    "charts": {
+      "dailySpending": "Daily Spending Trend",
+      "dailyTrend": "Daily Trend",
+      "monthlyBreakdown": "Monthly Breakdown"
+    },
+    "transferSummary": {
+      "title": "Transfer Summary",
+      "totalMoved": "Total Moved",
+      "totalReceived": "Received",
+      "withdrawals": "Withdrawals",
+      "count": "Transactions"
+    },
+    "topCategories": "Top Categories",
+    "categoriesCount": "categories",
+    "monthlyBreakdown": "Monthly Breakdown",
+    "monthsCount": "months",
+    "ofTotal": "of total",
+    "yearly": {
+      "bestMonth": "Best Month",
+      "worstMonth": "Toughest Month"
+    },
+    "custom": {
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "generate": "Generate Report",
+      "empty": "Select a date range above and click Generate Report to see your custom analysis.",
+      "categoryBreakdown": "Category Breakdown",
+      "emptyCategoryBreakdown": "No categorized transactions in this range.",
+      "accountBreakdown": "Account Breakdown",
+      "account": {
+        "in": "In",
+        "out": "Out",
+        "sent": "Sent",
+        "received": "Received"
+      }
     },
     "empty": {
-      "title": "No Data Available",
-      "monthly": "No spending data available for this month. Start adding transactions to see your top categories.",
-      "yearly": "No spending data available for this year. Start tracking your expenses to see insights.",
-      "breakdown": "No monthly data available for this year. Transactions will appear here once recorded."
+      "title": "No Data Found",
+      "monthly": "No transactions found for this month. Start recording your income and expenses.",
+      "yearly": "No transactions found for this year.",
+      "breakdown": "No monthly data available for this period."
     }
   },
   "profilesPage": {

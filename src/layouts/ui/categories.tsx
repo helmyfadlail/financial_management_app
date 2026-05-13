@@ -226,7 +226,7 @@ export const Categories: React.FC = () => {
             onError: (error: Error) => {
               addToast({ message: error.message || t("error.update"), type: "error" });
             },
-          }
+          },
         );
       } else {
         createCategory(
@@ -239,11 +239,11 @@ export const Categories: React.FC = () => {
             onError: (error: Error) => {
               addToast({ message: error.message || t("error.create"), type: "error" });
             },
-          }
+          },
         );
       }
     },
-    [formData, editingCategory, categories, createCategory, updateCategory, addToast, closeModal, t]
+    [formData, editingCategory, categories, createCategory, updateCategory, addToast, closeModal, t],
   );
 
   const handleEdit = React.useCallback((category: Category): void => {
@@ -444,7 +444,7 @@ export const Categories: React.FC = () => {
             </label>
           </div>
 
-          <div className="p-4 border rounded-lg bg-linier-to-br from-primary-50 to-neutral border-primary-200">
+          <div className="p-4 border rounded-lg bg-linear-to-br from-primary-50 to-neutral border-primary-200">
             <p className="mb-3 text-sm font-medium text-primary-700">{t("modal.preview")}:</p>
             <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
               <div className="flex items-center justify-center w-12 h-12 text-2xl rounded-xl" style={{ backgroundColor: formData.color + "20" }}>

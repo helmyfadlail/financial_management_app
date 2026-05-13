@@ -8,7 +8,8 @@ import type { ApiResponse, Transaction, TransactionFilter, PaginatedResponse } f
 
 interface CreateTransactionData {
   accountId: string;
-  categoryId: string;
+  categoryId?: string | null;
+  toAccountId?: string | null;
   amount: number;
   type: "INCOME" | "EXPENSE" | "TRANSFER";
   description?: string;

@@ -8,13 +8,14 @@ import { useTransactions, useCategories, useAccounts, useSearchPagination } from
 
 import { Card, CardContent, Button, Input, Select, Badge, Modal, Skeleton, useToast, useCurrency } from "@/components";
 
-import type { Transaction, TransactionFilter } from "@/types";
+import type { Transaction, TransactionFilter, TransactionType } from "@/types";
 
 interface FormData {
   accountId: string;
+  toAccountId: string;
   categoryId: string;
   amount: string;
-  type: "INCOME" | "EXPENSE" | "TRANSFER";
+  type: TransactionType;
   description: string;
   date: string;
 }
@@ -36,6 +37,7 @@ interface EmptyStateProps {
 
 const INITIAL_FORM_DATA: FormData = {
   accountId: "",
+  toAccountId: "",
   categoryId: "",
   amount: "",
   type: "EXPENSE",
@@ -43,10 +45,19 @@ const INITIAL_FORM_DATA: FormData = {
   date: new Date().toISOString().split("T")[0],
 };
 
+const TYPE_CONFIG: Record<TransactionType, { color: string; bg: string; icon: string; prefix: string }> = {
+  INCOME: { color: "text-green-600", bg: "bg-green-100", icon: "💰", prefix: "+" },
+  EXPENSE: { color: "text-red-600", bg: "bg-red-100", icon: "💳", prefix: "-" },
+  TRANSFER: { color: "text-blue-600", bg: "bg-blue-100", icon: "🔄", prefix: "⇄" },
+};
+
 const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete, isDeleting }) => {
   const t = useTranslations("transactionsPage");
   const { format } = useCurrency();
-  const isIncome = transaction.type === "INCOME";
+
+  const config = TYPE_CONFIG[transaction.type as TransactionType] ?? TYPE_CONFIG.EXPENSE;
+  const isTransfer = transaction.type === "TRANSFER";
+
   const formattedDate = React.useMemo(
     () =>
       new Date(transaction.date).toLocaleDateString("id-ID", {
@@ -57,11 +68,15 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete
     [transaction.date],
   );
 
+  const badgeVariant = transaction.type === "INCOME" ? "success" : transaction.type === "TRANSFER" ? "info" : "error";
+
+  const badgeLabel = transaction.type === "INCOME" ? `${config.icon} ${t("income")}` : transaction.type === "TRANSFER" ? `${config.icon} ${t("transfer")}` : `${config.icon} ${t("expense")}`;
+
   return (
     <div className="flex items-center justify-between p-4 transition-all rounded-lg bg-neutral hover:bg-neutral-200 hover:shadow-md group">
       <div className="flex items-center flex-1 min-w-0 gap-4">
-        <div className={`flex items-center justify-center w-12 h-12 text-2xl rounded-full ${isIncome ? "bg-green-100" : "bg-red-100"} transition-transform group-hover:scale-110`}>
-          {transaction.category?.icon || "💰"}
+        <div className={`flex items-center justify-center w-12 h-12 text-2xl rounded-full ${config.bg} transition-transform group-hover:scale-110`}>
+          {isTransfer ? "🔄" : (transaction.category?.icon ?? "💰")}
         </div>
 
         <div className="flex-1 min-w-0">
@@ -69,13 +84,25 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete
             {transaction.description || t("noDescription")}
           </h4>
           <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-primary-600">
-            <span className="flex items-center gap-1">
-              {transaction.category?.icon} {transaction.category?.name}
-            </span>
-            <span>•</span>
+            {!isTransfer && transaction.category && (
+              <>
+                <span className="flex items-center gap-1">
+                  {transaction.category.icon} {transaction.category.name}
+                </span>
+                <span>•</span>
+              </>
+            )}
             <span className="flex items-center gap-1">
               {transaction.account?.icon} {transaction.account?.name}
             </span>
+            {isTransfer && transaction.toAccount && (
+              <>
+                <span>→</span>
+                <span className="flex items-center gap-1">
+                  {transaction.toAccount.icon} {transaction.toAccount.name}
+                </span>
+              </>
+            )}
             <span>•</span>
             <span>📅 {formattedDate}</span>
           </div>
@@ -84,12 +111,11 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete
 
       <div className="flex items-center gap-4 shrink-0">
         <div className="text-right">
-          <p className={`text-xl font-bold ${isIncome ? "text-green-600" : "text-red-600"}`}>
-            {isIncome ? "+" : "-"}
-            {format(transaction.amount)}
+          <p className={`text-xl font-bold ${config.color}`}>
+            {config.prefix} {format(transaction.amount)}
           </p>
-          <Badge variant={isIncome ? "success" : "error"} size="sm" className="mt-1">
-            {isIncome ? `💰 ${t("income")}` : `💳 ${t("expense")}`}
+          <Badge variant={badgeVariant} size="sm" className="mt-1">
+            {badgeLabel}
           </Badge>
         </div>
         <Button variant="danger" size="sm" onClick={() => onDelete(transaction.id)} disabled={isDeleting} aria-label={t("deleteButton")}>
@@ -102,7 +128,6 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete
 
 const EmptyState: React.FC<EmptyStateProps> = ({ onCreateClick }) => {
   const t = useTranslations("transactionsPage");
-
   return (
     <div className="py-16 text-center">
       <div className="mb-4 text-6xl">📝</div>
@@ -135,10 +160,8 @@ export const Transactions: React.FC = () => {
   const t = useTranslations("transactionsPage");
   const { categories } = useCategories();
   const { accounts } = useAccounts();
-
   const { format } = useCurrency();
   const { addToast } = useToast();
-
   const { createTransaction, isCreating } = useTransactions();
 
   const { searchQuery, inputValue, setInputValue, currentPage, handlePageChange, selectedType, handleTypeChange, selectedCategory, handleCategoryChange, resetFilters } = useSearchPagination({
@@ -155,44 +178,73 @@ export const Transactions: React.FC = () => {
   });
 
   const [formData, setFormData] = React.useState<FormData>(INITIAL_FORM_DATA);
-
-  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState<string | null>(null);
 
-  const getFilteredCategories = React.useCallback((type: FormData["type"]) => categories.filter((c) => c.type === type), [categories]);
+  const getFilteredCategories = React.useCallback(
+    (type: TransactionType) => {
+      if (type === "TRANSFER") return [];
+      return categories.filter((c) => c.type === type);
+    },
+    [categories],
+  );
 
   const getDefaultCategory = React.useCallback(
-    (type: FormData["type"]) => {
+    (type: TransactionType) => {
       const filtered = getFilteredCategories(type);
-      return filtered.find((c) => c.isDefault) || filtered[0];
+      return filtered.find((c) => c.isDefault) ?? filtered[0] ?? null;
     },
     [getFilteredCategories],
   );
 
-  const categoryOptions = React.useMemo<SelectOption[]>(() => {
-    return getFilteredCategories(formData.type).map((c) => ({ value: c.id, label: `${c.icon} ${c.name}` }));
-  }, [formData.type, getFilteredCategories]);
+  const categoryOptions = React.useMemo<SelectOption[]>(() => getFilteredCategories(formData.type).map((c) => ({ value: c.id, label: `${c.icon} ${c.name}` })), [formData.type, getFilteredCategories]);
 
-  const accountOptions = React.useMemo<SelectOption[]>(() => {
-    return accounts.map((a) => ({ value: a.id, label: `${a.icon} ${a.name}` }));
-  }, [accounts]);
+  const accountOptions = React.useMemo<SelectOption[]>(() => accounts.map((a) => ({ value: a.id, label: `${a.icon} ${a.name}` })), [accounts]);
 
-  const resetForm = (): void => {
-    setFormData(INITIAL_FORM_DATA);
-  };
+  const toAccountOptions = React.useMemo<SelectOption[]>(
+    () => accounts.filter((a) => a.id !== formData.accountId).map((a) => ({ value: a.id, label: `${a.icon} ${a.name}` })),
+    [accounts, formData.accountId],
+  );
 
-  const openModal = React.useCallback((): void => {
+  const resetForm = React.useCallback(() => setFormData(INITIAL_FORM_DATA), []);
+
+  const openModal = React.useCallback(() => {
     resetForm();
     setIsModalOpen(true);
-  }, []);
+  }, [resetForm]);
 
-  const closeModal = React.useCallback((): void => {
+  const closeModal = React.useCallback(() => {
     setIsModalOpen(false);
     resetForm();
-  }, []);
+  }, [resetForm]);
+
+  const handleChangeForm = React.useCallback(
+    (field: keyof FormData, value: string) => {
+      setFormData((prev) => {
+        const updated = { ...prev, [field]: value };
+
+        if (field === "type") {
+          const newType = value as TransactionType;
+          updated.toAccountId = "";
+
+          if (newType === "TRANSFER") {
+            updated.categoryId = "";
+          } else {
+            const defaultCat = getDefaultCategory(newType);
+            updated.categoryId = defaultCat?.id ?? "";
+          }
+        }
+
+        if (field === "accountId" && updated.toAccountId === value) updated.toAccountId = "";
+
+        return updated;
+      });
+    },
+    [getDefaultCategory],
+  );
 
   const handleSubmitForm = React.useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>): void => {
+    (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
 
       if (!formData.amount || parseFloat(formData.amount) <= 0) {
@@ -205,7 +257,12 @@ export const Transactions: React.FC = () => {
         return;
       }
 
-      if (!formData.categoryId) {
+      if (formData.type === "TRANSFER" && formData.toAccountId && formData.toAccountId === formData.accountId) {
+        addToast({ message: t("validation.sameAccount"), type: "error" });
+        return;
+      }
+
+      if (formData.type !== "TRANSFER" && !formData.categoryId) {
         addToast({ message: t("validation.category"), type: "error" });
         return;
       }
@@ -215,34 +272,42 @@ export const Transactions: React.FC = () => {
         return;
       }
 
-      createTransaction(
-        {
-          ...formData,
-          description: formData.description.trim(),
-          amount: parseFloat(formData.amount),
-          date: new Date(formData.date).toISOString(),
+      const payload =
+        formData.type === "TRANSFER"
+          ? {
+              type: formData.type,
+              accountId: formData.accountId,
+              toAccountId: formData.toAccountId || undefined,
+              amount: parseFloat(formData.amount),
+              description: formData.description.trim(),
+              date: new Date(formData.date).toISOString(),
+            }
+          : {
+              type: formData.type,
+              accountId: formData.accountId,
+              categoryId: formData.categoryId,
+              amount: parseFloat(formData.amount),
+              description: formData.description.trim(),
+              date: new Date(formData.date).toISOString(),
+            };
+
+      createTransaction(payload, {
+        onSuccess: () => {
+          addToast({ message: t("success.created"), type: "success" });
+          closeModal();
         },
-        {
-          onSuccess: () => {
-            addToast({ message: t("success.created"), type: "success" });
-            closeModal();
-          },
-          onError: (error: Error) => {
-            addToast({ message: error.message || t("error.create"), type: "error" });
-          },
+        onError: (error: Error) => {
+          addToast({ message: error.message || t("error.create"), type: "error" });
         },
-      );
+      });
     },
     [formData, createTransaction, addToast, closeModal, t],
   );
 
-  const handleDeleteClick = React.useCallback((id: string): void => {
-    setDeleteId(id);
-  }, []);
+  const handleDeleteClick = React.useCallback((id: string) => setDeleteId(id), []);
 
-  const handleDeleteConfirm = React.useCallback((): void => {
+  const handleDeleteConfirm = React.useCallback(() => {
     if (!deleteId) return;
-
     deleteTransaction(deleteId, {
       onSuccess: () => {
         addToast({ message: t("success.deleted"), type: "success" });
@@ -255,29 +320,25 @@ export const Transactions: React.FC = () => {
     });
   }, [deleteId, deleteTransaction, addToast, t]);
 
-  const handleChangeForm = React.useCallback(
-    (field: keyof FormData, value: string): void => {
-      setFormData((prev) => {
-        const updated = { ...prev, [field]: value };
-
-        if (field === "type") {
-          const defaultCategory = getDefaultCategory(value as FormData["type"]);
-          if (defaultCategory) {
-            updated.categoryId = defaultCategory.id;
-          }
-        }
-
-        return updated;
-      });
-    },
-    [getDefaultCategory],
-  );
-
   const hasActiveFilters = React.useMemo(() => selectedType || selectedCategory || searchQuery, [selectedType, selectedCategory, searchQuery]);
 
-  if (isLoading) {
-    return <LoadingSkeleton />;
-  }
+  const previewConfig = TYPE_CONFIG[formData.type];
+
+  const previewSubtitle = React.useMemo(() => {
+    if (formData.type === "TRANSFER") {
+      const from = accounts.find((a) => a.id === formData.accountId)?.name ?? "—";
+      const to = formData.toAccountId ? accounts.find((a) => a.id === formData.toAccountId)?.name : null;
+      return to ? `${from} → ${to}` : from;
+    }
+    return categories.find((c) => c.id === formData.categoryId)?.name ?? t("modal.categoryLabel");
+  }, [formData, accounts, categories, t]);
+
+  const previewIcon = React.useMemo(() => {
+    if (formData.type === "TRANSFER") return "🔄";
+    return categories.find((c) => c.id === formData.categoryId)?.icon ?? "💰";
+  }, [formData.type, formData.categoryId, categories]);
+
+  if (isLoading) return <LoadingSkeleton />;
 
   return (
     <div className="space-y-6">
@@ -309,18 +370,17 @@ export const Transactions: React.FC = () => {
                   { value: "", label: t("filter.allTypes") },
                   { value: "INCOME", label: `💰 ${t("income")}` },
                   { value: "EXPENSE", label: `💳 ${t("expense")}` },
+                  { value: "TRANSFER", label: `🔄 ${t("transfer")}` },
                 ]}
                 value={selectedType}
                 onChange={(e) => handleTypeChange(e.target.value)}
               />
-
               <Select
                 label={t("filter.category")}
                 options={[{ value: "", label: t("filter.allCategories") }, ...categoryOptions]}
                 value={selectedCategory}
                 onChange={(e) => handleCategoryChange(e.target.value)}
               />
-
               <Input label={t("filter.search")} placeholder={t("filter.searchPlaceholder")} value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
             </div>
             {hasActiveFilters && (
@@ -401,11 +461,11 @@ export const Transactions: React.FC = () => {
               options={[
                 { value: "EXPENSE", label: `💳 ${t("expense")}` },
                 { value: "INCOME", label: `💰 ${t("income")}` },
+                { value: "TRANSFER", label: `🔄 ${t("transfer")}` },
               ]}
               value={formData.type}
               onChange={(e) => handleChangeForm("type", e.target.value)}
             />
-
             <Input
               type="number"
               label={`${t("modal.amount")} *`}
@@ -421,20 +481,29 @@ export const Transactions: React.FC = () => {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Select
-              label={`${t("modal.account")} *`}
+              label={`${formData.type === "TRANSFER" ? t("modal.fromAccount") : t("modal.account")} *`}
               options={[{ value: "", label: t("modal.selected", { type: t("modal.account") }) }, ...accountOptions]}
               value={formData.accountId}
               onChange={(e) => handleChangeForm("accountId", e.target.value)}
               required
             />
 
-            <Select
-              label={`${t("modal.category")} *`}
-              options={[{ value: "", label: t("modal.selected", { type: t("modal.category") }) }, ...categoryOptions]}
-              value={formData.categoryId}
-              onChange={(e) => handleChangeForm("categoryId", e.target.value)}
-              required
-            />
+            {formData.type === "TRANSFER" ? (
+              <Select
+                label={t("modal.toAccount")}
+                options={[{ value: "", label: t("modal.toAccountOptional") }, ...toAccountOptions]}
+                value={formData.toAccountId}
+                onChange={(e) => handleChangeForm("toAccountId", e.target.value)}
+              />
+            ) : (
+              <Select
+                label={`${t("modal.category")} *`}
+                options={[{ value: "", label: t("modal.selected", { type: t("modal.category") }) }, ...categoryOptions]}
+                value={formData.categoryId}
+                onChange={(e) => handleChangeForm("categoryId", e.target.value)}
+                required
+              />
+            )}
           </div>
 
           <Input type="date" label={`${t("modal.date")} *`} value={formData.date} onChange={(e) => handleChangeForm("date", e.target.value)} max={new Date().toISOString().split("T")[0]} required />
@@ -450,24 +519,21 @@ export const Transactions: React.FC = () => {
           />
 
           {formData.amount && formData.description && (
-            <div className="p-4 border rounded-lg bg-linier-to-br from-primary-50 to-neutral border-primary-200">
+            <div className="p-4 border rounded-lg bg-linear-to-br from-primary-50 to-neutral border-primary-200">
               <p className="mb-3 text-sm font-medium text-primary-700">{t("modal.preview")}:</p>
               <div className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
                 <div className="flex items-center gap-3">
-                  <div className={`flex items-center justify-center w-10 h-10 text-xl rounded-full ${formData.type === "INCOME" ? "bg-green-100" : "bg-red-100"}`}>
-                    {categories.find((c) => c.id === formData.categoryId)?.icon || "💰"}
-                  </div>
+                  <div className={`flex items-center justify-center w-10 h-10 text-xl rounded-full ${previewConfig.bg}`}>{previewIcon}</div>
                   <div>
                     <p className="font-medium text-primary-900">{formData.description}</p>
-                    <p className="text-xs text-primary-600">{categories.find((c) => c.id === formData.categoryId)?.name || t("modal.categoryLabel")}</p>
+                    <p className="text-xs text-primary-600">{previewSubtitle}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className={`font-bold ${formData.type === "INCOME" ? "text-green-600" : "text-red-600"}`}>
-                    {formData.type === "INCOME" ? "+" : "-"}
-                    {format(formData.amount)}
+                  <p className={`font-bold ${previewConfig.color}`}>
+                    {previewConfig.prefix} {format(formData.amount)}
                   </p>
-                  <Badge variant={formData.type === "INCOME" ? "success" : "error"} size="sm">
+                  <Badge variant={formData.type === "INCOME" ? "success" : formData.type === "TRANSFER" ? "info" : "error"} size="sm">
                     {formData.type}
                   </Badge>
                 </div>

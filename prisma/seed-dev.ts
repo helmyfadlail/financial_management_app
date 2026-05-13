@@ -1,18 +1,28 @@
 import { prisma } from "@/lib";
 import { CURRENCY_LOCALE_MAP, CURRENCY_OPTIONS, LANGUAGE_OPTIONS, THEME_OPTIONS, ZERO_DECIMAL_CURRENCIES } from "@/static";
-import { createId } from "@paralleldrive/cuid2";
 import bcrypt from "bcryptjs";
 
 async function main() {
   console.log("🌱 Starting database seeding...\n");
 
   // ============================================
-  // 1. CREATE DEMO USER
+  // 1. CLEAN EXISTING DATA
+  // ============================================
+  console.log("🧹 Cleaning existing data...");
+  await prisma.recurringTransaction.deleteMany({});
+  await prisma.budget.deleteMany({});
+  await prisma.transaction.deleteMany({});
+  await prisma.goal.deleteMany({});
+  await prisma.account.deleteMany({});
+  await prisma.category.deleteMany({});
+  await prisma.user.deleteMany({ where: { email: "demo@finance.com" } });
+  console.log("✅ Clean done\n");
+
+  // ============================================
+  // 2. CREATE DEMO USER
   // ============================================
   console.log("👤 Creating demo user...");
-
   const hashedPassword = await bcrypt.hash("password123", 10);
-
   const demoUser = await prisma.user.upsert({
     where: { email: "demo@finance.com" },
     update: {},
@@ -23,342 +33,473 @@ async function main() {
       avatar: null,
     },
   });
-
   console.log("✅ Demo user created: demo@finance.com / password123\n");
 
   // ============================================
-  // 2. CREATE DEFAULT CATEGORIES
+  // 3. CREATE DEFAULT CATEGORIES
   // ============================================
   console.log("📁 Creating default categories...");
 
   const defaultCategories = [
-    // Income categories
-    { name: "Salary", type: "INCOME", icon: "💰", color: "#10B981" },
-    { name: "Bonus", type: "INCOME", icon: "🎁", color: "#3B82F6" },
-    { name: "Investment", type: "INCOME", icon: "📈", color: "#8B5CF6" },
-    { name: "Freelance", type: "INCOME", icon: "💼", color: "#F59E0B" },
-    { name: "Business", type: "INCOME", icon: "🏪", color: "#06B6D4" },
-    { name: "Gift", type: "INCOME", icon: "🎉", color: "#EC4899" },
-    { name: "Other Income", type: "INCOME", icon: "💵", color: "#6B7280" },
-
-    // Expense categories
-    { name: "Food & Drinks", type: "EXPENSE", icon: "🍔", color: "#EF4444" },
-    { name: "Transportation", type: "EXPENSE", icon: "🚗", color: "#F59E0B" },
-    { name: "Shopping", type: "EXPENSE", icon: "🛒", color: "#8B5CF6" },
-    { name: "Entertainment", type: "EXPENSE", icon: "🎬", color: "#EC4899" },
-    { name: "Bills & Utilities", type: "EXPENSE", icon: "📄", color: "#6366F1" },
-    { name: "Healthcare", type: "EXPENSE", icon: "⚕️", color: "#14B8A6" },
-    { name: "Education", type: "EXPENSE", icon: "📚", color: "#06B6D4" },
-    { name: "Household", type: "EXPENSE", icon: "🏠", color: "#84CC16" },
-    { name: "Clothing", type: "EXPENSE", icon: "👕", color: "#A855F7" },
-    { name: "Beauty", type: "EXPENSE", icon: "💄", color: "#F472B6" },
-    { name: "Technology", type: "EXPENSE", icon: "💻", color: "#3B82F6" },
-    { name: "Sports & Fitness", type: "EXPENSE", icon: "⚽", color: "#22C55E" },
-    { name: "Donation", type: "EXPENSE", icon: "🤲", color: "#10B981" },
+    // Income
+    { name: "Salary", type: "INCOME", icon: "💰", color: "#10B981", isDefault: true },
+    { name: "Bonus", type: "INCOME", icon: "🎁", color: "#3B82F6", isDefault: false },
+    { name: "Investment", type: "INCOME", icon: "📈", color: "#8B5CF6", isDefault: false },
+    { name: "Freelance", type: "INCOME", icon: "💼", color: "#F59E0B", isDefault: false },
+    { name: "Business", type: "INCOME", icon: "🏪", color: "#06B6D4", isDefault: false },
+    { name: "Gift", type: "INCOME", icon: "🎉", color: "#EC4899", isDefault: false },
+    { name: "Other Income", type: "INCOME", icon: "💵", color: "#6B7280", isDefault: false },
+    // Expense
+    { name: "Food & Drinks", type: "EXPENSE", icon: "🍔", color: "#EF4444", isDefault: true },
+    { name: "Transportation", type: "EXPENSE", icon: "🚗", color: "#F59E0B", isDefault: false },
+    { name: "Shopping", type: "EXPENSE", icon: "🛒", color: "#8B5CF6", isDefault: false },
+    { name: "Entertainment", type: "EXPENSE", icon: "🎬", color: "#EC4899", isDefault: false },
+    { name: "Bills & Utilities", type: "EXPENSE", icon: "📄", color: "#6366F1", isDefault: false },
+    { name: "Healthcare", type: "EXPENSE", icon: "⚕️", color: "#14B8A6", isDefault: false },
+    { name: "Education", type: "EXPENSE", icon: "📚", color: "#06B6D4", isDefault: false },
+    { name: "Household", type: "EXPENSE", icon: "🏠", color: "#84CC16", isDefault: false },
+    { name: "Clothing", type: "EXPENSE", icon: "👕", color: "#A855F7", isDefault: false },
+    { name: "Beauty", type: "EXPENSE", icon: "💄", color: "#F472B6", isDefault: false },
+    { name: "Technology", type: "EXPENSE", icon: "💻", color: "#3B82F6", isDefault: false },
+    { name: "Sports & Fitness", type: "EXPENSE", icon: "⚽", color: "#22C55E", isDefault: false },
+    { name: "Donation", type: "EXPENSE", icon: "🤲", color: "#10B981", isDefault: false },
   ];
 
   const categoryIds: Record<string, string> = {};
-
   for (const category of defaultCategories) {
-    const categoryId = createId();
-
-    const created = await prisma.category.upsert({
-      where: { id: categoryId },
-      update: {},
-      create: {
-        id: categoryId,
+    const created = await prisma.category.create({
+      data: {
         userId: demoUser.id,
         name: category.name,
         type: category.type as "INCOME" | "EXPENSE",
         icon: category.icon,
         color: category.color,
-        isDefault: true,
+        isDefault: category.isDefault,
       },
     });
     categoryIds[category.name] = created.id;
   }
-
-  console.log(`✅ Created ${defaultCategories.length} default categories\n`);
+  console.log(`✅ Created ${defaultCategories.length} categories\n`);
 
   // ============================================
-  // 3. CREATE ACCOUNTS
+  // 4. CREATE ACCOUNTS (balance starts at 0,
+  //    will be updated by transaction processing)
   // ============================================
   console.log("💳 Creating accounts...");
 
-  const accounts = await Promise.all([
+  const [cashAccount, bankAccount, ewalletAccount, creditAccount, savingsAccount] = await Promise.all([
     prisma.account.create({
-      data: {
-        userId: demoUser.id,
-        name: "Cash",
-        type: "CASH",
-        balance: 2500000,
-        color: "#10B981",
-        icon: "💵",
-        isDefault: true,
-      },
+      data: { userId: demoUser.id, name: "Cash", type: "CASH", balance: 0, color: "#10B981", icon: "💵", isDefault: true },
     }),
     prisma.account.create({
-      data: {
-        userId: demoUser.id,
-        name: "Bank Account",
-        type: "BANK",
-        balance: 45750000,
-        color: "#3B82F6",
-        icon: "🏦",
-      },
+      data: { userId: demoUser.id, name: "Bank Account", type: "BANK", balance: 0, color: "#3B82F6", icon: "🏦", isDefault: false },
     }),
     prisma.account.create({
-      data: {
-        userId: demoUser.id,
-        name: "Digital Wallet",
-        type: "EWALLET",
-        balance: 1850000,
-        color: "#22C55E",
-        icon: "📱",
-      },
+      data: { userId: demoUser.id, name: "GoPay / OVO", type: "EWALLET", balance: 0, color: "#22C55E", icon: "📱", isDefault: false },
     }),
     prisma.account.create({
-      data: {
-        userId: demoUser.id,
-        name: "Credit Card",
-        type: "CREDIT_CARD",
-        balance: -8500000,
-        color: "#EF4444",
-        icon: "💳",
-      },
+      data: { userId: demoUser.id, name: "Credit Card", type: "CREDIT_CARD", balance: 0, color: "#EF4444", icon: "💳", isDefault: false },
+    }),
+    prisma.account.create({
+      data: { userId: demoUser.id, name: "Savings", type: "BANK", balance: 0, color: "#8B5CF6", icon: "🏛️", isDefault: false },
     }),
   ]);
 
+  const accounts = [cashAccount, bankAccount, ewalletAccount, creditAccount, savingsAccount];
   console.log(`✅ Created ${accounts.length} accounts\n`);
 
   // ============================================
-  // 4. CREATE TRANSACTIONS (Recent 6 months)
+  // 5. BUILD & INSERT TRANSACTIONS
+  //    (balances updated in the same loop)
   // ============================================
   console.log("💰 Creating transactions...");
 
-  // Helper to get random date in specific month
-  const getRandomDateInMonth = (year: number, month: number) => {
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const day = Math.floor(Math.random() * daysInMonth) + 1;
-    const hour = Math.floor(Math.random() * 24);
-    const minute = Math.floor(Math.random() * 60);
-    return new Date(year, month, day, hour, minute);
+  // Track running balances so account.balance is accurate after seed
+  const balances: Record<string, number> = {
+    [cashAccount.id]: 0,
+    [bankAccount.id]: 0,
+    [ewalletAccount.id]: 0,
+    [creditAccount.id]: 0,
+    [savingsAccount.id]: 0,
   };
 
-  // Helper to get random item from array
+  type TxType = "INCOME" | "EXPENSE" | "TRANSFER";
+
+  interface TxRow {
+    accountId: string;
+    toAccountId?: string;
+    categoryId?: string;
+    amount: number;
+    type: TxType;
+    description: string;
+    date: Date;
+  }
+
+  const transactions: TxRow[] = [];
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+
   const getRandom = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+
+  const randBetween = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+  const dateIn = (year: number, month: number, dayMin = 1, dayMax?: number) => {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const day = randBetween(dayMin, Math.min(dayMax ?? daysInMonth, daysInMonth));
+    return new Date(year, month, day, randBetween(7, 22), randBetween(0, 59));
+  };
 
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
 
-  // Generate transactions for last 6 months
-  const incomeData = [];
-  const expenseData = [];
+  // ── 6-month loop ─────────────────────────────────────────────────────────
 
-  // Generate monthly salaries for last 6 months
   for (let i = 5; i >= 0; i--) {
-    const month = currentMonth - i;
-    const year = month < 0 ? currentYear - 1 : currentYear;
-    const adjustedMonth = month < 0 ? month + 12 : month;
+    const rawMonth = currentMonth - i;
+    const year = rawMonth < 0 ? currentYear - 1 : currentYear;
+    const month = rawMonth < 0 ? rawMonth + 12 : rawMonth;
+    const isThisMonth = i === 0;
 
-    incomeData.push({
-      accountId: accounts[1].id,
+    // ── INCOME ──────────────────────────────────────────────────────────
+
+    // Salary (always on 25th)
+    transactions.push({
+      accountId: bankAccount.id,
       categoryId: categoryIds["Salary"],
-      amount: 12500000,
-      type: "INCOME" as const,
+      amount: 12_500_000,
+      type: "INCOME",
       description: "Monthly Salary",
-      date: new Date(year, adjustedMonth, 25),
+      date: new Date(year, month, 25, 9, 0),
     });
 
-    // Occasional bonuses
-    if (i === 2 || i === 5) {
-      incomeData.push({
-        accountId: accounts[1].id,
+    // Bonus (months 0 and 3 of the 6-month window)
+    if (i === 5 || i === 2) {
+      transactions.push({
+        accountId: bankAccount.id,
         categoryId: categoryIds["Bonus"],
-        amount: 5000000,
-        type: "INCOME" as const,
+        amount: 5_000_000,
+        type: "INCOME",
         description: "Performance Bonus",
-        date: getRandomDateInMonth(year, adjustedMonth),
+        date: dateIn(year, month),
       });
     }
 
-    // Freelance income (random months)
-    if (Math.random() > 0.5) {
-      incomeData.push({
-        accountId: accounts[1].id,
-        categoryId: categoryIds["Freelance"],
-        amount: Math.floor(Math.random() * 3000000) + 1500000,
-        type: "INCOME" as const,
-        description: getRandom(["Website Project", "Consulting Work", "Design Project", "App Development"]),
-        date: getRandomDateInMonth(year, adjustedMonth),
-      });
-    }
+    // Freelance (every month, varying amount)
+    transactions.push({
+      accountId: bankAccount.id,
+      categoryId: categoryIds["Freelance"],
+      amount: randBetween(1_500_000, 4_500_000),
+      type: "INCOME",
+      description: getRandom(["Website Project", "Consulting Work", "Design Project", "App Development", "Content Writing"]),
+      date: dateIn(year, month),
+    });
 
-    // Investment returns
-    if (i % 3 === 0) {
-      incomeData.push({
-        accountId: accounts[1].id,
+    // Investment return (every 2 months)
+    if (i % 2 === 0) {
+      transactions.push({
+        accountId: bankAccount.id,
         categoryId: categoryIds["Investment"],
-        amount: Math.floor(Math.random() * 800000) + 400000,
-        type: "INCOME" as const,
-        description: "Investment Returns",
-        date: getRandomDateInMonth(year, adjustedMonth),
+        amount: randBetween(400_000, 1_200_000),
+        type: "INCOME",
+        description: getRandom(["Dividend", "Stock Return", "Mutual Fund Return", "Bond Interest"]),
+        date: dateIn(year, month),
       });
     }
-  }
 
-  // Generate expenses for last 6 months
-  for (let i = 5; i >= 0; i--) {
-    const month = currentMonth - i;
-    const year = month < 0 ? currentYear - 1 : currentYear;
-    const adjustedMonth = month < 0 ? month + 12 : month;
+    // Gift income (random months)
+    if (Math.random() > 0.6) {
+      transactions.push({
+        accountId: cashAccount.id,
+        categoryId: categoryIds["Gift"],
+        amount: randBetween(200_000, 1_000_000),
+        type: "INCOME",
+        description: getRandom(["Birthday Gift", "Holiday Gift", "Cash Gift"]),
+        date: dateIn(year, month),
+      });
+    }
 
-    // Food & Drinks (3-5 times per week)
+    // ── EXPENSE ─────────────────────────────────────────────────────────
+
+    // Food & Drinks — heavy, ~20 transactions/month
     for (let j = 0; j < 20; j++) {
-      expenseData.push({
-        accountId: getRandom([accounts[0].id, accounts[2].id]),
+      transactions.push({
+        accountId: getRandom([cashAccount.id, ewalletAccount.id]),
         categoryId: categoryIds["Food & Drinks"],
-        amount: Math.floor(Math.random() * 100000) + 20000,
-        type: "EXPENSE" as const,
-        description: getRandom(["Breakfast", "Lunch", "Dinner", "Coffee", "Snacks", "Restaurant", "Fast Food", "Groceries"]),
-        date: getRandomDateInMonth(year, adjustedMonth),
+        amount: randBetween(20_000, 120_000),
+        type: "EXPENSE",
+        description: getRandom(["Breakfast", "Lunch", "Dinner", "Coffee", "Snacks", "Restaurant", "Fast Food", "Groceries", "Bubble Tea", "Bakery"]),
+        date: dateIn(year, month),
       });
     }
 
-    // Transportation (daily)
+    // Transportation — 15/month
     for (let j = 0; j < 15; j++) {
-      expenseData.push({
-        accountId: getRandom([accounts[0].id, accounts[2].id]),
+      transactions.push({
+        accountId: getRandom([cashAccount.id, ewalletAccount.id]),
         categoryId: categoryIds["Transportation"],
-        amount: Math.floor(Math.random() * 60000) + 15000,
-        type: "EXPENSE" as const,
-        description: getRandom(["Taxi", "Uber", "Gas", "Parking", "Toll", "Public Transport"]),
-        date: getRandomDateInMonth(year, adjustedMonth),
+        amount: randBetween(15_000, 80_000),
+        type: "EXPENSE",
+        description: getRandom(["Grab", "Gojek", "Gas", "Parking", "Toll", "Bus", "Train", "Commuter Line"]),
+        date: dateIn(year, month),
       });
     }
 
-    // Bills & Utilities (monthly)
-    expenseData.push(
+    // Bills & Utilities — fixed on specific days
+    transactions.push(
       {
-        accountId: accounts[1].id,
+        accountId: bankAccount.id,
         categoryId: categoryIds["Bills & Utilities"],
-        amount: Math.floor(Math.random() * 100000) + 350000,
-        type: "EXPENSE" as const,
+        amount: randBetween(350_000, 500_000),
+        type: "EXPENSE",
         description: "Electricity Bill",
-        date: new Date(year, adjustedMonth, 5),
+        date: new Date(year, month, 5),
       },
-      {
-        accountId: accounts[1].id,
-        categoryId: categoryIds["Bills & Utilities"],
-        amount: 450000,
-        type: "EXPENSE" as const,
-        description: "Internet Bill",
-        date: new Date(year, adjustedMonth, 10),
-      },
-      {
-        accountId: accounts[1].id,
-        categoryId: categoryIds["Bills & Utilities"],
-        amount: 165000,
-        type: "EXPENSE" as const,
-        description: "Streaming Subscriptions",
-        date: new Date(year, adjustedMonth, 15),
-      },
+      { accountId: bankAccount.id, categoryId: categoryIds["Bills & Utilities"], amount: 450_000, type: "EXPENSE", description: "Internet Bill", date: new Date(year, month, 10) },
+      { accountId: bankAccount.id, categoryId: categoryIds["Bills & Utilities"], amount: 165_000, type: "EXPENSE", description: "Netflix + Spotify", date: new Date(year, month, 15) },
+      { accountId: bankAccount.id, categoryId: categoryIds["Bills & Utilities"], amount: 75_000, type: "EXPENSE", description: "Phone Plan", date: new Date(year, month, 20) },
     );
 
-    // Shopping (2-4 times per month)
-    for (let j = 0; j < 3; j++) {
-      expenseData.push({
-        accountId: getRandom([accounts[2].id, accounts[3].id]),
+    // Shopping — 3-5 per month
+    const shopCount = randBetween(3, 5);
+    for (let j = 0; j < shopCount; j++) {
+      transactions.push({
+        accountId: getRandom([ewalletAccount.id, creditAccount.id]),
         categoryId: categoryIds["Shopping"],
-        amount: Math.floor(Math.random() * 500000) + 100000,
-        type: "EXPENSE" as const,
-        description: getRandom(["Groceries", "Household Items", "Personal Care", "Electronics", "Books"]),
-        date: getRandomDateInMonth(year, adjustedMonth),
+        amount: randBetween(100_000, 600_000),
+        type: "EXPENSE",
+        description: getRandom(["Groceries", "Household Items", "Personal Care", "Online Shopping", "Books", "Stationery"]),
+        date: dateIn(year, month),
       });
     }
 
-    // Entertainment (1-2 times per month)
-    if (Math.random() > 0.3) {
-      expenseData.push({
-        accountId: getRandom([accounts[0].id, accounts[2].id]),
+    // Entertainment — 1-3 per month
+    const entCount = randBetween(1, 3);
+    for (let j = 0; j < entCount; j++) {
+      transactions.push({
+        accountId: getRandom([cashAccount.id, ewalletAccount.id]),
         categoryId: categoryIds["Entertainment"],
-        amount: Math.floor(Math.random() * 300000) + 50000,
-        type: "EXPENSE" as const,
-        description: getRandom(["Cinema", "Concert", "Games", "Karaoke", "Bowling"]),
-        date: getRandomDateInMonth(year, adjustedMonth),
+        amount: randBetween(50_000, 350_000),
+        type: "EXPENSE",
+        description: getRandom(["Cinema", "Concert", "Games", "Karaoke", "Bowling", "Theme Park", "Museum"]),
+        date: dateIn(year, month),
       });
     }
 
-    // Healthcare (occasional)
-    if (Math.random() > 0.6) {
-      expenseData.push({
-        accountId: getRandom([accounts[0].id, accounts[1].id]),
+    // Healthcare — occasional
+    if (Math.random() > 0.5) {
+      transactions.push({
+        accountId: getRandom([cashAccount.id, bankAccount.id]),
         categoryId: categoryIds["Healthcare"],
-        amount: Math.floor(Math.random() * 500000) + 100000,
-        type: "EXPENSE" as const,
-        description: getRandom(["Doctor Visit", "Medicine", "Dental", "Eye Care", "Health Supplements"]),
-        date: getRandomDateInMonth(year, adjustedMonth),
+        amount: randBetween(100_000, 600_000),
+        type: "EXPENSE",
+        description: getRandom(["Doctor Visit", "Medicine", "Dental", "Eye Care", "Health Supplements", "Lab Test"]),
+        date: dateIn(year, month),
       });
     }
 
-    // Clothing (occasional)
-    if (Math.random() > 0.7) {
-      expenseData.push({
-        accountId: getRandom([accounts[2].id, accounts[3].id]),
+    // Clothing — occasional
+    if (Math.random() > 0.6) {
+      transactions.push({
+        accountId: getRandom([ewalletAccount.id, creditAccount.id]),
         categoryId: categoryIds["Clothing"],
-        amount: Math.floor(Math.random() * 400000) + 150000,
-        type: "EXPENSE" as const,
-        description: getRandom(["Shirts", "Pants", "Shoes", "Accessories", "Jacket"]),
-        date: getRandomDateInMonth(year, adjustedMonth),
+        amount: randBetween(150_000, 500_000),
+        type: "EXPENSE",
+        description: getRandom(["Shirts", "Pants", "Shoes", "Accessories", "Jacket", "Sneakers"]),
+        date: dateIn(year, month),
       });
     }
 
-    // Sports & Fitness (monthly)
-    if (i <= 3) {
-      expenseData.push({
-        accountId: accounts[1].id,
-        categoryId: categoryIds["Sports & Fitness"],
-        amount: 750000,
-        type: "EXPENSE" as const,
-        description: "Gym Membership",
-        date: new Date(year, adjustedMonth, 1),
+    // Technology (bigger purchases, rare)
+    if (Math.random() > 0.75) {
+      transactions.push({
+        accountId: creditAccount.id,
+        categoryId: categoryIds["Technology"],
+        amount: randBetween(300_000, 2_000_000),
+        type: "EXPENSE",
+        description: getRandom(["Phone Accessories", "Software License", "Gaming", "Smart Watch", "Headphones"]),
+        date: dateIn(year, month),
+      });
+    }
+
+    // Sports & Fitness — gym every month
+    transactions.push({
+      accountId: bankAccount.id,
+      categoryId: categoryIds["Sports & Fitness"],
+      amount: 750_000,
+      type: "EXPENSE",
+      description: "Gym Membership",
+      date: new Date(year, month, 1),
+    });
+
+    // Beauty — occasional
+    if (Math.random() > 0.65) {
+      transactions.push({
+        accountId: getRandom([cashAccount.id, ewalletAccount.id]),
+        categoryId: categoryIds["Beauty"],
+        amount: randBetween(80_000, 400_000),
+        type: "EXPENSE",
+        description: getRandom(["Haircut", "Skincare", "Salon", "Spa", "Cosmetics"]),
+        date: dateIn(year, month),
+      });
+    }
+
+    // Donation — occasional
+    if (Math.random() > 0.7) {
+      transactions.push({
+        accountId: getRandom([cashAccount.id, ewalletAccount.id]),
+        categoryId: categoryIds["Donation"],
+        amount: randBetween(50_000, 300_000),
+        type: "EXPENSE",
+        description: getRandom(["Charity", "Mosque Donation", "Social Fund", "Zakat", "Community Help"]),
+        date: dateIn(year, month),
+      });
+    }
+
+    // Education — occasional
+    if (Math.random() > 0.7) {
+      transactions.push({
+        accountId: bankAccount.id,
+        categoryId: categoryIds["Education"],
+        amount: randBetween(100_000, 800_000),
+        type: "EXPENSE",
+        description: getRandom(["Online Course", "Book Purchase", "Workshop", "Seminar", "Training"]),
+        date: dateIn(year, month),
+      });
+    }
+
+    // Household — monthly supplies
+    transactions.push({
+      accountId: getRandom([cashAccount.id, ewalletAccount.id]),
+      categoryId: categoryIds["Household"],
+      amount: randBetween(100_000, 400_000),
+      type: "EXPENSE",
+      description: getRandom(["Cleaning Supplies", "Home Decor", "Kitchen Items", "Laundry", "Maintenance"]),
+      date: dateIn(year, month),
+    });
+
+    // ── TRANSFERS ────────────────────────────────────────────────────────
+
+    // Top up e-wallet from bank (weekly-ish, 3-4 per month)
+    const topUpCount = randBetween(3, 4);
+    for (let j = 0; j < topUpCount; j++) {
+      transactions.push({
+        accountId: bankAccount.id,
+        toAccountId: ewalletAccount.id,
+        amount: randBetween(200_000, 500_000),
+        type: "TRANSFER",
+        description: "Top Up GoPay / OVO",
+        date: dateIn(year, month),
+      });
+    }
+
+    // Move salary savings to savings account (after payday)
+    transactions.push({
+      accountId: bankAccount.id,
+      toAccountId: savingsAccount.id,
+      amount: randBetween(2_000_000, 4_000_000),
+      type: "TRANSFER",
+      description: "Monthly Savings Transfer",
+      date: new Date(year, month, 26, 10, 0), // day after salary
+    });
+
+    // ATM cash withdrawal (no destination = just reducing bank)
+    transactions.push({
+      accountId: bankAccount.id,
+      amount: randBetween(500_000, 1_500_000),
+      type: "TRANSFER",
+      description: "ATM Cash Withdrawal",
+      date: dateIn(year, month),
+    });
+
+    // Occasional credit card payment from bank
+    if (!isThisMonth || now.getDate() >= 15) {
+      transactions.push({
+        accountId: bankAccount.id,
+        toAccountId: creditAccount.id,
+        amount: randBetween(1_000_000, 3_000_000),
+        type: "TRANSFER",
+        description: "Credit Card Payment",
+        date: dateIn(year, month, 14, 20),
       });
     }
   }
 
-  // Create all transactions
-  for (const tx of [...incomeData, ...expenseData]) {
+  // ── Sort by date ascending, then insert & track balances ─────────────────
+
+  transactions.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  let txCreated = 0;
+
+  for (const tx of transactions) {
     await prisma.transaction.create({
       data: {
         userId: demoUser.id,
-        ...tx,
+        accountId: tx.accountId,
+        toAccountId: tx.toAccountId ?? null,
+        categoryId: tx.categoryId ?? null,
+        amount: tx.amount,
+        type: tx.type,
+        description: tx.description,
+        date: tx.date,
       },
+    });
+
+    // Update running balances
+    if (tx.type === "INCOME") {
+      balances[tx.accountId] += tx.amount;
+    } else if (tx.type === "EXPENSE") {
+      balances[tx.accountId] -= tx.amount;
+    } else {
+      // TRANSFER
+      balances[tx.accountId] -= tx.amount;
+      if (tx.toAccountId) balances[tx.toAccountId] += tx.amount;
+    }
+
+    txCreated++;
+  }
+
+  // Write computed balances back to accounts
+  for (const [accountId, balance] of Object.entries(balances)) {
+    await prisma.account.update({
+      where: { id: accountId },
+      data: { balance },
     });
   }
 
-  console.log(`✅ Created ${incomeData.length + expenseData.length} transactions\n`);
+  console.log(`✅ Created ${txCreated} transactions\n`);
+  console.log("💰 Final account balances:");
+  for (const acc of accounts) {
+    const bal = balances[acc.id];
+    console.log(`   ${acc.icon} ${acc.name}: Rp ${bal.toLocaleString("id-ID")}`);
+  }
+  console.log();
 
   // ============================================
-  // 5. CREATE BUDGETS (Current Month)
+  // 6. CREATE BUDGETS (current month, with real spent)
   // ============================================
   console.log("📊 Creating budgets...");
 
-  const budgets = [
-    { categoryId: categoryIds["Food & Drinks"], amount: 3000000 },
-    { categoryId: categoryIds["Transportation"], amount: 1500000 },
-    { categoryId: categoryIds["Shopping"], amount: 2000000 },
-    { categoryId: categoryIds["Entertainment"], amount: 800000 },
-    { categoryId: categoryIds["Bills & Utilities"], amount: 1500000 },
-    { categoryId: categoryIds["Healthcare"], amount: 1000000 },
-    { categoryId: categoryIds["Clothing"], amount: 1000000 },
+  const budgetDefs = [
+    { name: "Food & Drinks", amount: 3_000_000 },
+    { name: "Transportation", amount: 1_500_000 },
+    { name: "Shopping", amount: 2_000_000 },
+    { name: "Entertainment", amount: 800_000 },
+    { name: "Bills & Utilities", amount: 1_500_000 },
+    { name: "Healthcare", amount: 1_000_000 },
+    { name: "Clothing", amount: 1_000_000 },
+    { name: "Sports & Fitness", amount: 1_000_000 },
+    { name: "Beauty", amount: 500_000 },
+    { name: "Household", amount: 600_000 },
   ];
 
-  for (const budget of budgets) {
-    const spent = await prisma.transaction.aggregate({
+  for (const def of budgetDefs) {
+    const categoryId = categoryIds[def.name];
+
+    const { _sum } = await prisma.transaction.aggregate({
       where: {
         userId: demoUser.id,
-        categoryId: budget.categoryId,
+        categoryId,
         type: "EXPENSE",
         date: {
           gte: new Date(currentYear, currentMonth, 1),
@@ -371,165 +512,159 @@ async function main() {
     await prisma.budget.create({
       data: {
         userId: demoUser.id,
-        categoryId: budget.categoryId,
-        amount: budget.amount,
-        spent: spent._sum.amount || 0,
+        categoryId,
+        amount: def.amount,
+        spent: _sum.amount ?? 0,
         month: currentMonth + 1,
         year: currentYear,
       },
     });
   }
 
-  console.log(`✅ Created ${budgets.length} budgets\n`);
+  console.log(`✅ Created ${budgetDefs.length} budgets\n`);
 
   // ============================================
-  // 6. CREATE FINANCIAL GOALS
+  // 7. CREATE FINANCIAL GOALS
   // ============================================
   console.log("🎯 Creating financial goals...");
 
-  const goals = [
-    {
-      name: "Emergency Fund",
-      targetAmount: 50000000,
-      currentAmount: 35000000,
-      deadline: new Date(currentYear, currentMonth + 6, 30),
-      status: "ACTIVE" as const,
-    },
-    {
-      name: "New Laptop",
-      targetAmount: 25000000,
-      currentAmount: 18500000,
-      deadline: new Date(currentYear, currentMonth + 3, 30),
-      status: "ACTIVE" as const,
-    },
-    {
-      name: "Vacation Fund",
-      targetAmount: 15000000,
-      currentAmount: 8200000,
-      deadline: new Date(currentYear, currentMonth + 8, 30),
-      status: "ACTIVE" as const,
-    },
-    {
-      name: "Investment Portfolio",
-      targetAmount: 100000000,
-      currentAmount: 42000000,
-      deadline: new Date(currentYear + 1, 11, 31),
-      status: "ACTIVE" as const,
-    },
-  ];
+  const totalSaved = balances[savingsAccount.id];
 
-  for (const goal of goals) {
-    await prisma.goal.create({
+  await Promise.all([
+    prisma.goal.create({
       data: {
         userId: demoUser.id,
-        ...goal,
+        name: "Emergency Fund",
+        targetAmount: 50_000_000,
+        currentAmount: Math.min(totalSaved, 35_000_000),
+        deadline: new Date(currentYear, currentMonth + 6, 30),
+        status: "ACTIVE",
       },
-    });
-  }
+    }),
+    prisma.goal.create({
+      data: { userId: demoUser.id, name: "New Laptop", targetAmount: 25_000_000, currentAmount: 18_500_000, deadline: new Date(currentYear, currentMonth + 3, 30), status: "ACTIVE" },
+    }),
+    prisma.goal.create({
+      data: { userId: demoUser.id, name: "Vacation Fund", targetAmount: 15_000_000, currentAmount: 8_200_000, deadline: new Date(currentYear, currentMonth + 8, 30), status: "ACTIVE" },
+    }),
+    prisma.goal.create({
+      data: { userId: demoUser.id, name: "Investment Portfolio", targetAmount: 100_000_000, currentAmount: 42_000_000, deadline: new Date(currentYear + 1, 11, 31), status: "ACTIVE" },
+    }),
+    prisma.goal.create({
+      data: { userId: demoUser.id, name: "House Down Payment", targetAmount: 200_000_000, currentAmount: 25_000_000, deadline: new Date(currentYear + 3, 11, 31), status: "ACTIVE" },
+    }),
+  ]);
 
-  console.log(`✅ Created ${goals.length} financial goals\n`);
+  console.log("✅ Created 5 financial goals\n");
 
   // ============================================
-  // 7. CREATE RECURRING TRANSACTIONS
+  // 8. CREATE RECURRING TRANSACTIONS
   // ============================================
   console.log("🔄 Creating recurring transactions...");
 
-  const recurring = [
-    {
-      accountId: accounts[1].id,
-      categoryId: categoryIds["Salary"],
-      amount: 12500000,
-      type: "INCOME" as const,
-      description: "Monthly Salary",
-      frequency: "MONTHLY" as const,
-      startDate: new Date(currentYear, 0, 25),
-      nextOccurrence: new Date(currentYear, currentMonth + 1, 25),
-      isActive: true,
-    },
-    {
-      accountId: accounts[1].id,
-      categoryId: categoryIds["Bills & Utilities"],
-      amount: 400000,
-      type: "EXPENSE" as const,
-      description: "Electricity Bill",
-      frequency: "MONTHLY" as const,
-      startDate: new Date(currentYear, 0, 5),
-      nextOccurrence: new Date(currentYear, currentMonth + 1, 5),
-      isActive: true,
-    },
-    {
-      accountId: accounts[1].id,
-      categoryId: categoryIds["Bills & Utilities"],
-      amount: 450000,
-      type: "EXPENSE" as const,
-      description: "Internet Bill",
-      frequency: "MONTHLY" as const,
-      startDate: new Date(currentYear, 0, 10),
-      nextOccurrence: new Date(currentYear, currentMonth + 1, 10),
-      isActive: true,
-    },
-    {
-      accountId: accounts[1].id,
-      categoryId: categoryIds["Sports & Fitness"],
-      amount: 750000,
-      type: "EXPENSE" as const,
-      description: "Gym Membership",
-      frequency: "MONTHLY" as const,
-      startDate: new Date(currentYear, currentMonth - 3, 1),
-      nextOccurrence: new Date(currentYear, currentMonth + 1, 1),
-      isActive: true,
-    },
-  ];
-
-  for (const rec of recurring) {
-    await prisma.recurringTransaction.create({
+  await Promise.all([
+    prisma.recurringTransaction.create({
       data: {
         userId: demoUser.id,
-        ...rec,
+        accountId: bankAccount.id,
+        categoryId: categoryIds["Salary"],
+        amount: 12_500_000,
+        type: "INCOME",
+        description: "Monthly Salary",
+        frequency: "MONTHLY",
+        startDate: new Date(currentYear, 0, 25),
+        nextOccurrence: new Date(currentYear, currentMonth + 1, 25),
+        isActive: true,
       },
-    });
-  }
+    }),
+    prisma.recurringTransaction.create({
+      data: {
+        userId: demoUser.id,
+        accountId: bankAccount.id,
+        categoryId: categoryIds["Bills & Utilities"],
+        amount: 400_000,
+        type: "EXPENSE",
+        description: "Electricity Bill",
+        frequency: "MONTHLY",
+        startDate: new Date(currentYear, 0, 5),
+        nextOccurrence: new Date(currentYear, currentMonth + 1, 5),
+        isActive: true,
+      },
+    }),
+    prisma.recurringTransaction.create({
+      data: {
+        userId: demoUser.id,
+        accountId: bankAccount.id,
+        categoryId: categoryIds["Bills & Utilities"],
+        amount: 450_000,
+        type: "EXPENSE",
+        description: "Internet Bill",
+        frequency: "MONTHLY",
+        startDate: new Date(currentYear, 0, 10),
+        nextOccurrence: new Date(currentYear, currentMonth + 1, 10),
+        isActive: true,
+      },
+    }),
+    prisma.recurringTransaction.create({
+      data: {
+        userId: demoUser.id,
+        accountId: bankAccount.id,
+        categoryId: categoryIds["Sports & Fitness"],
+        amount: 750_000,
+        type: "EXPENSE",
+        description: "Gym Membership",
+        frequency: "MONTHLY",
+        startDate: new Date(currentYear, 0, 1),
+        nextOccurrence: new Date(currentYear, currentMonth + 1, 1),
+        isActive: true,
+      },
+    }),
+    prisma.recurringTransaction.create({
+      data: {
+        userId: demoUser.id,
+        accountId: bankAccount.id,
+        categoryId: categoryIds["Bills & Utilities"],
+        amount: 165_000,
+        type: "EXPENSE",
+        description: "Netflix + Spotify",
+        frequency: "MONTHLY",
+        startDate: new Date(currentYear, 0, 15),
+        nextOccurrence: new Date(currentYear, currentMonth + 1, 15),
+        isActive: true,
+      },
+    }),
+    prisma.recurringTransaction.create({
+      data: {
+        userId: demoUser.id,
+        accountId: ewalletAccount.id,
+        categoryId: categoryIds["Food & Drinks"],
+        amount: 500_000,
+        type: "EXPENSE",
+        description: "Weekly Groceries",
+        frequency: "WEEKLY",
+        startDate: new Date(currentYear, 0, 1),
+        nextOccurrence: new Date(currentYear, currentMonth + 1, 7),
+        isActive: true,
+      },
+    }),
+  ]);
 
-  console.log(`✅ Created ${recurring.length} recurring transactions\n`);
+  console.log("✅ Created 6 recurring transactions\n");
 
   // ============================================
-  // 8. CREATE DEFAULT APP SETTINGS
+  // 9. APP SETTINGS
   // ============================================
   const APP_SETTINGS = [
-    {
-      key: "currency_options",
-      value: JSON.stringify(CURRENCY_OPTIONS),
-      type: "json",
-      category: "appearance",
-      label: "Currency Options",
-      description: "Available currency options for user selection",
-      isPublic: true,
-    },
-    {
-      key: "language_options",
-      value: JSON.stringify(LANGUAGE_OPTIONS),
-      type: "json",
-      category: "appearance",
-      label: "Language Options",
-      description: "Available language options for user selection",
-      isPublic: true,
-    },
-    {
-      key: "theme_options",
-      value: JSON.stringify(THEME_OPTIONS),
-      type: "json",
-      category: "appearance",
-      label: "Theme Options",
-      description: "Available theme options for user selection",
-      isPublic: true,
-    },
+    { key: "currency_options", value: JSON.stringify(CURRENCY_OPTIONS), type: "json", category: "appearance", label: "Currency Options", description: "Available currency options", isPublic: true },
+    { key: "language_options", value: JSON.stringify(LANGUAGE_OPTIONS), type: "json", category: "appearance", label: "Language Options", description: "Available language options", isPublic: true },
+    { key: "theme_options", value: JSON.stringify(THEME_OPTIONS), type: "json", category: "appearance", label: "Theme Options", description: "Available theme options", isPublic: true },
     {
       key: "currency_locale_map",
       value: JSON.stringify(CURRENCY_LOCALE_MAP),
       type: "json",
       category: "system",
       label: "Currency Locale Map",
-      description: "Mapping of currency to locale for formatting",
+      description: "Mapping of currency to locale",
       isPublic: true,
     },
     {
@@ -538,125 +673,66 @@ async function main() {
       type: "json",
       category: "system",
       label: "Zero Decimal Currencies",
-      description: "Currencies that do not use decimal fractions",
+      description: "Currencies without decimal fractions",
       isPublic: true,
     },
-    // ── Feature flags ───────────────────────────
-    {
-      key: "allow_registration",
-      value: "true",
-      type: "boolean",
-      category: "features",
-      label: "Allow Registration",
-      description: "Allow new users to register",
-      isPublic: false,
-    },
-    {
-      key: "maintenance_mode",
-      value: "false",
-      type: "boolean",
-      category: "features",
-      label: "Maintenance Mode",
-      description: "Put the app in read-only maintenance mode",
-      isPublic: false,
-    },
-    // ── Limits ──────────────────────────────────
-    {
-      key: "max_accounts_per_user",
-      value: "10",
-      type: "number",
-      category: "limits",
-      label: "Max Accounts Per User",
-      description: "Maximum number of accounts a user can create",
-      isPublic: false,
-    },
-    {
-      key: "max_categories_per_user",
-      value: "50",
-      type: "number",
-      category: "limits",
-      label: "Max Categories Per User",
-      description: "Maximum number of custom categories a user can create",
-      isPublic: false,
-    },
-    // ── Information ─────────────────────────────
-    {
-      key: "app_version",
-      value: "1.0.0",
-      type: "string",
-      category: "system",
-      label: "App Version",
-      description: "Current application version",
-      isPublic: true,
-    },
-    {
-      key: "app_last_updated",
-      value: "November 2025",
-      type: "string",
-      category: "system",
-      label: "Last Updated",
-      description: "Last application update date",
-      isPublic: true,
-    },
-    {
-      key: "app_build_number",
-      value: "2025.11.30",
-      type: "string",
-      category: "system",
-      label: "Build Number",
-      description: "Current application build number",
-      isPublic: true,
-    },
-    {
-      key: "app_environment",
-      value: "Production",
-      type: "string",
-      category: "system",
-      label: "Environment",
-      description: "Current application environment",
-      isPublic: true,
-    },
+    { key: "allow_registration", value: "true", type: "boolean", category: "features", label: "Allow Registration", description: "Allow new users to register", isPublic: false },
+    { key: "maintenance_mode", value: "false", type: "boolean", category: "features", label: "Maintenance Mode", description: "Put app in maintenance mode", isPublic: false },
+    { key: "max_accounts_per_user", value: "10", type: "number", category: "limits", label: "Max Accounts Per User", description: "Maximum accounts a user can create", isPublic: false },
+    { key: "max_categories_per_user", value: "50", type: "number", category: "limits", label: "Max Categories Per User", description: "Maximum custom categories per user", isPublic: false },
+    { key: "app_version", value: "1.0.0", type: "string", category: "system", label: "App Version", description: "Current application version", isPublic: true },
+    { key: "app_last_updated", value: "May 2026", type: "string", category: "system", label: "Last Updated", description: "Last application update date", isPublic: true },
+    { key: "app_build_number", value: "2026.05.11", type: "string", category: "system", label: "Build Number", description: "Current application build number", isPublic: true },
+    { key: "app_environment", value: "Production", type: "string", category: "system", label: "Environment", description: "Current application environment", isPublic: true },
   ] as const;
 
   for (const setting of APP_SETTINGS) {
     await prisma.appSetting.upsert({
       where: { key: setting.key },
-      update: {}, // never overwrite on re-seed
+      update: {},
       create: { ...setting },
     });
   }
 
-  console.log(`  ✓ ${APP_SETTINGS.length} app settings seeded`);
+  console.log(`✅ ${APP_SETTINGS.length} app settings seeded\n`);
 
   // ============================================
   // SUMMARY
   // ============================================
-  console.log("═══════════════════════════════════════");
-  console.log("🎉 DATABASE SEEDING COMPLETED!");
-  console.log("═══════════════════════════════════════\n");
+  const totalIncome = transactions.filter((t) => t.type === "INCOME").reduce((s, t) => s + t.amount, 0);
+  const totalExpense = transactions.filter((t) => t.type === "EXPENSE").reduce((s, t) => s + t.amount, 0);
+  const totalTransfer = transactions.filter((t) => t.type === "TRANSFER").reduce((s, t) => s + t.amount, 0);
+  const totalBalance = Object.values(balances).reduce((s, b) => s + b, 0);
 
-  const totalIncome = incomeData.reduce((sum, tx) => sum + tx.amount, 0);
-  const totalExpense = expenseData.reduce((sum, tx) => sum + tx.amount, 0);
-  const totalBalance = accounts.reduce((sum, acc) => sum + Number(acc.balance), 0);
-
+  console.log("═══════════════════════════════════════════════");
+  console.log("🎉  DATABASE SEEDING COMPLETED!");
+  console.log("═══════════════════════════════════════════════\n");
   console.log("📦 Summary:");
   console.log(`   • ${defaultCategories.length} categories`);
   console.log(`   • 1 demo user`);
   console.log(`   • ${accounts.length} accounts`);
-  console.log(`   • ${incomeData.length + expenseData.length} transactions`);
-  console.log(`   • ${budgets.length} budgets`);
-  console.log(`   • ${goals.length} goals`);
-  console.log(`   • ${recurring.length} recurring transactions\n`);
+  console.log(`   • ${txCreated} transactions (income + expense + transfer)`);
+  console.log(`   • ${budgetDefs.length} budgets`);
+  console.log(`   • 5 goals`);
+  console.log(`   • 6 recurring transactions\n`);
 
   console.log("🔐 Credentials:");
-  console.log("   Email: demo@finance.com");
+  console.log("   Email:    demo@finance.com");
   console.log("   Password: password123\n");
 
-  console.log("📊 Financial Summary (6 months):");
-  console.log(`   • Total Income: Rp ${totalIncome.toLocaleString("id-ID")}`);
-  console.log(`   • Total Expense: Rp ${totalExpense.toLocaleString("id-ID")}`);
-  console.log(`   • Net Savings: Rp ${(totalIncome - totalExpense).toLocaleString("id-ID")}`);
-  console.log(`   • Current Balance: Rp ${totalBalance.toLocaleString("id-ID")}\n`);
+  console.log("📊 6-Month Financial Summary:");
+  console.log(`   • Total Income:    Rp ${totalIncome.toLocaleString("id-ID")}`);
+  console.log(`   • Total Expense:   Rp ${totalExpense.toLocaleString("id-ID")}`);
+  console.log(`   • Total Transfers: Rp ${totalTransfer.toLocaleString("id-ID")}`);
+  console.log(`   • Net Savings:     Rp ${(totalIncome - totalExpense).toLocaleString("id-ID")}`);
+  console.log(`   • Total Balance:   Rp ${totalBalance.toLocaleString("id-ID")}\n`);
+
+  console.log("💰 Per-Account Balances:");
+  for (const acc of accounts) {
+    const bal = balances[acc.id];
+    const sign = bal >= 0 ? "+" : "";
+    console.log(`   ${acc.icon} ${acc.name.padEnd(16)} Rp ${sign}${bal.toLocaleString("id-ID")}`);
+  }
 }
 
 main()

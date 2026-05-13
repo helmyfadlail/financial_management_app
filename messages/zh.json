@@ -37,6 +37,20 @@
     "uncategorized": "未分类",
     "of": "的",
     "used": "已使用",
+    "totalBalance": "总余额",
+    "accountsLinked": "已关联账户",
+    "transfers": "转账",
+    "neutral": "中性",
+    "noDescription": "暂无描述",
+    "transfer": "转账",
+    "monthlyOverview": "6个月概览",
+    "monthlyComparison": "月度对比",
+    "expenseBreakdown": "支出明细",
+    "transferFlow": {
+      "totalMoved": "转移总额",
+      "totalReceived": "已收到",
+      "withdrawals": "提现"
+    },
     "budgetStatus": {
       "overBudget": "超出预算",
       "nearLimit": "接近限额",
@@ -51,6 +65,14 @@
         "title": "未设置预算",
         "description": "创建预算以跟踪支出限额并保持目标",
         "action": "设置第一个预算"
+      },
+      "charts": {
+        "title": "暂无数据",
+        "description": "开始添加交易以查看您的趋势"
+      },
+      "categories": {
+        "title": "暂无支出",
+        "description": "本月没有支出交易"
       }
     },
     "quickActions": {
@@ -78,6 +100,7 @@
     "addButton": "添加交易",
     "income": "收入",
     "expense": "支出",
+    "transfer": "转账",
     "noDescription": "无描述",
     "deleteButton": "删除交易",
     "listTitle": "交易",
@@ -112,6 +135,9 @@
       "selected": "选择 {type} ...",
       "account": "账户",
       "category": "类别",
+      "fromAccount": "来源账户",
+      "toAccount": "目标账户 (可选)",
+      "toAccountOptional": "选择目标账户",
       "categoryLabel": "类别",
       "date": "日期",
       "description": "描述",
@@ -131,7 +157,8 @@
       "amount": "请输入大于0的有效金额",
       "account": "请选择账户",
       "category": "请选择类别",
-      "description": "请添加描述"
+      "description": "请添加描述",
+      "sameAccount": "来源账户和目标账户必须不同"
     },
     "success": {
       "created": "交易创建成功！🎉",
@@ -455,15 +482,16 @@
   },
   "reportsPage": {
     "title": "财务报告",
-    "subtitle": "全面分析您的收入和支出",
+    "subtitle": "分析您的收入、支出和转账",
+    "tabs": {
+      "monthly": "月度",
+      "yearly": "年度",
+      "custom": "自定义"
+    },
     "income": "收入",
     "expense": "支出",
+    "transfer": "转账",
     "balance": "余额",
-    "ofTotal": "占总数",
-    "categoriesCount": "个类别",
-    "monthsCount": "个月",
-    "topCategories": "最高支出类别",
-    "monthlyBreakdown": "月度明细",
     "filter": {
       "reportType": "报告类型",
       "monthlyReport": "月度报告",
@@ -488,25 +516,64 @@
     "stats": {
       "totalIncome": "总收入",
       "totalExpense": "总支出",
+      "totalTransfers": "总转账",
+      "transfers": "转账",
       "netBalance": "净余额",
-      "yearlyBalance": "年度余额",
+      "balance": "余额",
       "savingsRate": "储蓄率",
-      "transactionCount": "交易数量",
+      "greatJob": "做得很好！",
+      "keepImproving": "继续努力",
+      "excellent": "非常出色！",
+      "roomToImprove": "仍有提升空间",
       "dailyAvgExpense": "日均支出",
       "largestTransaction": "最大交易",
+      "transactionCount": "交易",
       "totalTransactions": "总交易数",
       "avgMonthlyIncome": "月均收入",
       "avgMonthlyExpense": "月均支出",
-      "greatJob": "做得好！",
-      "keepImproving": "继续加油！",
-      "excellent": "优秀！",
-      "roomToImprove": "还有改进空间"
+      "txn": "笔"
+    },
+    "charts": {
+      "dailySpending": "每日支出趋势",
+      "dailyTrend": "每日趋势",
+      "monthlyBreakdown": "月度明细"
+    },
+    "transferSummary": {
+      "title": "转账摘要",
+      "totalMoved": "转出总额",
+      "totalReceived": "转入总额",
+      "withdrawals": "提现",
+      "count": "交易笔数"
+    },
+    "topCategories": "主要类别",
+    "categoriesCount": "个类别",
+    "monthlyBreakdown": "月度明细",
+    "monthsCount": "个月",
+    "ofTotal": "占总额",
+    "yearly": {
+      "bestMonth": "最佳月份",
+      "worstMonth": "最差月份"
+    },
+    "custom": {
+      "startDate": "开始日期",
+      "endDate": "结束日期",
+      "generate": "生成报告",
+      "empty": "请在上方选择日期范围，然后点击'生成报告'查看自定义分析。",
+      "categoryBreakdown": "类别明细",
+      "emptyCategoryBreakdown": "该时间段内无已分类交易。",
+      "accountBreakdown": "账户明细",
+      "account": {
+        "in": "转入",
+        "out": "转出",
+        "sent": "已发送",
+        "received": "已接收"
+      }
     },
     "empty": {
-      "title": "无可用数据",
-      "monthly": "本月没有支出数据。开始添加交易以查看您的热门类别。",
-      "yearly": "本年没有支出数据。开始跟踪您的支出以查看洞察。",
-      "breakdown": "本年没有月度数据。记录后交易将显示在此处。"
+      "title": "暂无数据",
+      "monthly": "本月暂无交易记录，请开始记录您的收入和支出。",
+      "yearly": "本年度暂无交易记录。",
+      "breakdown": "该期间暂无月度数据。"
     }
   },
   "profilesPage": {

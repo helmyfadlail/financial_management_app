@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 
-import { prisma, requireAuth } from "@/lib";
+import { applyBalanceChange, applyBudgetChange, prisma, requireAuth, TRANSACTION_INCLUDE, validateAccount, validateCategory } from "@/lib";
 
 import { errorResponse, successResponse, validationErrorResponse } from "@/utils";
 
@@ -44,59 +44,41 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return validationErrorResponse(fieldErrors);
     }
 
-    const existing = await prisma.transaction.findFirst({ where: { id, userId: user.id } });
-
+    const existing = await prisma.transaction.findFirst({
+      where: { id, userId: user.id },
+    });
     if (!existing) return errorResponse("Transaction not found", 404);
 
     const data = validation.data;
 
-    const transaction = await prisma.$transaction(async (tx) => {
-      const oldBalanceChange = existing.type === "INCOME" ? -existing.amount : existing.amount;
-      await tx.account.update({
-        where: { id: existing.accountId },
-        data: { balance: { increment: oldBalanceChange } },
-      });
+    const newAccountId = data.accountId ?? existing.accountId;
+    const newToAccountId = data.type === "TRANSFER" ? ("toAccountId" in data ? data.toAccountId : (existing.toAccountId ?? undefined)) : undefined;
 
-      if (existing.type === "EXPENSE") {
-        const oldDate = new Date(existing.date);
-        await tx.budget.updateMany({
-          where: {
-            userId: user.id,
-            categoryId: existing.categoryId,
-            month: oldDate.getMonth() + 1,
-            year: oldDate.getFullYear(),
-          },
-          data: { spent: { decrement: existing.amount } },
-        });
-      }
+    const { error: accountError } = await validateAccount(user.id, newAccountId, newToAccountId);
+    if (accountError) return errorResponse(accountError, 404);
+
+    const newCategoryId = data.type !== "TRANSFER" ? ("categoryId" in data ? data.categoryId : (existing.categoryId ?? undefined)) : undefined;
+
+    const { error: categoryError } = await validateCategory(user.id, newCategoryId);
+    if (categoryError) return errorResponse(categoryError, 404);
+
+    const transaction = await prisma.$transaction(async (tx) => {
+      await applyBalanceChange(tx, existing, "reverse");
+      await applyBudgetChange(tx, user.id, existing, "reverse");
 
       const updated = await tx.transaction.update({
         where: { id },
         data: {
           ...data,
           ...(data.date && { date: new Date(data.date) }),
+          ...(data.type && data.type !== "TRANSFER" && { toAccountId: null }),
+          ...(data.type === "TRANSFER" && !("categoryId" in data) && { categoryId: null }),
         },
-        include: { category: true, account: true },
+        include: TRANSACTION_INCLUDE,
       });
 
-      const newBalanceChange = updated.type === "INCOME" ? updated.amount : -updated.amount;
-      await tx.account.update({
-        where: { id: updated.accountId },
-        data: { balance: { increment: newBalanceChange } },
-      });
-
-      if (updated.type === "EXPENSE") {
-        const newDate = new Date(updated.date);
-        await tx.budget.updateMany({
-          where: {
-            userId: user.id,
-            categoryId: updated.categoryId,
-            month: newDate.getMonth() + 1,
-            year: newDate.getFullYear(),
-          },
-          data: { spent: { increment: updated.amount } },
-        });
-      }
+      await applyBalanceChange(tx, updated, "apply");
+      await applyBudgetChange(tx, user.id, updated, "apply");
 
       return updated;
     });
@@ -117,29 +99,16 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
     const user = await requireAuth();
     const { id } = await params;
 
-    const transaction = await prisma.transaction.findFirst({ where: { id, userId: user.id } });
+    const transaction = await prisma.transaction.findFirst({
+      where: { id, userId: user.id },
+    });
 
     if (!transaction) return errorResponse("Transaction not found", 404);
 
     await prisma.$transaction(async (tx) => {
-      const balanceChange = transaction.type === "INCOME" ? -transaction.amount : transaction.amount;
-      await tx.account.update({
-        where: { id: transaction.accountId },
-        data: { balance: { increment: balanceChange } },
-      });
+      await applyBalanceChange(tx, transaction, "reverse");
 
-      if (transaction.type === "EXPENSE") {
-        const date = new Date(transaction.date);
-        await tx.budget.updateMany({
-          where: {
-            userId: user.id,
-            categoryId: transaction.categoryId,
-            month: date.getMonth() + 1,
-            year: date.getFullYear(),
-          },
-          data: { spent: { decrement: transaction.amount } },
-        });
-      }
+      await applyBudgetChange(tx, user.id, transaction, "reverse");
 
       await tx.transaction.delete({ where: { id } });
     });
@@ -150,7 +119,6 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
 
     if (error instanceof Error && error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
 
-    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
-    return errorResponse(errorMessage, 500);
+    return errorResponse(error instanceof Error ? error.message : "An unexpected error occurred", 500);
   }
 }

@@ -37,6 +37,20 @@
     "uncategorized": "Tanpa Kategori",
     "of": "dari",
     "used": "terpakai",
+    "totalBalance": "Total Saldo",
+    "accountsLinked": "akun terhubung",
+    "transfers": "Transfer",
+    "neutral": "Netral",
+    "noDescription": "Tidak ada deskripsi",
+    "transfer": "Transfer",
+    "monthlyOverview": "Ringkasan 6 Bulan",
+    "monthlyComparison": "Perbandingan Bulanan",
+    "expenseBreakdown": "Rincian Pengeluaran",
+    "transferFlow": {
+      "totalMoved": "Total Dipindahkan",
+      "totalReceived": "Diterima",
+      "withdrawals": "Penarikan"
+    },
     "budgetStatus": {
       "overBudget": "Melebihi anggaran",
       "nearLimit": "Mendekati batas",
@@ -51,6 +65,14 @@
         "title": "Belum Ada Anggaran",
         "description": "Buat anggaran untuk melacak batas pengeluaran dan tetap pada target",
         "action": "Buat Anggaran Pertama"
+      },
+      "charts": {
+        "title": "Belum ada data",
+        "description": "Mulai tambahkan transaksi untuk melihat tren Anda"
+      },
+      "categories": {
+        "title": "Tidak ada pengeluaran",
+        "description": "Tidak ada transaksi pengeluaran bulan ini"
       }
     },
     "quickActions": {
@@ -78,6 +100,7 @@
     "addButton": "Tambah Transaksi",
     "income": "Pemasukan",
     "expense": "Pengeluaran",
+    "transfer": "Transfer",
     "noDescription": "Tanpa deskripsi",
     "deleteButton": "Hapus transaksi",
     "listTitle": "Transaksi",
@@ -112,6 +135,9 @@
       "selected": "Pilih {type} ...",
       "account": "Akun",
       "category": "Kategori",
+      "fromAccount": "Dari Akun",
+      "toAccount": "Ke Akun (opsional)",
+      "toAccountOptional": "Pilih akun tujuan",
       "categoryLabel": "Kategori",
       "date": "Tanggal",
       "description": "Deskripsi",
@@ -131,7 +157,8 @@
       "amount": "Masukkan jumlah yang valid lebih dari 0",
       "account": "Pilih akun",
       "category": "Pilih kategori",
-      "description": "Tambahkan deskripsi"
+      "description": "Tambahkan deskripsi",
+      "sameAccount": "Akun sumber dan tujuan harus berbeda"
     },
     "success": {
       "created": "Transaksi berhasil dibuat! 🎉",
@@ -455,17 +482,18 @@
   },
   "reportsPage": {
     "title": "Laporan Keuangan",
-    "subtitle": "Analisis komprehensif pemasukan dan pengeluaran Anda",
+    "subtitle": "Analisis pemasukan, pengeluaran, dan transfer Anda",
+    "tabs": {
+      "monthly": "Bulanan",
+      "yearly": "Tahunan",
+      "custom": "Kustom"
+    },
     "income": "Pemasukan",
     "expense": "Pengeluaran",
+    "transfer": "Transfer",
     "balance": "Saldo",
-    "ofTotal": "dari total",
-    "categoriesCount": "kategori",
-    "monthsCount": "bulan",
-    "topCategories": "Kategori Pengeluaran Teratas",
-    "monthlyBreakdown": "Rincian Bulanan",
     "filter": {
-      "reportType": "Tipe Laporan",
+      "reportType": "Jenis Laporan",
       "monthlyReport": "Laporan Bulanan",
       "yearlyReport": "Laporan Tahunan",
       "month": "Bulan",
@@ -488,25 +516,64 @@
     "stats": {
       "totalIncome": "Total Pemasukan",
       "totalExpense": "Total Pengeluaran",
+      "totalTransfers": "Total Transfer",
+      "transfers": "Transfer",
       "netBalance": "Saldo Bersih",
-      "yearlyBalance": "Saldo Tahunan",
+      "balance": "Saldo",
       "savingsRate": "Tingkat Tabungan",
-      "transactionCount": "Jumlah Transaksi",
+      "greatJob": "Bagus sekali!",
+      "keepImproving": "Terus tingkatkan",
+      "excellent": "Luar biasa!",
+      "roomToImprove": "Masih bisa ditingkatkan",
       "dailyAvgExpense": "Rata-rata Pengeluaran Harian",
       "largestTransaction": "Transaksi Terbesar",
+      "transactionCount": "Transaksi",
       "totalTransactions": "Total Transaksi",
       "avgMonthlyIncome": "Rata-rata Pemasukan Bulanan",
       "avgMonthlyExpense": "Rata-rata Pengeluaran Bulanan",
-      "greatJob": "Kerja bagus!",
-      "keepImproving": "Terus tingkatkan!",
-      "excellent": "Luar biasa!",
-      "roomToImprove": "Masih bisa lebih baik"
+      "txn": "trx"
+    },
+    "charts": {
+      "dailySpending": "Tren Pengeluaran Harian",
+      "dailyTrend": "Tren Harian",
+      "monthlyBreakdown": "Rincian Bulanan"
+    },
+    "transferSummary": {
+      "title": "Ringkasan Transfer",
+      "totalMoved": "Total Dipindahkan",
+      "totalReceived": "Diterima",
+      "withdrawals": "Penarikan",
+      "count": "Transaksi"
+    },
+    "topCategories": "Kategori Teratas",
+    "categoriesCount": "kategori",
+    "monthlyBreakdown": "Rincian Bulanan",
+    "monthsCount": "bulan",
+    "ofTotal": "dari total",
+    "yearly": {
+      "bestMonth": "Bulan Terbaik",
+      "worstMonth": "Bulan Tersulit"
+    },
+    "custom": {
+      "startDate": "Tanggal Mulai",
+      "endDate": "Tanggal Akhir",
+      "generate": "Buat Laporan",
+      "empty": "Pilih rentang tanggal di atas dan klik Buat Laporan untuk melihat analisis kustom Anda.",
+      "categoryBreakdown": "Rincian Kategori",
+      "emptyCategoryBreakdown": "Tidak ada transaksi berkategori dalam rentang ini.",
+      "accountBreakdown": "Rincian Akun",
+      "account": {
+        "in": "Masuk",
+        "out": "Keluar",
+        "sent": "Terkirim",
+        "received": "Diterima"
+      }
     },
     "empty": {
-      "title": "Tidak Ada Data",
-      "monthly": "Tidak ada data pengeluaran untuk bulan ini. Mulai tambahkan transaksi untuk melihat kategori teratas.",
-      "yearly": "Tidak ada data pengeluaran untuk tahun ini. Mulai lacak pengeluaran untuk melihat wawasan.",
-      "breakdown": "Tidak ada data bulanan untuk tahun ini. Transaksi akan muncul di sini setelah dicatat."
+      "title": "Data Tidak Ditemukan",
+      "monthly": "Tidak ada transaksi untuk bulan ini. Mulailah mencatat pemasukan dan pengeluaran Anda.",
+      "yearly": "Tidak ada transaksi untuk tahun ini.",
+      "breakdown": "Tidak ada data bulanan yang tersedia untuk periode ini."
     }
   },
   "profilesPage": {

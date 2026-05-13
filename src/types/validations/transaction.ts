@@ -1,27 +1,73 @@
 import { z } from "zod";
 
-export const transactionSchema = z.object({
-  accountId: z.string("Account ID is not valid"),
-  categoryId: z.string("Category ID is not valid"),
-  amount: z.number().positive("The amount must be greater than 0"),
-  type: z.enum(["INCOME", "EXPENSE", "TRANSFER"]),
-  description: z.string().optional().nullable(),
-  date: z.string().or(z.date()),
-  attachment: z.string().optional().nullable(),
+const incomeExpenseSchema = z.object({
+  type: z.enum(["INCOME", "EXPENSE"]),
+  accountId: z.string().min(1, "Account is required"),
+  categoryId: z.string().min(1, "Category is required"),
+  amount: z.number().positive("Amount must be positive"),
+  description: z.string().optional(),
+  date: z.string().min(1, "Date is required"),
+  attachment: z.string().optional(),
 });
 
-export const updateTransactionSchema = transactionSchema.partial();
-
-export const quickTransactionSchema = z.object({
-  email: z.email("Invalid email address"),
-  accountId: z.string("Account ID is not valid"),
-  categoryId: z.string("Category ID is not valid"),
-  amount: z.number().positive("The amount must be greater than 0"),
-  type: z.enum(["INCOME", "EXPENSE", "TRANSFER"]),
-  description: z.string().optional().nullable(),
-  date: z.string().or(z.date()),
-  attachment: z.string().optional().nullable(),
+const transferBaseSchema = z.object({
+  type: z.literal("TRANSFER"),
+  accountId: z.string().min(1, "Source account is required"),
+  toAccountId: z.string().optional(),
+  categoryId: z.string().optional(),
+  amount: z.number().positive("Amount must be positive"),
+  description: z.string().optional(),
+  date: z.string().min(1, "Date is required"),
+  attachment: z.string().optional(),
 });
+
+const transferSchema = transferBaseSchema.refine((d) => !d.toAccountId || d.toAccountId !== d.accountId, {
+  message: "Source and destination accounts must be different",
+  path: ["toAccountId"],
+});
+
+export const transactionSchema = z.discriminatedUnion("type", [incomeExpenseSchema.extend({ type: z.literal("INCOME") }), incomeExpenseSchema.extend({ type: z.literal("EXPENSE") }), transferSchema]);
+
+export const updateTransactionSchema = z.discriminatedUnion("type", [
+  incomeExpenseSchema
+    .extend({ type: z.literal("INCOME") })
+    .partial()
+    .required({ type: true }),
+
+  incomeExpenseSchema
+    .extend({ type: z.literal("EXPENSE") })
+    .partial()
+    .required({ type: true }),
+
+  transferBaseSchema
+    .partial()
+    .required({ type: true })
+    .refine((d) => !d.toAccountId || d.toAccountId !== d.accountId, {
+      message: "Source and destination accounts must be different",
+      path: ["toAccountId"],
+    }),
+]);
+
+export const quickTransactionSchema = z.discriminatedUnion("type", [
+  incomeExpenseSchema.extend({
+    email: z.string().email("Invalid email address"),
+    type: z.literal("INCOME"),
+  }),
+
+  incomeExpenseSchema.extend({
+    email: z.string().email("Invalid email address"),
+    type: z.literal("EXPENSE"),
+  }),
+
+  transferBaseSchema
+    .extend({
+      email: z.string().email("Invalid email address"),
+    })
+    .refine((d) => !d.toAccountId || d.toAccountId !== d.accountId, {
+      message: "Source and destination accounts must be different",
+      path: ["toAccountId"],
+    }),
+]);
 
 export const transactionFilterSchema = z.object({
   startDate: z.string().optional().nullable(),
