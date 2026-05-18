@@ -48,8 +48,8 @@ export const ResetPasswordSuccess = () => {
         <div className="p-8 shadow-2xl bg-white/95 backdrop-blur-sm rounded-2xl">
           <div className="flex flex-col items-center text-center">
             <div className="relative flex items-center justify-center w-20 h-20 mb-6">
-              <div className="absolute inset-0 rounded-full bg-green-100 animate-ping opacity-75" />
-              <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-green-100">
+              <div className="absolute inset-0 bg-green-100 rounded-full opacity-75 animate-ping" />
+              <div className="relative flex items-center justify-center w-20 h-20 bg-green-100 rounded-full">
                 <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>

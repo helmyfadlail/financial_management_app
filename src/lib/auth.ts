@@ -1,7 +1,11 @@
-import { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
+
+import { NextAuthOptions } from "next-auth";
+
+import GoogleProvider from "next-auth/providers/google";
+
+import CredentialsProvider from "next-auth/providers/credentials";
+
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
@@ -42,7 +46,7 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: parseInt(process.env.SESSION_EXPIRATION!) || 15 * 60,
   },
 
   callbacks: {

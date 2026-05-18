@@ -225,7 +225,7 @@ export const Settings: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card variant="elevated" className="bg-linear-to-br from-primary-500 to-primary-600">
+        <Card variant="elevated" className="bg-linear-to-br from-info-50 to-info-100">
           <CardContent className="pt-6">
             <div className="text-center text-primary-900">
               <p className="mb-2 text-4xl">🔔</p>
@@ -237,7 +237,7 @@ export const Settings: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card variant="elevated" className="bg-linear-to-br from-green-500 to-green-600">
+        <Card variant="elevated" className="bg-linear-to-br from-success-50 to-success-100">
           <CardContent className="pt-6">
             <div className="text-center text-primary-900">
               <p className="mb-2 text-4xl">💾</p>
@@ -247,7 +247,7 @@ export const Settings: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card variant="elevated" className="bg-linear-to-br from-blue-500 to-blue-600">
+        <Card variant="elevated" className="bg-linear-to-br from-primary-50 to-primary-100">
           <CardContent className="pt-6">
             <div className="text-center text-primary-900">
               <p className="mb-2 text-4xl">

@@ -289,12 +289,12 @@ export const Dashboard: React.FC = () => {
         </Button>
       </div>
 
-      <div className="p-4 text-white shadow-lg rounded-2xl bg-linear-to-r from-primary-900 to-primary-700 sm:p-6">
+      <div className="p-4 shadow-lg text-primary-900 rounded-2xl bg-linear-to-br from-primary-50 via-primary-100 to-primary-200 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="mb-1 text-xs font-medium tracking-widest uppercase sm:text-sm text-primary-300">{t("totalBalance")}</p>
+            <p className="mb-1 text-xs font-medium tracking-widest uppercase sm:text-sm text-primary">{t("totalBalance")}</p>
             <p className="text-2xl font-bold sm:text-3xl md:text-4xl tabular-nums">{format(totalBalance)}</p>
-            <p className="mt-1 text-xs sm:text-sm text-primary-300 sm:mt-2">
+            <p className="mt-1 text-xs sm:text-sm text-primary sm:mt-2">
               {accounts.length} {t("accountsLinked")}
             </p>
           </div>
@@ -304,11 +304,11 @@ export const Dashboard: React.FC = () => {
             {accounts.slice(0, 3).map((acc) => (
               <div key={acc.id} className="flex items-center gap-2 text-xs sm:text-sm">
                 <span className="opacity-70">{acc.icon}</span>
-                <span className="truncate text-primary-200 max-w-28 sm:max-w-40">{acc.name}</span>
-                <span className="font-bold text-white tabular-nums">{format(acc.balance)}</span>
+                <span className="truncate text-primary max-w-28 sm:max-w-40">{acc.name}</span>
+                <span className="font-bold text-primary-900 tabular-nums">{format(acc.balance)}</span>
               </div>
             ))}
-            {accounts.length > 3 && <span className="text-xs text-primary-400">+{accounts.length - 3} more</span>}
+            {accounts.length > 3 && <span className="text-xs text-primary">+{accounts.length - 3} more</span>}
           </div>
         </div>
       </div>

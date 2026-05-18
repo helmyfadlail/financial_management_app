@@ -75,8 +75,6 @@ export const Home: React.FC = () => {
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [formData, setFormData] = React.useState<FormData>(INITIAL_FORM_DATA);
 
-  // ── Derived options ───────────────────────────────────────────────────────
-
   const getFilteredCategories = React.useCallback(
     (type: TransactionType) => {
       if (type === "TRANSFER") return [];
@@ -199,17 +197,17 @@ export const Home: React.FC = () => {
   const showPreview = !!formData.amount && !!formData.description;
 
   return (
-    <div className="min-h-screen px-3 sm:px-4 py-6 sm:py-8 md:py-12 bg-to-br from-primary-50 to-neutral">
-      <div className="max-w-lg sm:max-w-xl md:max-w-2xl mx-auto space-y-3 sm:space-y-4 md:space-y-6">
-        <div className="text-center py-2 sm:py-4">
-          <div className="mb-2 sm:mb-3 text-4xl sm:text-5xl md:text-6xl">⚡</div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary-900">Finarthax</h1>
-          <p className="px-4 mt-1 sm:mt-2 text-sm sm:text-base md:text-lg text-primary-600">Record your transactions instantly, no login required</p>
+    <div className="min-h-screen px-3 py-6 sm:px-4 sm:py-8 md:py-12 bg-linear-to-br from-primary-50 to-neutral">
+      <div className="max-w-lg mx-auto space-y-3 sm:max-w-xl md:max-w-2xl sm:space-y-4 md:space-y-6">
+        <div className="py-2 text-center sm:py-4">
+          <div className="mb-2 text-4xl sm:mb-3 sm:text-5xl md:text-6xl">⚡</div>
+          <h1 className="text-2xl font-bold sm:text-3xl md:text-4xl text-primary-900">Finarthax</h1>
+          <p className="px-4 mt-1 text-sm sm:mt-2 sm:text-base md:text-lg text-primary-600">Record your transactions instantly, no login required</p>
         </div>
 
         <Card>
-          <CardContent className="pt-3 sm:pt-4 md:pt-6 pb-3 sm:pb-4">
-            <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 border rounded-lg bg-primary-50 border-primary-200">
+          <CardContent className="pt-3 pb-3 sm:pt-4 md:pt-6 sm:pb-4">
+            <div className="flex items-start gap-2 p-3 border rounded-lg sm:gap-3 sm:p-4 bg-primary-50 border-primary-200">
               <span className="text-lg sm:text-xl md:text-2xl shrink-0">💡</span>
               <div className="flex-1 min-w-0">
                 <p className="mb-1.5 sm:mb-2 text-xs sm:text-sm md:text-base font-medium text-primary-900">How it works:</p>
@@ -238,9 +236,9 @@ export const Home: React.FC = () => {
             {emailVerified && (
               <>
                 <div className="flex items-center justify-between p-2.5 sm:p-3 mb-3 sm:mb-4 border rounded-lg bg-green-50 border-green-200">
-                  <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-center min-w-0 gap-2">
                     <span className="text-base sm:text-xl shrink-0">✓</span>
-                    <span className="text-xs sm:text-sm font-medium text-green-900 truncate">{email}</span>
+                    <span className="text-xs font-medium text-green-900 truncate sm:text-sm">{email}</span>
                   </div>
                   <button
                     onClick={() => {
@@ -250,14 +248,14 @@ export const Home: React.FC = () => {
                       setAccounts([]);
                       setCategories([]);
                     }}
-                    className="text-xs text-green-700 hover:text-green-900 shrink-0 ml-2"
+                    className="ml-2 text-xs text-green-700 hover:text-green-900 shrink-0"
                   >
                     Change
                   </button>
                 </div>
 
                 <div className="space-y-3 sm:space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                     <Select
                       label="Type *"
                       options={[
@@ -307,7 +305,7 @@ export const Home: React.FC = () => {
 
                   {showPreview && (
                     <div className={`p-3 sm:p-4 border rounded-xl ${config.bg} border-primary-200`}>
-                      <p className="mb-2 sm:mb-3 text-xs sm:text-sm font-medium text-primary-700">Preview:</p>
+                      <p className="mb-2 text-xs font-medium sm:mb-3 sm:text-sm text-primary-700">Preview:</p>
                       <div className="flex items-center justify-between gap-2 sm:gap-3 p-2.5 sm:p-3 bg-white rounded-lg shadow-sm">
                         <div className="flex items-center flex-1 min-w-0 gap-2 sm:gap-3">
                           <div
@@ -321,7 +319,7 @@ export const Home: React.FC = () => {
                             {previewIcon}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs sm:text-sm md:text-base font-medium truncate text-primary-900">{formData.description}</p>
+                            <p className="text-xs font-medium truncate sm:text-sm md:text-base text-primary-900">{formData.description}</p>
                             <p className="text-xs truncate text-primary-600">{previewSubtitle}</p>
                           </div>
                         </div>
@@ -348,11 +346,11 @@ export const Home: React.FC = () => {
 
         <Card>
           <CardContent className="pt-4 sm:pt-6">
-            <div className="p-4 sm:p-6 text-center border-2 border-dashed rounded-xl border-primary-300 bg-primary-50">
-              <div className="mb-2 sm:mb-3 text-3xl sm:text-4xl">🚀</div>
+            <div className="p-4 text-center border-2 border-dashed sm:p-6 rounded-xl border-primary-300 bg-primary-50">
+              <div className="mb-2 text-3xl sm:mb-3 sm:text-4xl">🚀</div>
               <h3 className="mb-1.5 sm:mb-2 text-lg sm:text-xl font-bold text-primary-900">Ready for More?</h3>
-              <p className="mb-3 sm:mb-4 text-xs sm:text-sm md:text-base text-primary-600 max-w-xs mx-auto">Create a free account to sync your data, set budgets, and access powerful analytics</p>
-              <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
+              <p className="max-w-xs mx-auto mb-3 text-xs sm:mb-4 sm:text-sm md:text-base text-primary-600">Create a free account to sync your data, set budgets, and access powerful analytics</p>
+              <div className="flex flex-col justify-center gap-2 sm:flex-row sm:gap-3">
                 <Button variant="primary" size="lg" onClick={() => router.push("/register")} className="w-full sm:w-auto">
                   Sign Up Free
                 </Button>

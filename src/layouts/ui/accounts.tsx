@@ -129,9 +129,7 @@ export const Accounts: React.FC = () => {
   });
 
   const summary = React.useMemo(() => {
-    const totalBalance = accounts.reduce((sum, acc) => sum + Number(acc.balance), 0);
-    const positiveBalance = accounts.filter((acc) => Number(acc.balance) > 0).reduce((sum, acc) => sum + Number(acc.balance), 0);
-    const negativeBalance = accounts.filter((acc) => Number(acc.balance) < 0).reduce((sum, acc) => sum + Number(acc.balance), 0);
+    const totalBalance = accounts.filter((acc) => acc.type !== "CREDIT_CARD").reduce((sum, acc) => sum + Number(acc.balance), 0);
 
     const accountsByType = accounts.reduce(
       (acc, account) => {
@@ -141,13 +139,7 @@ export const Accounts: React.FC = () => {
       {} as Record<Account["type"], number>,
     );
 
-    return {
-      total: accounts.length,
-      totalBalance,
-      positiveBalance,
-      negativeBalance,
-      accountsByType,
-    };
+    return { total: accounts.length, totalBalance, accountsByType };
   }, [accounts]);
 
   const resetForm = React.useCallback((): void => {
@@ -341,40 +333,17 @@ export const Accounts: React.FC = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card variant="elevated" className="bg-linear-to-br from-primary-500 to-primary-600">
-          <CardContent className="pt-6">
-            <div className="text-center text-primary-900">
-              <p className="mb-2 text-sm opacity-90">💰 {t("summary.totalBalance")}</p>
-              <p className="text-4xl font-bold">{format(summary.totalBalance)}</p>
-              <p className="mt-2 text-xs opacity-75">
-                {summary.total} {summary.total === 1 ? t("summary.account") : t("summary.accounts")}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card variant="elevated">
-          <CardContent className="pt-6">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-primary-600">📈 {t("summary.assets")}</span>
-                <span className="font-bold text-green-600">{format(summary.positiveBalance)}</span>
-              </div>
-              {summary.negativeBalance < 0 && (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-primary-600">📉 {t("summary.liabilities")}</span>
-                  <span className="font-bold text-red-600">{format(Math.abs(summary.negativeBalance))}</span>
-                </div>
-              )}
-              <div className="flex items-center justify-between pt-3 border-t">
-                <span className="text-sm font-medium text-primary-900">{t("summary.netWorth")}</span>
-                <span className={`font-bold ${summary.totalBalance >= 0 ? "text-primary-900" : "text-red-600"}`}>{format(summary.totalBalance)}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Card variant="default" className="bg-linear-to-br from-primary-50 via-primary-100 to-primary-200">
+        <CardContent className="pt-6">
+          <div className="text-center text-primary-900">
+            <p className="mb-2 text-sm opacity-90">💰 {t("summary.totalBalance")}</p>
+            <p className="text-4xl font-bold">{format(summary.totalBalance)}</p>
+            <p className="mt-2 text-xs opacity-75">
+              {summary.total} {summary.total === 1 ? t("summary.account") : t("summary.accounts")}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {accounts.length > 0 && (
         <Card>
